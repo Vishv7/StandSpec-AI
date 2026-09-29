@@ -1,0 +1,65 @@
+{
+  "run_id": "2026-09-27T18:36:08.587348+00:00",
+  "first_run_started_at": "2026-09-27T18:36:08.587348+00:00",
+  "last_run_started_at": "2026-09-27T18:36:08.587348+00:00",
+  "run_completed_at": "2026-09-27T18:57:13.006444+00:00",
+  "department": "ETD",
+  "input_file": "Electrotechnical Department (ETD).xlsx",
+  "input_rows": 1944,
+  "run_manifest": {
+    "input_sha256": "898eed769ccca7367310a819de24abc969607ff5bcb77b56e6c9ab8b54de92a8",
+    "source_snapshot_sha256": "898eed769ccca7367310a819de24abc969607ff5bcb77b56e6c9ab8b54de92a8",
+    "parser_version": "1.2.0",
+    "collector_version": "1.2.0",
+    "schema_version": "1.2",
+    "first_run_started_at": "2026-09-27T18:36:08.587348+00:00",
+    "last_run_started_at": "2026-09-27T18:36:08.587348+00:00",
+    "source_collection_timestamp": "2026-09-27T18:36:08.587348+00:00",
+    "code_commit": null,
+    "code_version_source": "NO_GIT_METADATA"
+  },
+  "statistics": {
+    "input_rows_count": 1944,
+    "attempted_count": 1944,
+    "skipped_cache_count": 0,
+    "reparsed_count": 0,
+    "output_snapshot_count": 1944
+  },
+  "standards": {
+    "processed": 1944,
+    "success": 464,
+    "partial_success": 1464,
+    "failed": 16,
+    "review_required": 908,
+    "note": "review_required is a quality flag, not a status. success+partial+failed=processed."
+  },
+  "evidence": {
+    "verified": 1090,
+    "version_uncertain": 18,
+    "note": "version_uncertain pages have content but years differ from requested."
+  },
+  "content": {
+    "scope_present": 438,
+    "scope_fallback": 37,
+    "scope_found": 475,
+    "foreword_found": 619,
+    "notes_found": 86
+  },
+  "references": {
+    "standards_with_references": 475,
+    "total_reference_records": 2175,
+    "formal_reference_rows": 2092,
+    "extracted_references": 2175,
+    "international_references": 458,
+    "sp_references": 6,
+    "dual_numbered_references": 83,
+    "continuation_resolved": 258
+  },
+  "output_paths": {
+    "standards_jsonl": "data\\processed\\ETD\\ETD_standards.jsonl",
+    "references_jsonl": "data\\processed\\ETD\\ETD_references.jsonl",
+    "source_availability_jsonl": "data\\processed\\ETD\\ETD_source_availability.jsonl",
+    "source_availability_csv": "data\\processed\\ETD\\ETD_source_availability.csv",
+    "enriched_excel": "data\\processed\\ETD\\ETD_enriched.xlsx"
+  }
+}

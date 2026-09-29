@@ -1,0 +1,11 @@
+requests
+beautifulsoup4
+lxml
+pandas
+openpyxl
+pytest>=8.0.0
+jsonschema>=4.20.0
+fastapi>=0.115.0
+uvicorn>=0.30.0
+pypdf>=5.0.0
+python-multipart>=0.0.9

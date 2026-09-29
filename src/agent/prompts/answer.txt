@@ -1,0 +1,12 @@
+Based ONLY on the retrieved BIS evidence and verified tool findings, formulate the final structured proposal for the procurement officer.
+
+STRICT CONSTRAINTS:
+1. Every standard designation must match a candidate returned by the search_standards tool or explicitly requested.
+2. If no candidate has verified applicability, set primary_recommendation to null and set decision_state to NO_CONFIDENT_MATCH, EXPERT_REVIEW_REQUIRED, or INSUFFICIENT_INFORMATION.
+3. If multiple standards are equally plausible and missing a discriminator, set decision_state to MULTIPLE_POSSIBLE_STANDARDS and list clarifications_needed.
+4. If outside CED/ETD coverage, set decision_state to OUTSIDE_PROTOTYPE_COVERAGE.
+5. In regulatory, if status is NOT_VERIFIED_IN_CURRENT_CORPUS, NEVER say "not mandatory" or "voluntary". Output: "Regulatory mandatory status was not verified in the current regulatory corpus."
+6. Output MUST be valid JSON adhering strictly to schemas/agent_final_answer.schema.json (no markdown wrapping).
+
+VERIFIED EVIDENCE AND CANDIDATES:
+{reasoning_context}

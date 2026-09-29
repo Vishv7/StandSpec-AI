@@ -1,0 +1,1149 @@
+{
+  "n_queries": 50,
+  "RAW_RETRIEVAL_TOP1": 0.2326,
+  "EFFECTIVE_CANDIDATE_TOP1": 0.2093,
+  "VERIFIED_PRIMARY_TOP1": 0.12,
+  "MRR": 0.2748,
+  "candidate_recall_at_5": 0.34,
+  "candidate_recall_at_10": 0.34,
+  "safe_decision_accuracy": 0.04,
+  "safe_abstention_rate": 1.0,
+  "safety_metrics": {
+    "WRONG_PRIMARY_PROMOTION_RATE": 0.2791,
+    "UNSUPPORTED_PRIMARY_PROMOTION_RATE": 1.0,
+    "WRONG_ROLE_PRIMARY_RATE": 0.0,
+    "WRONG_EDITION_PRIMARY_RATE": 0.0,
+    "SAFE_PRIMARY_RATE": 0.0,
+    "UNSAFE_PRIMARY_RATE": 0.36,
+    "SAFE_DECISION_ACCURACY": 0.2,
+    "SAFE_ABSTENTION_RATE": 1.4286
+  },
+  "subset_breakdown": {
+    "paraphrase": {
+      "total_queries": 10,
+      "effective_top1_accuracy": 0.3,
+      "verified_primary_accuracy": 0.2,
+      "recall_at_5": 0.5,
+      "safe_decision_accuracy": 0.0,
+      "safe_abstention_rate": 1.0
+    },
+    "compositional": {
+      "total_queries": 10,
+      "effective_top1_accuracy": 0.2,
+      "verified_primary_accuracy": 0.2,
+      "recall_at_5": 0.5,
+      "safe_decision_accuracy": 0.0,
+      "safe_abstention_rate": 1.0
+    },
+    "multilingual": {
+      "total_queries": 10,
+      "effective_top1_accuracy": 0.1,
+      "verified_primary_accuracy": 0.1,
+      "recall_at_5": 0.1,
+      "safe_decision_accuracy": 0.0,
+      "safe_abstention_rate": 1.0
+    },
+    "long_clause": {
+      "total_queries": 10,
+      "effective_top1_accuracy": 0.2,
+      "verified_primary_accuracy": 0.1,
+      "recall_at_5": 0.5,
+      "safe_decision_accuracy": 0.0,
+      "safe_abstention_rate": 1.0
+    },
+    "conflict": {
+      "total_queries": 10,
+      "effective_top1_accuracy": 0.1,
+      "verified_primary_accuracy": 0.0,
+      "recall_at_5": 0.1,
+      "safe_decision_accuracy": 0.2,
+      "safe_abstention_rate": 1.0
+    }
+  },
+  "per_query_results": [
+    {
+      "query_id": "Q_OWP_001",
+      "subset": "paraphrase",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 1139:1966",
+      "expected_golds": [
+        "IS 1786:2008"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RERANKING_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWP_002",
+      "subset": "paraphrase",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 16647:2017",
+      "expected_golds": [
+        "IS 4985:2021"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWP_003",
+      "subset": "paraphrase",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 17066 (Part 1):2018",
+      "expected_golds": [
+        "IS 3854:2023"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWP_004",
+      "subset": "paraphrase",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 383:2016",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 383:2016"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": true,
+      "wrong_primary": false,
+      "error_classifications": [],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWP_005",
+      "subset": "paraphrase",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 17048:2018",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 694:2010"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "WRONG_PRIMARY",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWP_006",
+      "subset": "paraphrase",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 16102 (Part 1):2026",
+      "expected_golds": [
+        "IS 16102 (Part 1):2026"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWP_007",
+      "subset": "paraphrase",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 6909:2026",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 8041:2026"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "QUERY_INSUFFICIENT",
+        "RETRIEVAL_MISS",
+        "WRONG_PRIMARY"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWP_008",
+      "subset": "paraphrase",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 398 (Part 2):2025",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 398 (Part 2):2025"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": true,
+      "wrong_primary": false,
+      "error_classifications": [
+        "QUERY_INSUFFICIENT"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWP_009",
+      "subset": "paraphrase",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 15877:2010",
+      "expected_golds": [
+        "IS 2095 (Part 1):2023"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWP_010",
+      "subset": "paraphrase",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 7538:1996",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 12615:2026"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "RERANKING_MISS",
+        "WRONG_PRIMARY"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWC_001",
+      "subset": "compositional",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 8783 (Part 2):2026",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 7098 (Part 1):2025"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "QUERY_INSUFFICIENT",
+        "RETRIEVAL_MISS",
+        "WRONG_PRIMARY"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWC_002",
+      "subset": "compositional",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 18444 (Part 57/Sec 129):2024",
+      "expected_golds": [
+        "IS 1180 (Part 1):2014"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWC_003",
+      "subset": "compositional",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 15622:2017",
+      "expected_golds": [
+        "IS 15477:2019"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWC_004",
+      "subset": "compositional",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 6452:2026",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 6452:2026"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": true,
+      "wrong_primary": false,
+      "error_classifications": [],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWC_005",
+      "subset": "compositional",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 6909:2026",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 12330:1988"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "QUERY_INSUFFICIENT",
+        "RERANKING_MISS",
+        "WRONG_PRIMARY"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWC_006",
+      "subset": "compositional",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 7098 (Part 1):2025",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 4289 (Part 1):2026"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "QUERY_INSUFFICIENT",
+        "RERANKING_MISS",
+        "WRONG_PRIMARY"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWC_007",
+      "subset": "compositional",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 12089:1987",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 12089:1987"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": true,
+      "wrong_primary": false,
+      "error_classifications": [
+        "QUERY_INSUFFICIENT"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWC_008",
+      "subset": "compositional",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 2062:2011",
+      "expected_golds": [
+        "IS 5820:2024"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWC_009",
+      "subset": "compositional",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 7538:1996",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 996:2025"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "WRONG_PRIMARY",
+        "KNOWN_HARD_NEGATIVE"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWC_010",
+      "subset": "compositional",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 18444 (Part 57/Sec 129):2024",
+      "expected_golds": [
+        "IS 7391 (Part 1):2026"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWM_001",
+      "subset": "multilingual",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 10086:1982",
+      "expected_golds": [
+        "IS 1786:2008"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWM_002",
+      "subset": "multilingual",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 10 (Part 1):1990",
+      "expected_golds": [
+        "IS 4985:2021"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWM_003",
+      "subset": "multilingual",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IEC 62335:2008",
+      "expected_golds": [
+        "IS 3854:2023"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWM_004",
+      "subset": "multilingual",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 1180 (Part 1):2014",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 1180 (Part 1):2014"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": true,
+      "wrong_primary": false,
+      "error_classifications": [],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWM_005",
+      "subset": "multilingual",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 13730 (Part 0/Sec 2):2024",
+      "expected_golds": [
+        "IS 15477:2019"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWM_006",
+      "subset": "multilingual",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 15660:2006",
+      "expected_golds": [
+        "IS 398 (Part 2):2025"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWM_007",
+      "subset": "multilingual",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 10086:1982",
+      "expected_golds": [
+        "IS 8041:2026"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWM_008",
+      "subset": "multilingual",
+      "decision_state": "CONDITIONAL_RECOMMENDATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 8394:1977",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 694:2010"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "WRONG_PRIMARY",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWM_009",
+      "subset": "multilingual",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 8783 (Part 2):2026",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 7098 (Part 1):2025"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "WRONG_PRIMARY"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWM_010",
+      "subset": "multilingual",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 2095",
+      "expected_golds": [
+        "IS 2095 (Part 1):2023"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWL_001",
+      "subset": "long_clause",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 10086:1982",
+      "expected_golds": [
+        "IS 1786:2008"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RERANKING_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWL_002",
+      "subset": "long_clause",
+      "decision_state": "NO_CONFIDENT_MATCH",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 4985:2021"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RETRIEVAL_MISS"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWL_003",
+      "subset": "long_clause",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 16227 (Part 100):2018",
+      "expected_golds": [
+        "IS 1180 (Part 1):2014"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWL_004",
+      "subset": "long_clause",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 7098 (Part 1):2025",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 694:2010"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "QUERY_INSUFFICIENT",
+        "RETRIEVAL_MISS",
+        "WRONG_PRIMARY",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWL_005",
+      "subset": "long_clause",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 7098",
+      "expected_golds": [
+        "IS 7098 (Part 1):2025"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWL_006",
+      "subset": "long_clause",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 383:2016",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 383:2016"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": true,
+      "wrong_primary": false,
+      "error_classifications": [],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWL_007",
+      "subset": "long_clause",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 19465:2025",
+      "expected_golds": [
+        "IS 3854:2023"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWL_008",
+      "subset": "long_clause",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 12423:1988",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 12330:1988"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "RERANKING_MISS",
+        "WRONG_PRIMARY"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWL_009",
+      "subset": "long_clause",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 16102 (Part 1):2026",
+      "expected_golds": [
+        "IS 16102 (Part 1):2026"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWL_010",
+      "subset": "long_clause",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 1239 (Part 1):2004",
+      "expected_golds": [
+        "IS 2095 (Part 1):2023"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWX_001",
+      "subset": "conflict",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "INSUFFICIENT_INFORMATION",
+      "expected_safe_decision": "INSUFFICIENT_INFORMATION",
+      "primary_recommendation": null,
+      "review_candidate": "IS 10151:2019",
+      "expected_golds": [],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWX_002",
+      "subset": "conflict",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "INSUFFICIENT_INFORMATION",
+      "expected_safe_decision": "INSUFFICIENT_INFORMATION",
+      "primary_recommendation": null,
+      "review_candidate": "IS 18444 (Part 57/Sec 129):2024",
+      "expected_golds": [],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWX_003",
+      "subset": "conflict",
+      "decision_state": "NO_CONFIDENT_MATCH",
+      "expected_decision": "OUTSIDE_PROTOTYPE_COVERAGE",
+      "expected_safe_decision": "OUTSIDE_PROTOTYPE_COVERAGE",
+      "primary_recommendation": null,
+      "review_candidate": null,
+      "expected_golds": [],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWX_004",
+      "subset": "conflict",
+      "decision_state": "NO_CONFIDENT_MATCH",
+      "expected_decision": "OUTSIDE_PROTOTYPE_COVERAGE",
+      "expected_safe_decision": "OUTSIDE_PROTOTYPE_COVERAGE",
+      "primary_recommendation": null,
+      "review_candidate": null,
+      "expected_golds": [],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWX_005",
+      "subset": "conflict",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "OUTSIDE_PROTOTYPE_COVERAGE",
+      "expected_safe_decision": "OUTSIDE_PROTOTYPE_COVERAGE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 1139:1966",
+      "expected_golds": [],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "COVERAGE_OUTSIDE_DOMAIN"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWX_006",
+      "subset": "conflict",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "INSUFFICIENT_INFORMATION",
+      "expected_safe_decision": "INSUFFICIENT_INFORMATION",
+      "primary_recommendation": null,
+      "review_candidate": "IS 1068:1993",
+      "expected_golds": [],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWX_007",
+      "subset": "conflict",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "EXPERT_REVIEW_REQUIRED",
+      "primary_recommendation": null,
+      "review_candidate": "IS 2553 (Part 1):1990",
+      "expected_golds": [
+        "IS 2553 (Part 1):2018"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": true,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWX_008",
+      "subset": "conflict",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "EXPERT_REVIEW_REQUIRED",
+      "primary_recommendation": "IS 9762:1994",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 14900:2018"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": true,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "WRONG_PRIMARY",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    },
+    {
+      "query_id": "Q_OWX_009",
+      "subset": "conflict",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "EXPERT_REVIEW_REQUIRED",
+      "primary_recommendation": null,
+      "review_candidate": "IS 4984:2016",
+      "expected_golds": [
+        "IS 4984:2016"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": true,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "RETRIEVAL_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": true,
+      "hit_in_top_10": true
+    },
+    {
+      "query_id": "Q_OWX_010",
+      "subset": "conflict",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "INSUFFICIENT_INFORMATION",
+      "expected_safe_decision": "INSUFFICIENT_INFORMATION",
+      "primary_recommendation": null,
+      "review_candidate": "IS 13114:1991",
+      "expected_golds": [],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "wrong_primary": false,
+      "error_classifications": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "EVIDENCE_MISSING"
+      ],
+      "hit_in_top_5": false,
+      "hit_in_top_10": false
+    }
+  ]
+}

@@ -1,0 +1,178 @@
+{
+  "release_id": "STANDSPEC_PROTOTYPE_CED_ETD_V3_0_0",
+  "format_version": "2.0",
+  "build_timestamp": "2026-09-28T17:35:46+00:00",
+  "versions": {
+    "engine_version": "3.0.0",
+    "collector_version": "1.2.1",
+    "parser_version": "1.2.1",
+    "schema_version": "2.0",
+    "python_runtime": "3.14.6",
+    "pytest_version": "9.1.1"
+  },
+  "artifacts": {
+    "knowledge_graph": {
+      "path": "data/processed/standards_graph.json",
+      "sha256": "df2305607c91bf81c95ffbd364cc927d68cf877bdd37bd839955e4fb02d3f11e",
+      "total_nodes": 6082,
+      "total_edges": 5428,
+      "ced_hydrated": 2125,
+      "etd_hydrated": 2029
+    },
+    "benchmarks": {
+      "test": {
+        "path": "data/benchmarks/test.jsonl",
+        "sha256": "648817d79693135d28626ee7a2285449e98a7ff038609c99ebf1dd91a10cea70",
+        "record_count": 13
+      },
+      "val": {
+        "path": "data/benchmarks/val.jsonl",
+        "sha256": "304142dab5ddffdfa52787b99aa8bd587f432e294dc4224c3d170f06b4aa536d",
+        "record_count": 13
+      },
+      "train": {
+        "path": "data/benchmarks/train.jsonl",
+        "sha256": "b94e35b86985e8072781f0175e1e006b7f747f34f86873e72a8ec4774d02e5e1",
+        "record_count": 24
+      },
+      "adversarial": {
+        "path": "data/benchmarks/adversarial.jsonl",
+        "sha256": "76f8e2f27bbb40c100adea79764cd756d4c44f261a808097d33691af927382b1",
+        "record_count": 32
+      },
+      "challenge": {
+        "path": "data/benchmarks/challenge.jsonl",
+        "sha256": "ec2090a747e90ddd4124c94730f45e73e2c58243a19e86c84f5fde8007d9f1d4",
+        "record_count": 10
+      },
+      "coverage_boundary": {
+        "path": "data/benchmarks/coverage_boundary.jsonl",
+        "sha256": "8cf692303699eec343528545a43caba638690b1a16398699d3866716ac0834a0",
+        "record_count": 10
+      },
+      "open_world": {
+        "path": "data/benchmarks/open_world.jsonl",
+        "sha256": "b296b855f0ff727acb8c1a50e7345944f0239d3854b802437490f4c4d0cfae72",
+        "record_count": 50
+      }
+    },
+    "evaluation_artifacts": {
+      "test": {
+        "path": "data/evaluations/test_evaluation.json",
+        "sha256": "d84dc8c3abaf77ffb0dc09a034acbadcb72a1210d390326a08ab1dba55d6056d"
+      },
+      "val": {
+        "path": "data/evaluations/val_evaluation.json",
+        "sha256": "02e932799d34ac3aace961b834e362c2c744ff9946f3dfd5f608e2c69c17007b"
+      },
+      "open_world": {
+        "path": "data/evaluations/open_world_evaluation.json",
+        "sha256": "5421525ea13159e065c12a0220580beab2adad9c36940fe1e45a9f97cccffdca"
+      },
+      "adversarial": {
+        "path": "data/evaluations/adversarial_evaluation.json",
+        "sha256": "ef8cfc526404c4b5c0fa141cd0c1b96353871b81892a31ee961924a8d16effcf"
+      },
+      "challenge": {
+        "path": "data/evaluations/challenge_evaluation.json",
+        "sha256": "6d7f1cff2f1c6efaddb855c226cab90e7af955c8c7043493169e9b2af97486d9"
+      },
+      "coverage_boundary": {
+        "path": "data/evaluations/coverage_boundary_evaluation.json",
+        "sha256": "08257be623df27ae411ecf05e7a9cd28737485062ccb15eb759d23cc74f20d4f"
+      }
+    },
+    "calibrator": {
+      "path": "data/models/calibrator_v1.json",
+      "sha256": "f02c2c0fe31536db5d49c9842fa9abec3cc29a9f61e240b3dc3299c3c5f10c12",
+      "status": "CALIBRATION_INSUFFICIENT_DATA",
+      "n_samples": 24,
+      "note": "Calibrator sample size (N=24) insufficient for statistical calibration claims; flagged CALIBRATION_INSUFFICIENT_DATA."
+    },
+    "regulatory_datasets": {
+      "qco_orders": {
+        "path": "data/regulatory/qco_orders.jsonl",
+        "sha256": "f06424e623f72ae3feb40cb848fa98b70c492454ad0c73a1ff0994f92d358df1",
+        "record_count": 17
+      },
+      "crs_rules": {
+        "path": "data/regulatory/crs_rules.jsonl",
+        "sha256": "cea479e7652b22251ed1c7ea4c1e0ae6646de48c2f900871efd3ae67067f41f4",
+        "record_count": 2
+      },
+      "source_manifest": {
+        "path": "data/regulatory/source_manifest.json",
+        "sha256": "5e6309d3f164e408ba4c7c6ff09d231d4da8d6e73fa553da1d898236027543f5"
+      }
+    }
+  },
+  "authoritative_evaluation": {
+    "evaluation_command": "python scripts/evaluate_recommendation.py --benchmark data/benchmarks/test.jsonl --output-json data/evaluations/test_evaluation.json",
+    "evaluated_benchmark": "data/benchmarks/test.jsonl",
+    "evaluation_artifact": "data/evaluations/test_evaluation.json",
+    "total_queries": 13,
+    "metrics": {
+      "retrieval_gold_accuracy_top1": 0.2308,
+      "candidate_recall_at_5": 0.3846,
+      "verified_primary_rec_accuracy": 0.1538,
+      "safe_decision_contract_accuracy": 0.0769,
+      "legacy_raw_decision_match": 0.0,
+      "safe_abstention_rate_on_unready": 1.0,
+      "unsafe_primary_promotion_rate": 0.6154,
+      "regulatory_mandate_accuracy": 0.1538,
+      "hard_negative_rejection_at_1": 1.0,
+      "hard_negative_intrusion_at_5": 0.0,
+      "hard_negative_intrusion_at_10": 0.0,
+      "expected_calibration_error_diagnostic": 0.2785,
+      "brier_score_diagnostic": 0.2578
+    }
+  },
+  "departments": [
+    {
+      "department": "CED",
+      "input_file": "data/input/Civil Engineering Department (CED).xlsx",
+      "input_sha256": "2a8c6925af59dfa57431a3cb5ea86d40d942c95bce7a66e9067afc559b510b94",
+      "input_rows": 1935,
+      "outputs": {
+        "standards_jsonl": {
+          "path": "data/processed/CED/CED_standards.jsonl",
+          "sha256": "3a105e8daeb7228e986331e534ef495354f2a26edac4d51e540933ad09eccd4a",
+          "record_count": 1935
+        },
+        "references_jsonl": {
+          "path": "data/processed/CED/CED_references.jsonl",
+          "sha256": "c2e44fff78fb0b37763a29764119090175f4203279c4fe232d591ddb3d2b9563",
+          "record_count": 3253
+        },
+        "availability_jsonl": {
+          "path": "data/processed/CED/CED_source_availability.jsonl",
+          "sha256": "c6baee31417217635f8e1767b66b31fd5a747e912b93dcb76d2b124ae14229af",
+          "record_count": 1935
+        }
+      }
+    },
+    {
+      "department": "ETD",
+      "input_file": "data/input/Electrotechnical Department (ETD).xlsx",
+      "input_sha256": "898eed769ccca7367310a819de24abc969607ff5bcb77b56e6c9ab8b54de92a8",
+      "input_rows": 1944,
+      "outputs": {
+        "standards_jsonl": {
+          "path": "data/processed/ETD/ETD_standards.jsonl",
+          "sha256": "f6843efc5ebbd95baa7cd7dc3ee586f218498a581d38f9e20b7767e937938454",
+          "record_count": 1944
+        },
+        "references_jsonl": {
+          "path": "data/processed/ETD/ETD_references.jsonl",
+          "sha256": "bf972048594076f52c60ff65e5c85102edcd91758c4040a73aa4aa718a7f65fe",
+          "record_count": 2175
+        },
+        "availability_jsonl": {
+          "path": "data/processed/ETD/ETD_source_availability.jsonl",
+          "sha256": "f9adbcb4f312199d629a69cbe1ae4922661b279907a862f1673ce86b87340b07",
+          "record_count": 1944
+        }
+      }
+    }
+  ]
+}

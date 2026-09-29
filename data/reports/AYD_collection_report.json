@@ -1,0 +1,51 @@
+{
+  "run_id": "2026-09-25T11:59:36.686173+00:00",
+  "department": "AYD",
+  "input_file": "Ayush Department (AYD).xlsx",
+  "input_rows": 247,
+  "run_manifest": {
+    "input_sha256": "5690fa7759c6d3ac1d0e7c1ed2f1d97b2a8752d2f6a56fee494190ade88d6e07",
+    "parser_version": "1.2.0",
+    "collector_version": "1.2.0",
+    "schema_version": "1.2",
+    "source_collection_timestamp": "2026-09-25T11:59:36.686173+00:00",
+    "code_commit": null
+  },
+  "standards": {
+    "processed": 247,
+    "success": 245,
+    "partial_success": 1,
+    "failed": 1,
+    "review_required": 2,
+    "note": "review_required is a quality flag, not a status. success+partial+failed=processed."
+  },
+  "evidence": {
+    "verified": 245,
+    "version_uncertain": 1,
+    "note": "version_uncertain pages have content but years differ from requested."
+  },
+  "content": {
+    "scope_present": 246,
+    "scope_fallback": 0,
+    "scope_found": 246,
+    "foreword_found": 0,
+    "notes_found": 12
+  },
+  "references": {
+    "standards_with_references": 144,
+    "total_reference_records": 1137,
+    "formal_reference_rows": 985,
+    "extracted_references": 1137,
+    "international_references": 171,
+    "sp_references": 0,
+    "dual_numbered_references": 152,
+    "continuation_resolved": 25
+  },
+  "output_paths": {
+    "standards_jsonl": "data\\processed\\AYD\\AYD_standards.jsonl",
+    "references_jsonl": "data\\processed\\AYD\\AYD_references.jsonl",
+    "source_availability_jsonl": "data\\processed\\AYD\\AYD_source_availability.jsonl",
+    "source_availability_csv": "data\\processed\\AYD\\AYD_source_availability.csv",
+    "enriched_excel": "data\\processed\\AYD\\AYD_enriched.xlsx"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "department": "CED",
+  "input_file": "data/input/Civil Engineering Department (CED).xlsx",
+  "input_sha256": "2a8c6925af59dfa57431a3cb5ea86d40d942c95bce7a66e9067afc559b510b94",
+  "input_rows": 1935,
+  "outputs": {
+    "standards_jsonl": {
+      "path": "data/processed/CED/CED_standards.jsonl",
+      "sha256": "3a105e8daeb7228e986331e534ef495354f2a26edac4d51e540933ad09eccd4a",
+      "record_count": 1935
+    },
+    "references_jsonl": {
+      "path": "data/processed/CED/CED_references.jsonl",
+      "sha256": "c2e44fff78fb0b37763a29764119090175f4203279c4fe232d591ddb3d2b9563",
+      "record_count": 3253
+    },
+    "availability_jsonl": {
+      "path": "data/processed/CED/CED_source_availability.jsonl",
+      "sha256": "c6baee31417217635f8e1767b66b31fd5a747e912b93dcb76d2b124ae14229af",
+      "record_count": 1935
+    }
+  }
+}

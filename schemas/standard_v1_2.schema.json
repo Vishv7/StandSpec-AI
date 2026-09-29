@@ -1,0 +1,251 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StandardRecord_V1_2",
+  "description": "Strict schema for StandSpec AI V1.2 canonical standard records.",
+  "type": "object",
+  "required": [
+    "record_version",
+    "input",
+    "raw_excel",
+    "identity",
+    "content",
+    "references",
+    "source",
+    "primary_status",
+    "quality"
+  ],
+  "properties": {
+    "record_version": {
+      "type": "string",
+      "const": "1.2"
+    },
+    "input": {
+      "type": "object",
+      "required": ["source_file", "source_row", "raw_standard_number"],
+      "properties": {
+        "source_file": {"type": "string"},
+        "source_sheet": {"type": "string"},
+        "source_row": {"type": "integer"},
+        "raw_standard_number": {"type": "string"},
+        "raw_title": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "first_seen_at": {"type": ["string", "null"]},
+        "first_run_started_at": {"type": ["string", "null"]},
+        "last_run_started_at": {"type": ["string", "null"]},
+        "record_last_processed_at": {"type": ["string", "null"]},
+        "parser_version": {"type": "string"},
+        "collector_version": {"type": "string"},
+        "schema_version": {"type": "string"},
+        "source_file": {"type": "string"},
+        "source_sheet": {"type": "string"},
+        "source_row": {"type": "integer"},
+        "row_sha256": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "raw_excel": {
+      "type": "object",
+      "required": ["sheet_name", "row_number"],
+      "properties": {
+        "sheet_name": {"type": "string"},
+        "row_number": {"type": "integer"},
+        "row_sha256": {"type": ["string", "null"]},
+        "columns": {"type": "object"},
+        "excel_row_number": {"type": "integer"},
+        "original_standard_number": {"type": "string"},
+        "is_number": {"type": ["string", "null"]},
+        "year": {"type": ["integer", "string", "null"]},
+        "recognized": {"type": "boolean"},
+        "title": {"type": ["string", "null"]},
+        "date_of_publish": {"type": ["string", "null"]},
+        "type_of_standard": {"type": ["string", "null"]},
+        "degree_of_equivalence": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "identity": {
+      "type": "object",
+      "required": ["standard_designation", "family", "base_number"],
+      "properties": {
+        "standard_designation": {"type": "string"},
+        "family": {"type": "string"},
+        "base_number": {"type": "string"},
+        "part": {"type": ["string", "null"]},
+        "section": {"type": ["string", "null"]},
+        "year": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "content": {
+      "type": "object",
+      "required": ["scope", "national_foreword", "notes", "evidence_verified"],
+      "properties": {
+        "header_text": {"type": ["string", "null"]},
+        "title": {"type": ["string", "null"]},
+        "title_source": {"type": "string", "enum": ["preview", "excel", "unknown"]},
+        "ics_raw": {"type": ["string", "null"]},
+        "ics_codes": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "committee": {"type": ["string", "null"]},
+        "scope": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "text": {"type": ["string", "null"]},
+            "status": {"type": "string", "enum": ["present", "fallback", "absent", "not_verified"]},
+            "reason": {"type": ["string", "null"]},
+            "extraction_method": {"type": ["string", "null"]},
+            "scope_source_section": {"type": ["string", "null"]}
+          },
+          "additionalProperties": false
+        },
+        "national_foreword": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "text": {"type": ["string", "null"]},
+            "status": {"type": "string", "enum": ["present", "absent", "not_verified"]},
+            "reason": {"type": ["string", "null"]},
+            "extraction_method": {"type": ["string", "null"]}
+          },
+          "additionalProperties": false
+        },
+        "notes": {
+          "type": "object",
+          "required": ["status", "items"],
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": {"type": "string"},
+                  "evidence": {"type": ["string", "null"]},
+                  "extraction_method": {"type": ["string", "null"]}
+                },
+                "additionalProperties": false
+              }
+            },
+            "status": {"type": "string", "enum": ["present", "absent", "not_verified"]},
+            "reason": {"type": ["string", "null"]},
+            "extraction_method": {"type": ["string", "null"]}
+          },
+          "additionalProperties": false
+        },
+        "evidence_verified": {"type": "boolean"},
+        "references_status": {
+          "type": "string",
+          "enum": [
+            "parsed",
+            "referenced_in_annex_not_in_preview",
+            "truncated_or_empty_in_preview",
+            "none_found",
+            "absent"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "references": {
+      "type": "array",
+      "items": {"type": "object"}
+    },
+    "source": {
+      "type": "object",
+      "required": ["candidate_urls", "identity_match"],
+      "properties": {
+        "verified_source_url": {"type": ["string", "null"]},
+        "candidate_urls": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "preview_url": {"type": ["string", "null"]},
+        "requested_preview_id": {"type": ["string", "null"]},
+        "matched_preview_id": {"type": ["string", "null"]},
+        "attempted_urls": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "http_status": {"type": ["integer", "null"]},
+        "fetch_status": {"type": ["string", "null"]},
+        "identity_match": {
+          "type": "string",
+          "enum": [
+            "match",
+            "match_version_verified",
+            "match_version_uncertain",
+            "match_identity_only_version_uncertain",
+            "mismatch",
+            "unknown"
+          ]
+        },
+        "page_identity_evidence": {
+          "type": ["object", "null"],
+          "properties": {
+            "header_text": {"type": ["string", "null"]},
+            "normalized_designation": {"type": ["string", "null"]},
+            "verification_method": {"type": ["string", "null"]},
+            "requested_year": {"type": ["string", "null"]},
+            "page_year": {"type": ["string", "null"]},
+            "year_match": {"type": ["boolean", "null"]},
+            "year_verification": {"type": ["string", "null"]}
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "primary_status": {
+      "type": "string",
+      "enum": ["success", "partial_success", "failed"]
+    },
+    "quality": {
+      "type": "object",
+      "required": ["manual_review_required", "warnings", "errors"],
+      "properties": {
+        "manual_review_required": {"type": "boolean"},
+        "warnings": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "errors": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "is_number": {"type": ["string", "null"]},
+    "year": {"type": ["string", "integer", "null"]},
+    "title": {"type": ["string", "null"]},
+    "department": {"type": ["string", "null"]},
+    "ics_raw": {"type": ["string", "null"]},
+    "ics_code": {"type": ["string", "null"]},
+    "ics_codes": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "committee": {"type": ["string", "null"]},
+    "scope": {"type": ["string", "null"]},
+    "national_foreword": {"type": ["string", "null"]},
+    "notes": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "extraction_status": {"type": ["string", "null"]},
+    "review_required": {"type": ["boolean", "null"]},
+    "source_url": {"type": ["string", "null"]},
+    "references_count": {"type": ["integer", "null"]},
+    "notes_flag": {"type": ["string", "null"]},
+    "collected_at": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}

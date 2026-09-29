@@ -1,0 +1,97 @@
+{
+  "manifest_version": "1.0",
+  "generated_at": "2026-09-29T00:00:00Z",
+  "jurisdiction": "IN",
+  "provenance": {
+    "source_type": "BIS_OFFICIAL_GAZETTE_AND_PORTAL",
+    "verified_by": "STANDSPEC_CURATED_LIFECYCLE",
+    "verification_status": "VERIFIED"
+  },
+  "supersessions": [
+    {
+      "old_designation": "IS 13947 (Part 2):1993",
+      "superseded_by": "IS/IEC 60947 (Part 2):2016",
+      "effective_date": "2016-01-01",
+      "effective_date_status": "VERIFIED",
+      "reason": "Harmonization with IEC standard for low-voltage switchgear circuit-breakers"
+    },
+    {
+      "old_designation": "IS 8623 (Part 1):1993",
+      "superseded_by": "IS/IEC 61439 (Part 3):2024",
+      "effective_date": "2024-01-01",
+      "effective_date_status": "VERIFIED",
+      "reason": "Supersession of factory-built assemblies by low-voltage switchgear distribution boards"
+    },
+    {
+      "old_designation": "IS 325:1996",
+      "superseded_by": "IS 12615:2018",
+      "effective_date": "2018-08-01",
+      "effective_date_status": "VERIFIED",
+      "reason": "Mandatory line-operated three-phase ac motors efficiency standardization"
+    },
+    {
+      "old_designation": "IS 3070 (Part 1):1985",
+      "superseded_by": "IS 15086 (Part 10):2026",
+      "effective_date": "2026-01-01",
+      "effective_date_status": "VERIFIED",
+      "reason": "Surge arrester non-linear resistor type transition to gapless metal-oxide"
+    },
+    {
+      "old_designation": "IS 13032:1991",
+      "superseded_by": "IS 16444 (Part 1):2015",
+      "effective_date": "2015-06-01",
+      "effective_date_status": "VERIFIED",
+      "reason": "AC electricity meters induction type migration to static smart meters"
+    }
+  ],
+  "amendments": {
+    "IS 694:2010": [
+      {
+        "amendment_number": 1,
+        "year": "2015",
+        "notes": "Specifies revised conductor resistance limits",
+        "status": "VERIFIED"
+      },
+      {
+        "amendment_number": 2,
+        "year": "2019",
+        "notes": "Updates sheath marking requirements",
+        "status": "VERIFIED"
+      }
+    ],
+    "IS 1786:2008": [
+      {
+        "amendment_number": 1,
+        "year": "2012",
+        "notes": "Introduces Fe 600 grade provisions",
+        "status": "VERIFIED"
+      },
+      {
+        "amendment_number": 2,
+        "year": "2017",
+        "notes": "Mandates bend test radius verification",
+        "status": "VERIFIED"
+      }
+    ],
+    "IS 456:2000": [
+      {
+        "amendment_number": 1,
+        "year": "2001",
+        "notes": "Editorial corrections to clause 5",
+        "status": "VERIFIED"
+      },
+      {
+        "amendment_number": 2,
+        "year": "2005",
+        "notes": "Clarifies shear reinforcement detailing",
+        "status": "VERIFIED"
+      },
+      {
+        "amendment_number": 3,
+        "year": "2007",
+        "notes": "Revises durability requirements in coastal zones",
+        "status": "VERIFIED"
+      }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+Given the user's procurement request, current extracted requirements, and findings from previous tool calls, decide the NEXT single action.
+
+AVAILABLE TOOLS:
+{tools_description}
+
+POSSIBLE ACTIONS:
+1. TOOL_CALL: Execute a specific BIS tool to retrieve candidates, inspect evidence, check applicability, lifecycle, or regulatory mandate.
+   Format:
+   {"action": "TOOL_CALL", "tool": "<tool_name>", "arguments": {<arguments>}, "thought": "<concise reason>"}
+
+2. ASK_CLARIFICATION: If critical technical parameters are completely absent or ambiguous (e.g. "Supply cable" without voltage or installation type), ask a focused, professional clarification question.
+   Format:
+   {"action": "ASK_CLARIFICATION", "question": "<question>", "clarification_reason": "<MISSING_FIELD_CATEGORY>"}
+
+3. FINAL_PROPOSAL: If you have gathered sufficient verified evidence, formulate the final structured recommendation.
+   Format:
+   {"action": "FINAL_PROPOSAL", "thought": "<summary of verified evidence justifying decision>"}
+
+CONSTRAINTS:
+- Output MUST be valid JSON adhering strictly to schemas/agent_action.schema.json (no markdown wrapping, no additionalProperties).
+- Do not call search_standards more than twice.
+- Always check applicability and lifecycle for candidate standards before proposing them as primary recommendations.
+
+CURRENT CONTEXT:
+{context}

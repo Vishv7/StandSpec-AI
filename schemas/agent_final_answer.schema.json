@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentFinalAnswer",
+  "description": "Schema for final structured proposal from the StandSpec LLM Agent prior to validator gate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision_state",
+    "primary_recommendation",
+    "alternative_standards",
+    "clarifications_needed",
+    "confidence"
+  ],
+  "properties": {
+    "decision_state": {
+      "type": "string",
+      "enum": [
+        "PRIMARY_RECOMMENDATION_AVAILABLE",
+        "CONDITIONAL_RECOMMENDATION",
+        "MULTIPLE_POSSIBLE_STANDARDS",
+        "INSUFFICIENT_INFORMATION",
+        "NO_CONFIDENT_MATCH",
+        "STANDARD_DATA_UNAVAILABLE",
+        "OUTSIDE_PROTOTYPE_COVERAGE",
+        "EXPERT_REVIEW_REQUIRED",
+        "CLARIFICATION_REQUIRED"
+      ]
+    },
+    "primary_recommendation": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "designation": {"type": "string"},
+        "title": {"type": "string"},
+        "reason": {"type": "string"},
+        "applicability_state": {"type": "string"},
+        "claim_level": {"type": "string"},
+        "evidence_ids": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "matched_attributes": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "alternative_standards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "designation": {"type": "string"},
+          "title": {"type": "string"},
+          "reason": {"type": "string"},
+          "evidence_ids": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      }
+    },
+    "review_candidate": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "designation": {"type": "string"},
+        "title": {"type": "string"},
+        "reason": {"type": "string"},
+        "evidence_gaps": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "clarifications_needed": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "clarification_category": {
+      "type": ["string", "null"]
+    },
+    "normalized_requirements": {
+      "type": "object"
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {"type": "string"},
+        "recommended_edition": {"type": ["string", "null"]},
+        "superseded_by": {"type": ["string", "null"]},
+        "evidence": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "regulatory": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {"type": "string"},
+        "qco_order_number": {"type": ["string", "null"]},
+        "gazette_so_number": {"type": ["string", "null"]},
+        "effective_date": {"type": ["string", "null"]},
+        "statement": {"type": "string"},
+        "evidence": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["HIGH", "MEDIUM", "LOW", "UNVERIFIED"]
+    },
+    "uncertainty_statement": {
+      "type": "string"
+    },
+    "provenance": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "natural_language_explanation": {
+      "type": "string"
+    },
+    "agent_metadata": {
+      "type": ["object", "null"],
+      "description": "Orchestration metadata for StandSpecAgent runs."
+    },
+    "tool_calls": {
+      "type": ["array", "null"],
+      "description": "Audit trace of tool calls executed during orchestration."
+    }
+  }
+}

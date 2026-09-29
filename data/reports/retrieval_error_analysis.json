@@ -1,0 +1,1030 @@
+{
+  "analysis_timestamp": "2026-09-30T00:00:00Z",
+  "total_queries_evaluated": 50,
+  "benchmarks_evaluated": [
+    "open_world.jsonl"
+  ],
+  "metrics_summary": {
+    "RAW_RETRIEVAL_TOP1": {
+      "metric_name": "RAW_RETRIEVAL_TOP1",
+      "numerator": 13,
+      "denominator": 43,
+      "value": 0.3023,
+      "percentage": 30.23,
+      "review_candidates_counted": false
+    },
+    "EFFECTIVE_CANDIDATE_TOP1": {
+      "metric_name": "EFFECTIVE_CANDIDATE_TOP1",
+      "numerator": 12,
+      "denominator": 43,
+      "value": 0.2791,
+      "percentage": 27.91,
+      "review_candidates_counted": true
+    },
+    "VERIFIED_PRIMARY_TOP1": {
+      "metric_name": "VERIFIED_PRIMARY_TOP1",
+      "numerator": 6,
+      "denominator": 50,
+      "value": 0.12,
+      "percentage": 12.0,
+      "review_candidates_counted": false
+    },
+    "recall_at_5": {
+      "metric_name": "RECALL_AT_5",
+      "k": 5,
+      "numerator": 22,
+      "denominator": 43,
+      "value": 0.5116,
+      "percentage": 51.16
+    },
+    "recall_at_10": {
+      "metric_name": "RECALL_AT_10",
+      "k": 10,
+      "numerator": 22,
+      "denominator": 43,
+      "value": 0.5116,
+      "percentage": 51.16
+    },
+    "mrr": {
+      "metric_name": "MRR",
+      "value": 0.3775,
+      "denominator": 43
+    },
+    "safety_metrics": {
+      "safe_decision_accuracy": 0.26,
+      "wrong_primary_promotion_rate": 0.2326,
+      "unsupported_primary_promotion_rate": 1.0,
+      "wrong_role_primary_rate": 0.0,
+      "wrong_part_primary_rate": 0.0,
+      "wrong_edition_primary_rate": 0.0,
+      "regulatory_false_assertion_rate": 0.0,
+      "safe_primary_rate": 0.0,
+      "unsafe_primary_rate": 0.34,
+      "safe_abstention_rate": 1.7143,
+      "hard_negative_rejection_rate": 0.92,
+      "hard_negative_intrusion_rate_5": 0.26,
+      "supporting_as_primary_rate": 0.0,
+      "coverage_detection_accuracy": 0.6667,
+      "total_primaries_emitted": 17,
+      "in_scope_with_gold_queries": 43
+    }
+  },
+  "error_taxonomy_breakdown": {
+    "RETRIEVAL_MISS": 21,
+    "RETRIEVAL_MISS_LEXICAL_GAP": 21,
+    "EVIDENCE_MISSING": 15,
+    "EXTRACTION_MISS": 11,
+    "PRODUCT_CATEGORY_MISS": 11,
+    "WRONG_PRIMARY": 10,
+    "RERANKING_MISS": 9,
+    "RERANKING_DISPLACEMENT": 9,
+    "FALSE_ABSTENTION_THRESHOLD": 9,
+    "QUERY_INSUFFICIENT": 5,
+    "KNOWN_HARD_NEGATIVE": 1,
+    "COVERAGE_OUTSIDE_DOMAIN": 1
+  },
+  "query_diagnostics": [
+    {
+      "query_id": "Q_OWP_001",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Need high strength ribbed steel reinforcement bars Fe 500D grade for RCC bridge ",
+      "gold_standards": [
+        "IS 1786:2008"
+      ],
+      "primary_recommendation": "IS 18256:2023",
+      "decision_state": "CONDITIONAL_RECOMMENDATION",
+      "top_candidates": [
+        "IS 18256:2023",
+        "IS 16172:2023",
+        "IS 1786:2008",
+        "IS 1786:2008",
+        "IS 1786:2008"
+      ],
+      "error_labels": [
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "WRONG_PRIMARY"
+      ]
+    },
+    {
+      "query_id": "Q_OWP_002",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of rigid polyvinyl chloride pressure piping for municipal drinking w",
+      "gold_standards": [
+        "IS 4985:2021"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP"
+      ]
+    },
+    {
+      "query_id": "Q_OWP_003",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of domestic flush-mounted piano switches and rocker switches rated 6A and",
+      "gold_standards": [
+        "IS 3854:2023"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWP_004",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Crushed stone coarse aggregate 20 mm and 10 mm graded down and river sand fine a",
+      "gold_standards": [
+        "IS 383:2016"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 383:2025",
+        "IS 383:2025",
+        "IS 383:2025",
+        "IS 383:2025",
+        "IS 383:2025"
+      ],
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP"
+      ]
+    },
+    {
+      "query_id": "Q_OWP_005",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Single core and multi core copper conductor PVC insulated and sheathed flexible ",
+      "gold_standards": [
+        "IS 694:2010"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 7098 (Part 1):2025",
+        "IS 7098 (Part 1):2025",
+        "IS 694:2010",
+        "IS 694:2010",
+        "IS 694"
+      ],
+      "error_labels": [
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "FALSE_ABSTENTION_THRESHOLD"
+      ]
+    },
+    {
+      "query_id": "Q_OWP_006",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of domestic self-ballasted 9W and 12W LED bulbs with B22d cap for general",
+      "gold_standards": [
+        "IS 16102 (Part 1):2026"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 16102 (Part 1):2026",
+        "IS 16102 (Part 1):2026",
+        "IS 16102 (Part 2):2026",
+        "IS 16102 (Part 2):2026"
+      ],
+      "error_labels": [
+        "FALSE_ABSTENTION_THRESHOLD"
+      ]
+    },
+    {
+      "query_id": "Q_OWP_007",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of rapid hardening Portland cement for emergency precast concrete tr",
+      "gold_standards": [
+        "IS 8041:2026"
+      ],
+      "primary_recommendation": "IS 11652:2017",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "top_candidates": [
+        "IS 11652:2017",
+        "IS 11761:2024",
+        "IS 1489 (Part 1):2015",
+        "IS 1489 (Part 1):2015",
+        "IS 12269:1987"
+      ],
+      "error_labels": [
+        "QUERY_INSUFFICIENT",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "WRONG_PRIMARY"
+      ]
+    },
+    {
+      "query_id": "Q_OWP_008",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of aluminium conductors galvanized steel reinforced ACSR Panther and Zebr",
+      "gold_standards": [
+        "IS 398 (Part 2):2025"
+      ],
+      "primary_recommendation": "IS 398 (Part 2):2025",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "top_candidates": [
+        "IS 398 (Part 2):2025",
+        "IS 2121 (Part 1):1981",
+        "IS 2121 (Part 1):1981",
+        "IS 2121 (Part 2):1983",
+        "IS 2121 (Part 2):1983"
+      ],
+      "error_labels": [
+        "QUERY_INSUFFICIENT"
+      ]
+    },
+    {
+      "query_id": "Q_OWP_009",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply and fixing of paper-faced gypsum plaster boards 12.5 mm thickness for fal",
+      "gold_standards": [
+        "IS 2095 (Part 1):2023"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWP_010",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of line-operated three phase squirrel cage AC induction motors 15 kW",
+      "gold_standards": [
+        "IS 12615:2026"
+      ],
+      "primary_recommendation": "IS 14578:2025",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "top_candidates": [
+        "IS 14578:2025",
+        "IS 7538:1996",
+        "IS 8151:2024",
+        "IS 8789:2021",
+        "IS 11537:1985"
+      ],
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "WRONG_PRIMARY"
+      ]
+    },
+    {
+      "query_id": "Q_OWC_001",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of 1100 V grade 4-core 240 sq mm crosslinked polyethylene XLPE insul",
+      "gold_standards": [
+        "IS 7098 (Part 1):2025"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 7098 (Part 1):2025",
+        "IS 7098 (Part 1):2025",
+        "IS 8308:1993",
+        "IS 8309:1993",
+        "IS 8394:1977"
+      ],
+      "error_labels": [
+        "FALSE_ABSTENTION_THRESHOLD"
+      ]
+    },
+    {
+      "query_id": "Q_OWC_002",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of 11/0.433 kV, 100 kVA outdoor oil immersed step-down distribution trans",
+      "gold_standards": [
+        "IS 1180 (Part 1):2014"
+      ],
+      "primary_recommendation": "IS 1180 (Part 3):2021",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "top_candidates": [
+        "IS 1180 (Part 3):2021",
+        "IS 1180 (Part 1):2014",
+        "IS 2026 (Part 1):2011",
+        "IS 19059:2024"
+      ],
+      "error_labels": [
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "WRONG_PRIMARY"
+      ]
+    },
+    {
+      "query_id": "Q_OWC_003",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of polymer-modified cementitious tile adhesive Type 2 for fixing ceramic,",
+      "gold_standards": [
+        "IS 15477:2019"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 10890:1984",
+        "IS 13801:2013",
+        "IS 1443:2018"
+      ],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWC_004",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of high alumina cement for structural applications and refractory ca",
+      "gold_standards": [
+        "IS 6452:2026"
+      ],
+      "primary_recommendation": "IS 6452:2026",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "top_candidates": [
+        "IS 6452:2026",
+        "IS 11652:2017",
+        "IS 6452:2026",
+        "IS 11761:2024",
+        "IS 3535:1986"
+      ],
+      "error_labels": []
+    },
+    {
+      "query_id": "Q_OWC_005",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of sulphate resisting Portland cement for heavy pile cap and maritime wha",
+      "gold_standards": [
+        "IS 12330:1988"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 1489 (Part 1):2015",
+        "IS 1489 (Part 1):2015",
+        "IS 12330:1988",
+        "IS 12600:1989",
+        "IS 16993:2018"
+      ],
+      "error_labels": [
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "FALSE_ABSTENTION_THRESHOLD"
+      ]
+    },
+    {
+      "query_id": "Q_OWC_006",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of flexible travelling trailing electric cables for passenger elevator sh",
+      "gold_standards": [
+        "IS 4289 (Part 1):2026"
+      ],
+      "primary_recommendation": "IS 1554 (Part 1):1988",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "top_candidates": [
+        "IS 1554 (Part 1):1988",
+        "IS 9968 (Part 1):2025",
+        "IS 9968 (Part 1):2025",
+        "IS 17505 (Part 1):2021",
+        "IS 4289 (Part 1):2026"
+      ],
+      "error_labels": [
+        "QUERY_INSUFFICIENT",
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "WRONG_PRIMARY"
+      ]
+    },
+    {
+      "query_id": "Q_OWC_007",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of granulated blast furnace slag from iron manufacturing plant for t",
+      "gold_standards": [
+        "IS 12089:1987"
+      ],
+      "primary_recommendation": "IS 12089:1987",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "top_candidates": [
+        "IS 12089:1987",
+        "IS 455:2015",
+        "IS 455:2015",
+        "IS 455:2015",
+        "IS 455:2015"
+      ],
+      "error_labels": [
+        "QUERY_INSUFFICIENT"
+      ]
+    },
+    {
+      "query_id": "Q_OWC_008",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of precast concrete cable covers and protection slabs for protecting buri",
+      "gold_standards": [
+        "IS 5820:2024"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 694:2010",
+        "IS 694:2010",
+        "IS 7098 (Part 1):2025",
+        "IS 7098 (Part 1):2025",
+        "IS 7098 (Part 2):2011"
+      ],
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWC_009",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of single phase a.c. induction motors 230V 50Hz, output rating 1.5 kW foo",
+      "gold_standards": [
+        "IS 996:2025"
+      ],
+      "primary_recommendation": "IS 14578:2025",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "top_candidates": [
+        "IS 14578:2025",
+        "IS 7538:1996",
+        "IS 8151:2024",
+        "IS 8789:2021",
+        "IS 11537:1985"
+      ],
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "WRONG_PRIMARY"
+      ]
+    },
+    {
+      "query_id": "Q_OWC_010",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of cotton covered copper conductors, round wires and rectangular str",
+      "gold_standards": [
+        "IS 7391 (Part 1):2026"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 2026 (Part 1):2011",
+        "IS 2026 (Part 1):2011"
+      ],
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP"
+      ]
+    },
+    {
+      "query_id": "Q_OWM_001",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "\u0906\u0930\u0938\u0940\u0938\u0940 \u0915\u0902\u0915\u094d\u0930\u0940\u091f \u0928\u093f\u0930\u094d\u092e\u093e\u0923 \u090f\u0935\u0902 \u092a\u0941\u0932 \u0928\u093f\u0930\u094d\u092e\u093e\u0923 \u0939\u0947\u0924\u0941 \u091f\u0940\u090f\u092e\u091f\u0940 \u0909\u091a\u094d\u091a \u0936\u0915\u094d\u0924\u093f \u0935\u093f\u0915\u0943\u0924 \u0938\u094d\u091f\u0940\u0932 \u092c\u093e\u0930 Fe",
+      "gold_standards": [
+        "IS 1786:2008"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWM_002",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "\u0936\u0939\u0930\u0940 \u092a\u0947\u092f\u091c\u0932 \u0935\u093f\u0924\u0930\u0923 \u0928\u0947\u091f\u0935\u0930\u094d\u0915 \u0939\u0947\u0924\u0941 110 \u092e\u093f\u092e\u0940 \u0928\u093e\u092e\u092e\u093e\u0924\u094d\u0930 \u0935\u094d\u092f\u093e\u0938 \u092a\u0940\u090f\u0928 10 \u0905\u0928\u092a\u094d\u0932\u093e\u0938\u094d\u091f\u093f\u0915\u093e\u0907\u091c\u094d\u0921 \u092a",
+      "gold_standards": [
+        "IS 4985:2021"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWM_003",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "\u0906\u0935\u093e\u0938\u0940\u092f \u0915\u094d\u0935\u093e\u0930\u094d\u091f\u0930\u094b\u0902 \u092e\u0947\u0902 \u0906\u0902\u0924\u0930\u093f\u0915 \u0935\u093f\u0926\u094d\u092f\u0941\u0924 \u0938\u094d\u0925\u093e\u092a\u0928\u093e \u0939\u0947\u0924\u0941 6A \u090f\u0935\u0902 16A 240V \u092b\u094d\u0932\u0936-\u092e\u093e\u0909\u0902\u091f\u0947\u0921 \u092a",
+      "gold_standards": [
+        "IS 3854:2023"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWM_004",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "\u0917\u094d\u0930\u093e\u092e\u0940\u0923 \u0935\u093f\u0926\u094d\u092f\u0941\u0924 \u092b\u0940\u0921\u0930 \u0915\u0947 \u0932\u093f\u090f 11 kV / 433 V 100 kVA \u0906\u0909\u091f\u0921\u094b\u0930 \u0911\u092f\u0932-\u0907\u092e\u0930\u094d\u0938\u094d\u0921 \u0935\u093f\u0924\u0930\u0923 \u091f\u094d\u0930\u093e\u0902",
+      "gold_standards": [
+        "IS 1180 (Part 1):2014"
+      ],
+      "primary_recommendation": "IS 1180 (Part 1):2014",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "top_candidates": [
+        "IS 1180 (Part 1):2014",
+        "IS 1180 (Part 3):2021",
+        "IS 2026 (Part 1):2011",
+        "IS 2026 (Part 1):2011"
+      ],
+      "error_labels": []
+    },
+    {
+      "query_id": "Q_OWM_005",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "\u0aa8\u0ab5\u0abe \u0a95\u0acb\u0aae\u0ab0\u0acd\u0ab6\u0abf\u0aaf\u0ab2 \u0aac\u0abf\u0ab2\u0acd\u0aa1\u0abf\u0a82\u0a97\u0aae\u0abe\u0a82 \u0ab8\u0abf\u0ab0\u0abe\u0aae\u0abf\u0a95 \u0a85\u0aa8\u0ac7 \u0aae\u0acb\u0a9d\u0ac7\u0a95 \u0a9f\u0abe\u0a87\u0ab2\u0acd\u0ab8 \u0ab2\u0a97\u0abe\u0ab5\u0ab5\u0abe \u0aae\u0abe\u0a9f\u0ac7 \u0ab9\u0abe\u0a87 \u0aaa\u0ab0\u0aab\u0acb\u0ab0\u0acd\u0aae\u0aa8\u0acd\u0ab8 \u0a9f\u0abe",
+      "gold_standards": [
+        "IS 15477:2019"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWM_006",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "\u0a93\u0ab5\u0ab0\u0ab9\u0ac7\u0aa1 \u0aaa\u0abe\u0ab5\u0ab0 \u0a9f\u0acd\u0ab0\u0abe\u0aa8\u0acd\u0ab8\u0aae\u0abf\u0ab6\u0aa8 \u0ab2\u0abe\u0a87\u0aa8 \u0aae\u0abe\u0a9f\u0ac7 \u0a8f\u0ab2\u0acd\u0aaf\u0ac1\u0aae\u0abf\u0aa8\u0abf\u0aaf\u0aae \u0a95\u0aa8\u0acd\u0aa1\u0a95\u0acd\u0a9f\u0ab0 \u0a97\u0ac7\u0ab2\u0acd\u0ab5\u0ac7\u0aa8\u0abe\u0a87\u0a9d\u0acd\u0aa1 \u0ab8\u0acd\u0a9f\u0ac0\u0ab2 \u0ab0\u0abf\u0a87\u0aa8\u0aab\u0acb",
+      "gold_standards": [
+        "IS 398 (Part 2):2025"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWM_007",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "\u0a95\u0ac7\u0aa8\u0abe\u0ab2 \u0ab0\u0abf\u0aaa\u0ac7\u0ab0\u0abf\u0a82\u0a97 \u0a85\u0aa8\u0ac7 \u0aa4\u0abe\u0aa4\u0acd\u0a95\u0abe\u0ab2\u0abf\u0a95 \u0aaa\u0acd\u0ab0\u0abf\u0a95\u0abe\u0ab8\u0acd\u0a9f \u0a95\u0acb\u0a82\u0a95\u0acd\u0ab0\u0ac0\u0a9f \u0a95\u0abe\u0aae\u0acb \u0aae\u0abe\u0a9f\u0ac7 \u0ab0\u0ac7\u0aaa\u0abf\u0aa1 \u0ab9\u0abe\u0ab0\u0acd\u0aa1\u0aa8\u0abf\u0a82\u0a97 \u0aaa\u0acb\u0ab0\u0acd\u0a9f\u0ab2",
+      "gold_standards": [
+        "IS 8041:2026"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWM_008",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Residential building internal wiring ke liye 1100V copper conductor PVC insulate",
+      "gold_standards": [
+        "IS 694:2010"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 694:2010",
+        "IS 694:2010",
+        "IS 8394:1977",
+        "IS 17505 (Part 1):2021",
+        "IS 9968 (Part 1):2025"
+      ],
+      "error_labels": [
+        "FALSE_ABSTENTION_THRESHOLD"
+      ]
+    },
+    {
+      "query_id": "Q_OWM_009",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Substation underground power cabling ke liye 4 core 185 sq mm aluminium conducto",
+      "gold_standards": [
+        "IS 7098 (Part 1):2025"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 7098 (Part 1):2025",
+        "IS 7098 (Part 1):2025",
+        "IS 694",
+        "IS 8308:1993",
+        "IS 8309:1993"
+      ],
+      "error_labels": [
+        "FALSE_ABSTENTION_THRESHOLD"
+      ]
+    },
+    {
+      "query_id": "Q_OWM_010",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Commercial office false ceiling aur partition drywall ke liye plain gypsum plast",
+      "gold_standards": [
+        "IS 2095 (Part 1):2023"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWL_001",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Section 4.2.1 Technical Specifications for Structural Reinforcement: The contrac",
+      "gold_standards": [
+        "IS 1786:2008"
+      ],
+      "primary_recommendation": "IS 16172:2023",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "top_candidates": [
+        "IS 16172:2023",
+        "IS 1786:2008",
+        "IS 1786:2008",
+        "IS 1786:2008",
+        "IS 19068:2025"
+      ],
+      "error_labels": [
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "WRONG_PRIMARY"
+      ]
+    },
+    {
+      "query_id": "Q_OWL_002",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Clause 8.1 Scope of Supply and Technical Standards for Potable Water Piping: Man",
+      "gold_standards": [
+        "IS 4985:2021"
+      ],
+      "primary_recommendation": "IS 7634 (Part 3):2003",
+      "decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "top_candidates": [
+        "IS 7634 (Part 3):2003",
+        "IS 4985:2021",
+        "IS 10124 (Part 1):2009",
+        "IS 17546:2021",
+        "IS 7834 (Part 1):1987"
+      ],
+      "error_labels": [
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "WRONG_PRIMARY"
+      ]
+    },
+    {
+      "query_id": "Q_OWL_003",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Specification No. HESCOM/E-66/2025 Technical Clause 3.1: Manufacture, testing, s",
+      "gold_standards": [
+        "IS 1180 (Part 1):2014"
+      ],
+      "primary_recommendation": "IS 19059:2024",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "top_candidates": [
+        "IS 19059:2024",
+        "IS 1180 (Part 3):2021",
+        "IS 1180 (Part 1):2014",
+        "IS 19428:2025",
+        "IS 335:2018"
+      ],
+      "error_labels": [
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "WRONG_PRIMARY"
+      ]
+    },
+    {
+      "query_id": "Q_OWL_004",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Tender Specification Schedule 'A' Item No. 14: Providing and drawing single-core",
+      "gold_standards": [
+        "IS 694:2010"
+      ],
+      "primary_recommendation": "IS 1554 (Part 1):1988",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "top_candidates": [
+        "IS 1554 (Part 1):1988",
+        "IS 7098 (Part 1):2025",
+        "IS 7098 (Part 1):2025",
+        "IS 3961 (Part 6):2016",
+        "IS 694:2010"
+      ],
+      "error_labels": [
+        "QUERY_INSUFFICIENT",
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "WRONG_PRIMARY",
+        "KNOWN_HARD_NEGATIVE"
+      ]
+    },
+    {
+      "query_id": "Q_OWL_005",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Section 9 Electrical Power Supply Distribution System: Design, manufacture, test",
+      "gold_standards": [
+        "IS 7098 (Part 1):2025"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "NO_CONFIDENT_MATCH",
+      "top_candidates": [
+        "IS 7098 (Part 1):2025",
+        "IS 7098 (Part 1):2025",
+        "IS 3961 (Part 6):2016",
+        "IS 694",
+        "IS 17048:2018"
+      ],
+      "error_labels": [
+        "FALSE_ABSTENTION_THRESHOLD"
+      ]
+    },
+    {
+      "query_id": "Q_OWL_006",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Section 1000 Materials for Concrete Structures: The coarse aggregate for structu",
+      "gold_standards": [
+        "IS 383:2016"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 2430:1986",
+        "IS 2430:1986",
+        "IS 383:2025",
+        "IS 383:2025",
+        "IS 383:2025"
+      ],
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP"
+      ]
+    },
+    {
+      "query_id": "Q_OWL_007",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Terminal Building Electrical Works Clause 6.3: Supply, installation, testing and",
+      "gold_standards": [
+        "IS 3854:2023"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWL_008",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Section 3.1.2 Hydraulic Binders for Marine Exposure: The cement used in the cons",
+      "gold_standards": [
+        "IS 12330:1988"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 1489 (Part 1):2015",
+        "IS 3535:1986",
+        "IS 1489 (Part 1):2015",
+        "IS 1489 (Part 1):2015",
+        "IS 12269:1987"
+      ],
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP"
+      ]
+    },
+    {
+      "query_id": "Q_OWL_009",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Tender Document Volume II Section 5 Lighting Luminaires: Supply of self-ballaste",
+      "gold_standards": [
+        "IS 16102 (Part 1):2026"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 16102 (Part 1):2026",
+        "IS 16102 (Part 1):2026",
+        "IS 15111 (Part 1):2002",
+        "IS 16614 (Part 1):2026",
+        "IS 2418 (Part 1):2018"
+      ],
+      "error_labels": [
+        "FALSE_ABSTENTION_THRESHOLD"
+      ]
+    },
+    {
+      "query_id": "Q_OWL_010",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Section 09250 Gypsum Board Assemblies: Furnish and install paper-faced gypsum pl",
+      "gold_standards": [
+        "IS 2095 (Part 1):2023"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP",
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWX_001",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of unplasticized PVC pipes nominal diameter 110 mm rated for 33 kV h",
+      "gold_standards": [],
+      "primary_recommendation": "IS 10151:2019",
+      "decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "top_candidates": [
+        "IS 10151:2019",
+        "IS 13592:2013",
+        "IS 15265:2003",
+        "IS 18166:2025",
+        "IS 4985:2021"
+      ],
+      "error_labels": []
+    },
+    {
+      "query_id": "Q_OWX_002",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of 400 kV extra high voltage pole mounted distribution transformer with 5",
+      "gold_standards": [],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 2026 (Part 1):2011",
+        "IS 2026 (Part 1):2011"
+      ],
+      "error_labels": []
+    },
+    {
+      "query_id": "Q_OWX_003",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of 500 Metric Tonnes of export quality 1121 Basmati Rice with maximu",
+      "gold_standards": [],
+      "primary_recommendation": null,
+      "decision_state": "NO_CONFIDENT_MATCH",
+      "top_candidates": [],
+      "error_labels": []
+    },
+    {
+      "query_id": "Q_OWX_004",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of sterile absorbent surgical cotton wool rolls 500g and sterile open wea",
+      "gold_standards": [],
+      "primary_recommendation": null,
+      "decision_state": "NO_CONFIDENT_MATCH",
+      "top_candidates": [],
+      "error_labels": []
+    },
+    {
+      "query_id": "Q_OWX_005",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of steel belted radial ply pneumatic tyres size 295/80 R22.5 with all-ste",
+      "gold_standards": [],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "COVERAGE_OUTSIDE_DOMAIN"
+      ]
+    },
+    {
+      "query_id": "Q_OWX_006",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of high-strength deformed rebar made entirely of copper alloy with 500 MP",
+      "gold_standards": [],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 19068:2025",
+        "IS 16172:2023",
+        "IS 1786:2008",
+        "IS 1786:2008"
+      ],
+      "error_labels": [
+        "EVIDENCE_MISSING"
+      ]
+    },
+    {
+      "query_id": "Q_OWX_007",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of thermally toughened architectural safety glass panes 10 mm thickn",
+      "gold_standards": [
+        "IS 2553 (Part 1):2018"
+      ],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [
+        "IS 2553 (Part 1):2018",
+        "IS 2553 (Part 1):2018",
+        "IS 14900:2018",
+        "IS 16978 (Part 1):2022",
+        "IS 17004:2018"
+      ],
+      "error_labels": [
+        "FALSE_ABSTENTION_THRESHOLD"
+      ]
+    },
+    {
+      "query_id": "Q_OWX_008",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply of clear transparent flat float glass panes 6 mm nominal thickness for re",
+      "gold_standards": [
+        "IS 14900:2018"
+      ],
+      "primary_recommendation": "IS 14900:2018",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "top_candidates": [
+        "IS 14900:2018",
+        "IS 2835:1987",
+        "IS 16982:2018",
+        "IS 2553 (Part 1):2018",
+        "IS 3438:2023"
+      ],
+      "error_labels": []
+    },
+    {
+      "query_id": "Q_OWX_009",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Procurement of high density polyethylene HDPE pressure pipes nominal diameter 11",
+      "gold_standards": [
+        "IS 4984:2016"
+      ],
+      "primary_recommendation": "IS 4984:2016",
+      "decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "top_candidates": [
+        "IS 4984:2016",
+        "IS 1536:2023",
+        "IS 1536:2023",
+        "IS 8329:2000"
+      ],
+      "error_labels": []
+    },
+    {
+      "query_id": "Q_OWX_010",
+      "benchmark_file": "open_world.jsonl",
+      "query_text": "Supply and delivery of electrical power equipment for departmental works.",
+      "gold_standards": [],
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "top_candidates": [],
+      "error_labels": [
+        "EXTRACTION_MISS",
+        "PRODUCT_CATEGORY_MISS",
+        "EVIDENCE_MISSING"
+      ]
+    }
+  ]
+}

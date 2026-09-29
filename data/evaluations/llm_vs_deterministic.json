@@ -1,0 +1,55 @@
+{
+  "engine_version": "2.5.0",
+  "release_id": "STANDSPEC_PROTOTYPE_CED_ETD_V2_5_0",
+  "benchmark": "open_world.jsonl",
+  "total_queries": 50,
+  "comparison_matrix": {
+    "safe_decision_accuracy": {
+      "deterministic": 0.6,
+      "llm_assisted": 0.6,
+      "delta": 0.0
+    },
+    "primary_recommendation_accuracy": {
+      "deterministic": 0.2791,
+      "llm_assisted": 0.2791,
+      "delta": 0.0
+    },
+    "safe_abstention_rate": {
+      "deterministic": 0.7143,
+      "llm_assisted": 0.7143,
+      "delta": 0.0
+    },
+    "unsupported_primary_promotions": {
+      "deterministic": 2,
+      "llm_assisted": 2,
+      "delta": 0
+    },
+    "validator_accept_rate": {
+      "deterministic": 1.0,
+      "llm_assisted": 1.0,
+      "delta": 0.0
+    },
+    "average_steps_per_query": {
+      "deterministic": 3.88,
+      "llm_assisted": 3.88
+    },
+    "average_latency_ms": {
+      "deterministic": 344.81,
+      "llm_assisted": 609.85
+    }
+  },
+  "deterministic_tool_usage": {
+    "search_standards": 48,
+    "get_standard_evidence": 336,
+    "check_applicability": 336,
+    "check_lifecycle": 336,
+    "check_regulatory": 336
+  },
+  "llm_tool_usage": {
+    "search_standards": 48,
+    "get_standard_evidence": 336,
+    "check_applicability": 336,
+    "check_lifecycle": 336,
+    "check_regulatory": 336
+  }
+}

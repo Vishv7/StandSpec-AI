@@ -1,0 +1,3 @@
+# StandSpec AI — Optional LLM Provider Dependencies
+# Core engine functions hermetically without these. Install only when enabling live external LLM assist.
+google-generativeai>=0.8.0

@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<title>StandSpec.AI - Executive Workbench</title>
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body {
+        margin: 0;
+        padding: 0;
+        background-color: #F1F5F9;
+        color: #1E293B;
+        font-family: 'Inter', sans-serif;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            canvas: '#F1F5F9',
+            card: '#FFFFFF',
+            heading: '#1E293B',
+            reading: '#475569',
+            muted: '#64748B',
+            emerald: {
+              50: '#ECFDF5',
+              100: '#D1FAE5',
+              600: '#059669',
+              700: '#047857',
+              800: '#065F46',
+            },
+            amber: {
+              50: '#FFFBEB',
+              100: '#FEF3C7',
+              500: '#F59E0B',
+              600: '#D97706',
+              700: '#B45309',
+            },
+            blue: {
+              50: '#EFF6FF',
+              100: '#DBEAFE',
+              600: '#2563EB',
+              700: '#1D4ED8',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-canvas text-reading min-h-screen antialiased flex flex-col selection:bg-blue-100 selection:text-blue-700">
+<!-- Header: Institutional Light Header -->
+<header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm transition-all">
+<div class="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between gap-4 py-3">
+<!-- Left: Brand & Verified Pill -->
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200/80 flex items-center justify-center text-blue-600 shadow-sm">
+<span class="material-symbols-outlined text-[24px]">verified_user</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-display font-bold text-xl tracking-tight text-heading">StandSpec<span class="text-blue-600">.AI</span></span>
+<span class="font-mono text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">CED + ETD v1.2</span>
+</div>
+<span class="text-xs text-muted font-normal">Corpus: Civil (CED) &amp; Electrotechnical (ETD) Standards</span>
+</div>
+</div>
+<div class="h-7 w-px bg-slate-200 hidden lg:block"></div>
+<!-- Navigation Tabs -->
+<nav class="hidden lg:flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60">
+<a aria-current="page" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-white text-blue-600 shadow-sm" href="#">Query Studio</a>
+<a class="px-3.5 py-1.5 text-xs font-medium rounded-lg text-slate-600 hover:text-heading hover:bg-slate-200/50 transition" href="#">Tender PDF Studio</a>
+<a class="px-3.5 py-1.5 text-xs font-medium rounded-lg text-slate-600 hover:text-heading hover:bg-slate-200/50 transition" href="#">Standards Explorer</a>
+<a class="px-3.5 py-1.5 text-xs font-medium rounded-lg text-slate-600 hover:text-heading hover:bg-slate-200/50 transition" href="#">Audit &amp; Verification Logs</a>
+</nav>
+</div>
+<!-- Right: Meta controls & User details -->
+<div class="flex items-center gap-3.5">
+<div class="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 text-xs text-slate-700">
+<span class="material-symbols-outlined text-[17px] text-amber-600">calendar_today</span>
+<span>As-Of: <strong class="text-heading font-semibold">30 Sep 2026</strong> <span class="text-emerald-700 font-mono text-[11px] font-semibold bg-emerald-100/60 px-1.5 py-0.2 rounded">(Live Audit)</span></span>
+</div>
+<div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200/80 text-xs">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+</span>
+<span class="text-slate-600 font-mono text-[11px]">10,042 Stds <span class="text-slate-300">|</span> QCO: <strong class="text-emerald-700 font-semibold">Active</strong></span>
+</div>
+<div class="h-7 w-px bg-slate-200 hidden sm:block"></div>
+<div class="flex items-center gap-2.5 pl-1">
+<div class="hidden sm:flex flex-col text-right">
+<div class="flex items-center justify-end gap-1">
+<span class="text-xs font-bold text-heading">Chief Tender Officer (TEC)</span>
+<span class="material-symbols-outlined text-[15px] text-blue-600">verified</span>
+</div>
+<span class="text-[11px] font-mono text-muted">GeM / CPWD Authority</span>
+</div>
+<div class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-semibold text-xs flex items-center justify-center ring-2 ring-blue-100 shadow-sm">
+<span>CTO</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas Container -->
+<main class="flex-1 w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+<!-- Top Executive Summary Bar: 4 Metric Cards -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Metric 1: Primary Status -->
+<div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">verified</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="text-xs font-semibold uppercase tracking-wider text-muted font-mono">Verification Status</span>
+</div>
+<span class="text-base font-bold text-heading tracking-tight mt-0.5 truncate">Verified Primary Standard</span>
+<span class="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 mt-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> 100% Deterministic match
+          </span>
+</div>
+</div>
+<!-- Metric 2: Recommended Code -->
+<div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">auto_stories</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-xs font-semibold uppercase tracking-wider text-muted font-mono">Recommended Code</span>
+<span class="text-base font-bold text-heading tracking-tight mt-0.5 truncate font-mono">IS 7098 (Part 1):1988</span>
+<span class="text-[11px] font-medium text-blue-700 mt-1 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Reaffirmed 2020 • Current &amp; Active
+          </span>
+</div>
+</div>
+<!-- Metric 3: Statutory Mandate -->
+<div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">gavel</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-xs font-semibold uppercase tracking-wider text-muted font-mono">Statutory Mandate</span>
+<span class="text-base font-bold text-heading tracking-tight mt-0.5 truncate">Mandatory DPIIT QCO</span>
+<span class="text-[11px] font-medium text-amber-700 mt-1">
+            S.O. 4312(E) • Section 16 BIS Enforced
+          </span>
+</div>
+</div>
+<!-- Metric 4: Safety Veto Guard -->
+<div class="bg-white rounded-xl border border-slate-200/90 p-4 shadow-sm hover:shadow-md transition-shadow flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 flex-shrink-0">
+<span class="material-symbols-outlined text-[22px]">shield_with_heart</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-xs font-semibold uppercase tracking-wider text-muted font-mono">Safety Veto Guard</span>
+<span class="text-base font-bold text-heading tracking-tight mt-0.5 truncate">100% Invariants Passed</span>
+<span class="text-[11px] font-medium text-slate-600 mt-1 flex items-center gap-1 font-mono">
+<span>Latency: 342ms</span> • <span class="text-emerald-700 font-semibold">0 False Positives</span>
+</span>
+</div>
+</div>
+</section>
+<!-- Main Content Grid: Balanced 2-Column Executive Workbench -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- LEFT COLUMN: Tender Specification & Analysis (5 cols) -->
+<div class="lg:col-span-5 space-y-6">
+<!-- Card: Tender Specification & Query Console -->
+<div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+<div class="flex items-center justify-between pb-2 border-b border-slate-100">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-blue-600">tune</span>
+<h2 class="text-sm font-bold text-heading font-display tracking-tight uppercase">Tender Specification Input</h2>
+</div>
+<span class="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+<span class="material-symbols-outlined text-[13px] text-blue-600">translate</span>
+              English (ETD Tokenized)
+            </span>
+</div>
+<!-- Textarea area -->
+<div class="space-y-1.5">
+<label class="block text-xs font-semibold text-slate-700 font-mono uppercase tracking-wider" for="tender-query">
+              Raw Tender Scope / Schedule of Rates Line
+            </label>
+<div class="relative">
+<textarea class="w-full bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-lg p-3 text-sm text-heading leading-relaxed focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition resize-none outline-none font-sans" id="tender-query" rows="4">Supply of 1.1 kV grade XLPE insulated 3-core 240 sq mm aluminium conductor underground cables conforming to standard specifications with outer extruded PVC sheathing for municipal feeder infrastructure.</textarea>
+<div class="absolute bottom-2.5 right-2.5 flex items-center gap-1.5 text-xs">
+<span class="font-mono text-[11px] text-slate-400 bg-white/80 px-1.5 py-0.5 rounded border border-slate-200/60">188 chars</span>
+<button class="p-1 rounded bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 hover:text-heading transition shadow-xs" onclick="navigator.clipboard.readText().then(t =&gt; { if(t) document.getElementById('tender-query').value = t; })" title="Paste clipboard text">
+<span class="material-symbols-outlined text-[15px] align-middle">content_paste</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Quick Test Vectors / Chips as sleek pills -->
+<div class="space-y-2">
+<span class="text-[11px] font-semibold uppercase tracking-wider text-muted font-mono block">Analytical Test Vectors &amp; Regression Cases</span>
+<div class="flex flex-wrap gap-1.5" id="quick-chips">
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200/80 hover:bg-blue-100 transition flex items-center gap-1 shadow-xs">
+<span class="material-symbols-outlined text-[14px]">check</span>
+<span>1.1 kV XLPE 3-Core Power Cable</span>
+</button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200/70 transition flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-slate-500">alt_route</span>
+<span>uPVC pipes per IS 1180 Pt 1</span>
+</button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200/70 transition flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-rose-500">cancel</span>
+<span>Fresh Bananas / Grade A Rice</span>
+</button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200/70 transition flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-amber-600">electric_bolt</span>
+<span>33/11 kV Transformers</span>
+</button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-200/70 transition flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-cyan-600">water_drop</span>
+<span>Potable water supply pipes</span>
+</button>
+</div>
+</div>
+<!-- Execution engine mode switch -->
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-200/80 flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[20px] text-blue-600">memory</span>
+<div>
+<div class="text-xs font-bold text-heading">Reasoning Engine</div>
+<div class="text-[11px] text-muted">Dual-pass validation + Statutory Gate</div>
+</div>
+</div>
+<div class="flex bg-slate-200/80 p-0.5 rounded-lg border border-slate-300/60 font-mono text-[11px]">
+<button class="px-2.5 py-1 rounded-md bg-white text-blue-700 font-semibold shadow-xs flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">auto_awesome</span> Agent
+              </button>
+<button class="px-2 py-1 rounded-md text-slate-600 hover:text-heading">
+                Deterministic
+              </button>
+</div>
+</div>
+<!-- Actions Bar -->
+<div class="flex items-center justify-between gap-2 pt-2">
+<button class="flex-1 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs transition shadow-sm hover:shadow flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span>Re-Analyze &amp; Verify Standard</span>
+</button>
+<button class="px-3 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs border border-slate-200 transition flex items-center gap-1.5" title="Extract entities without running full verification pipeline">
+<span class="material-symbols-outlined text-[17px] text-slate-600">data_object</span>
+<span>Entities</span>
+</button>
+<button class="p-2.5 rounded-lg bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-500 border border-slate-200 transition" title="Clear inputs">
+<span class="material-symbols-outlined text-[18px]">delete_outline</span>
+</button>
+</div>
+</div>
+<!-- Card: Grounded Parameter Breakdown Grouped into Clean Sections -->
+<div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 space-y-4">
+<div class="flex items-center justify-between pb-2 border-b border-slate-100">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-emerald-600">view_compact_alt</span>
+<h2 class="text-sm font-bold text-heading font-display tracking-tight uppercase">Grounded Specifications</h2>
+</div>
+<span class="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+              5 PARAMETERS EXTRACTED
+            </span>
+</div>
+<!-- Cleanly Grouped Parameter Cards -->
+<div class="space-y-3">
+<!-- Group 1: Product Category & Physical Installation -->
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-200/80 space-y-2">
+<span class="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-blue-600">category</span>
+                Product Classification &amp; Deployment
+              </span>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+<div class="bg-white p-2.5 rounded-md border border-slate-200/60 shadow-xs">
+<div class="text-[10px] uppercase font-mono text-muted">Primary Product Class</div>
+<div class="text-xs font-semibold text-heading mt-0.5">Power Cable (Underground)</div>
+<div class="flex items-center justify-between text-[10px] text-emerald-700 font-mono mt-1 pt-1 border-t border-slate-100">
+<span>100% Lexical</span>
+<span class="text-slate-400">Span: "cables"</span>
+</div>
+</div>
+<div class="bg-white p-2.5 rounded-md border border-slate-200/60 shadow-xs">
+<div class="text-[10px] uppercase font-mono text-muted">Deployment Modality</div>
+<div class="text-xs font-semibold text-heading mt-0.5">Direct Burial (Underground)</div>
+<div class="flex items-center justify-between text-[10px] text-emerald-700 font-mono mt-1 pt-1 border-t border-slate-100">
+<span>90.1% Match</span>
+<span class="text-slate-400">Span: "underground"</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Group 2: Electrical Specifications -->
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-200/80 space-y-2">
+<span class="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-amber-600">electric_bolt</span>
+                Electrical Ratings &amp; Core Configuration
+              </span>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+<div class="bg-white p-2.5 rounded-md border border-slate-200/60 shadow-xs">
+<div class="text-[10px] uppercase font-mono text-muted">Voltage Operational Class</div>
+<div class="text-xs font-semibold text-heading mt-0.5">1.1 kV (1100 V Phase-to-Phase)</div>
+<div class="flex items-center justify-between text-[10px] text-emerald-700 font-mono mt-1 pt-1 border-t border-slate-100">
+<span>95.0% Grounded</span>
+<span class="text-slate-400">Span: "1.1 kV"</span>
+</div>
+</div>
+<div class="bg-white p-2.5 rounded-md border border-slate-200/60 shadow-xs">
+<div class="text-[10px] uppercase font-mono text-muted">Core &amp; Conductor Gauge</div>
+<div class="text-xs font-semibold text-heading mt-0.5">3-Core × 240 sq mm</div>
+<div class="flex items-center justify-between text-[10px] text-emerald-700 font-mono mt-1 pt-1 border-t border-slate-100">
+<span>92.2% Match</span>
+<span class="text-slate-400">Span: "3-core 240"</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Group 3: Material & Physical Composition -->
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-200/80 space-y-2">
+<span class="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-indigo-600">layers</span>
+                Materials, Insulation &amp; Sheathing
+              </span>
+<div class="bg-white p-2.5 rounded-md border border-slate-200/60 shadow-xs">
+<div class="flex items-start justify-between">
+<div>
+<div class="text-[10px] uppercase font-mono text-muted">Insulation / Conductor Metal</div>
+<div class="text-xs font-semibold text-heading mt-0.5">XLPE (Cross-linked Polyethylene) + Aluminium Conductor</div>
+<div class="text-[11px] text-slate-500 mt-0.5">Outer extruded PVC sheathing (ST-2 compound)</div>
+</div>
+<span class="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                    98.4% Match
+                  </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Discriminator resolution callout -->
+<div class="rounded-lg bg-amber-50/70 border border-amber-200 p-3 flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[18px] text-amber-600 flex-shrink-0 mt-0.5">info</span>
+<div class="text-xs leading-relaxed text-amber-900">
+<strong class="font-semibold text-amber-800">Discriminator Resolution Applied:</strong>
+              Armouring type was unstated. System mapped to general underground clause (Cl. 12 scope), confirming standard applicability for both armoured and unarmoured variants.
+            </div>
+</div>
+<!-- Grounding Coverage Meter -->
+<div class="bg-slate-50 rounded-lg border border-slate-200/80 p-3 space-y-2">
+<div class="flex items-center justify-between text-xs">
+<span class="font-medium text-slate-700">Query Parameter Grounding Coverage</span>
+<span class="font-mono font-bold text-emerald-700">95.14% Grounded</span>
+</div>
+<div class="w-full h-2 rounded-full bg-slate-200 overflow-hidden flex">
+<div class="h-full bg-emerald-600" style="width: 72%;" title="Direct Lexical: 72%"></div>
+<div class="h-full bg-blue-600" style="width: 18%;" title="Semantic Vector: 18%"></div>
+<div class="h-full bg-amber-500" style="width: 5%;" title="Domain Rule: 5%"></div>
+<div class="h-full bg-slate-300" style="width: 5%;" title="Residual: 5%"></div>
+</div>
+<div class="flex items-center justify-between text-[10px] font-mono text-muted pt-0.5">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-600"></span> Direct (72%)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-600"></span> Semantic (18%)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span> Rules (5%)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Authoritative Compliance & Standard Details (7 cols) -->
+<div class="lg:col-span-7 space-y-6">
+<!-- Hero Card: Standard Title, official designation, ICS Code, Sectional Committee -->
+<div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-6 relative overflow-hidden">
+<div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-blue-500 to-indigo-500"></div>
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b border-slate-100">
+<div class="space-y-1">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">verified</span> PRIMARY RECOMMENDATION
+                </span>
+<span class="text-xs font-mono font-medium px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                  ICS Code: 29.060.20
+                </span>
+</div>
+<h1 class="text-2xl font-bold font-mono text-heading tracking-tight flex items-center gap-2 pt-1">
+                IS 7098 (Part 1):1988
+                <button class="p-1 rounded text-slate-400 hover:text-heading hover:bg-slate-100 transition" onclick="navigator.clipboard.writeText('IS 7098 (Part 1):1988')" title="Copy Standard Code">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+<a class="p-1 rounded text-slate-400 hover:text-blue-600 hover:bg-slate-100 transition" href="https://www.services.bis.gov.in" rel="noopener noreferrer" target="_blank" title="Open BIS Official Portal">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+</h1>
+<p class="text-sm text-reading font-medium leading-relaxed pt-1">
+                Crosslinked Polyethylene Insulated Thermoplastic Sheathed Cables: Part 1 For Working Voltages up to and Including 1100 V
+              </p>
+</div>
+<!-- Committee Pill -->
+<div class="sm:text-right flex-shrink-0">
+<div class="text-[11px] font-mono text-muted uppercase">Sectional Committee</div>
+<div class="text-xs font-bold text-heading mt-0.5">ETD 09 (Electrical Wires &amp; Cables)</div>
+<div class="text-[11px] font-mono text-emerald-700 font-medium mt-1">Reaffirmation Confirmed: 2020</div>
+</div>
+</div>
+<!-- Short Match Rationale -->
+<div class="mt-4 p-3.5 bg-slate-50 rounded-lg border border-slate-200/80 text-xs leading-relaxed text-reading">
+<span class="font-semibold text-heading font-mono uppercase text-[11px]">Match Rationale: </span>
+            The queried technical parameters specify a multi-core crosslinked polyethylene cable operating at 1.1 kV using solid/stranded aluminium conductor. Under the Indian Standards codex, <strong class="text-heading font-semibold">IS 7098 (Part 1)</strong> explicitly governs all XLPE insulated cables up to 1100 V. The aluminium conductor is governed subordinately by <strong class="text-heading font-semibold">IS 8130:2013 (Class 2)</strong>, as cross-referenced in Clause 5.1.
+          </div>
+</div>
+<!-- Technical Verification Matrix: Modern minimalist card table -->
+<div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-slate-100">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-blue-600">table_chart</span>
+<h2 class="text-sm font-bold text-heading font-display tracking-tight uppercase">Technical Verification Matrix</h2>
+</div>
+<span class="text-xs font-mono font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+              5 of 5 Parameters Validated
+            </span>
+</div>
+<div class="overflow-x-auto rounded-lg border border-slate-200">
+<table class="w-full text-left text-xs">
+<thead class="bg-slate-50 border-b border-slate-200 text-slate-700 font-mono text-[11px] uppercase tracking-wider">
+<tr>
+<th class="py-2.5 px-3 font-semibold">Attribute</th>
+<th class="py-2.5 px-3 font-semibold">Tender Specification Demand</th>
+<th class="py-2.5 px-3 font-semibold">IS Standard Provision</th>
+<th class="py-2.5 px-3 font-semibold text-right">Verification Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 bg-white">
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-heading">Product Class</td>
+<td class="py-2.5 px-3 font-mono text-slate-700">Power Cable</td>
+<td class="py-2.5 px-3 text-slate-600">Cables for fixed installations</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-1 text-emerald-700 font-medium font-mono">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">check_circle</span> Cl. 1.1 Matched
+                    </span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-heading">Voltage Rating</td>
+<td class="py-2.5 px-3 font-mono text-slate-700">1.1 kV (1100 V)</td>
+<td class="py-2.5 px-3 text-slate-600">Up to &amp; including 1100 V</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-1 text-emerald-700 font-medium font-mono">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">check_circle</span> Cl. 4.1 (Tab. 2)
+                    </span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-heading">Insulation System</td>
+<td class="py-2.5 px-3 font-mono text-slate-700">XLPE</td>
+<td class="py-2.5 px-3 text-slate-600">Cross-linked polyethylene Type A</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-1 text-emerald-700 font-medium font-mono">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">check_circle</span> Cl. 3.2 Type A
+                    </span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-heading">Conductor Metal</td>
+<td class="py-2.5 px-3 font-mono text-slate-700">Aluminium 240 sq mm</td>
+<td class="py-2.5 px-3 text-slate-600">Aluminium / Copper per IS 8130</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-1 text-emerald-700 font-medium font-mono">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">check_circle</span> IS 8130 Cl. 2
+                    </span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/70 transition-colors">
+<td class="py-2.5 px-3 font-semibold text-heading">Installation Modality</td>
+<td class="py-2.5 px-3 font-mono text-slate-700">Underground burial</td>
+<td class="py-2.5 px-3 text-slate-600">Direct burial or duct layout</td>
+<td class="py-2.5 px-3 text-right">
+<span class="inline-flex items-center gap-1 text-emerald-700 font-medium font-mono">
+<span class="material-symbols-outlined text-[15px] text-emerald-600">check_circle</span> Compatible (App. B)
+                    </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Statutory Quality Control Order (QCO) Alert Box -->
+<div class="bg-amber-50/60 rounded-xl border border-amber-300/80 p-5 shadow-sm space-y-3">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-lg bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-700 flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">gavel</span>
+</div>
+<div>
+<div class="text-xs font-bold font-mono text-amber-900 uppercase tracking-wide">Statutory Quality Control Order (QCO) Mandate</div>
+<div class="text-sm font-bold text-heading">DPIIT Gazette Notification S.O. 4312(E)</div>
+</div>
+</div>
+<span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-amber-100 text-amber-800 border border-amber-300">
+              SECTION 16 BIS ACT
+            </span>
+</div>
+<div class="bg-white/90 rounded-lg p-3 border border-amber-200/70 text-xs text-reading leading-relaxed">
+<div class="flex items-center gap-1.5 text-amber-800 font-semibold mb-1">
+<span class="material-symbols-outlined text-[16px] text-amber-600">policy</span>
+<span>Mandatory Tender Compliance for Public Procurement:</span>
+</div>
+            Under Section 16 of the Bureau of Indian Standards Act, 2016, products conforming to Gazette S.O. 4312(E) must bear the <strong class="text-heading font-semibold">Standard ISI Mark</strong>. Any tenderer submitting bids without a certified BIS License (CM/L Number) is subject to summary disqualification at Technical Evaluation Stage without right of cure. Public sector procuring entities (CPWD, GeM, NHPC, State Discoms) are statutorily barred from procuring non-marked cables.
+          </div>
+</div>
+<!-- Supersession & Lifecycle Path: Stepper Graphic -->
+<div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+<div class="flex items-center justify-between pb-2 border-b border-slate-100">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-blue-600">history</span>
+<h2 class="text-sm font-bold text-heading font-display tracking-tight uppercase">Supersession &amp; Lifecycle Epoch</h2>
+</div>
+<span class="text-xs font-mono font-medium text-slate-500">Reaffirmation Cycle: 5 Years</span>
+</div>
+<!-- Clean Horizontal Stepper -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+<!-- Step 1: Superseded -->
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-200 relative">
+<span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 inline-block mb-1">
+                SUPERSEDED (FOR XLPE)
+              </span>
+<div class="text-xs font-bold text-heading font-mono">IS 1554 (Part 1):1988</div>
+<div class="text-[11px] text-slate-500 mt-0.5">PVC Insulated Cables</div>
+<div class="text-[10px] text-slate-400 mt-2 font-mono">Historical Baseline</div>
+</div>
+<!-- Step 2: Current Active Recommended -->
+<div class="p-3 bg-emerald-50/50 rounded-lg border-2 border-emerald-500/60 relative shadow-xs">
+<span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-emerald-600 text-white inline-block mb-1">
+                CURRENT ACTIVE STANDARD
+              </span>
+<div class="text-xs font-bold text-heading font-mono">IS 7098 (Part 1):1988</div>
+<div class="text-[11px] text-emerald-800 font-medium mt-0.5">XLPE Insulated (Up to 1.1 kV)</div>
+<div class="text-[10px] text-emerald-700 mt-2 font-mono flex items-center gap-1 font-semibold">
+<span class="material-symbols-outlined text-[13px]">check_circle</span> Verified Standard
+              </div>
+</div>
+<!-- Step 3: Latest Reaffirmation -->
+<div class="p-3 bg-slate-50 rounded-lg border border-slate-200 relative">
+<span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 inline-block mb-1">
+                COMMITTEE ETD 09
+              </span>
+<div class="text-xs font-bold text-heading font-mono">Reaffirmed 2020</div>
+<div class="text-[11px] text-slate-500 mt-0.5">Statutory validity in force</div>
+<div class="text-[10px] text-slate-400 mt-2 font-mono">Next review scheduled</div>
+</div>
+</div>
+<!-- Allied Regimes Sub-Row -->
+<div class="pt-2 flex flex-col sm:flex-row gap-2">
+<div class="flex-1 p-2 bg-slate-50 rounded-md border border-slate-200/80 flex items-center justify-between text-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-blue-600">link</span>
+<span class="font-mono font-semibold text-heading">IS 8130:2013</span>
+<span class="text-slate-500 truncate max-w-[200px]">Conductors for Insulated Cables</span>
+</div>
+<span class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
+                Mandatory Allied
+              </span>
+</div>
+<div class="flex-1 p-2 bg-slate-50 rounded-md border border-slate-200/80 flex items-center justify-between text-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-indigo-600">biotech</span>
+<span class="font-mono font-semibold text-heading">IS 10810</span>
+<span class="text-slate-500 truncate max-w-[200px]">Cable Testing Regimes</span>
+</div>
+<span class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-slate-200 text-slate-700">
+                Test Protocol
+              </span>
+</div>
+</div>
+</div>
+<!-- Progressive Disclosure: Agent Audit Log (Collapsible) -->
+<div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-4 space-y-2">
+<button class="w-full flex items-center justify-between text-left focus:outline-none" onclick="document.getElementById('audit-log-details').classList.toggle('hidden'); document.getElementById('log-chevron').classList.toggle('rotate-180');" type="button">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[19px] text-blue-600">terminal</span>
+<span class="text-xs font-bold text-heading font-mono uppercase tracking-wide">Agent Audit &amp; Reasoning Execution Log</span>
+<span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">6 / 6 Passed</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-slate-400 transition-transform" id="log-chevron">expand_more</span>
+</button>
+<div class="pt-2 border-t border-slate-100 space-y-1.5 font-mono text-[11px] text-slate-600" id="audit-log-details">
+<div class="flex items-start gap-2">
+<span class="text-slate-400">00:00.042</span>
+<span class="text-blue-700 font-semibold">GATE 1:</span>
+<span>Query formulated &amp; tokenized. Normalized voltage class to 1100 V.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="text-slate-400">00:00.118</span>
+<span class="text-blue-700 font-semibold">GATE 2:</span>
+<span>Dense retrieval evaluated candidate standards against ETD corpus.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="text-slate-400">00:00.194</span>
+<span class="text-emerald-700 font-semibold">GATE 3:</span>
+<span>Applicability gate PASS: IS 7098 (Pt 1) chosen over IS 1554 (PVC mismatch).</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="text-slate-400">00:00.251</span>
+<span class="text-emerald-700 font-semibold">GATE 4:</span>
+<span>Lifecycle gate PASS: Standard confirmed ACTIVE, 2020 reaffirmation verified.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="text-slate-400">00:00.302</span>
+<span class="text-amber-700 font-semibold">GATE 5:</span>
+<span>QCO Mandate: Gazette S.O. 4312(E) verified under Section 16 BIS Act.</span>
+</div>
+<div class="flex items-start gap-2">
+<span class="text-slate-400">00:00.342</span>
+<span class="text-emerald-700 font-semibold">GATE 6:</span>
+<span>Zero-hallucination validation passed (hash: sha256:7f9a8b1...3b21).</span>
+</div>
+</div>
+</div>
+<!-- Sticky Action Bar at the Bottom -->
+<div class="bg-white rounded-xl border border-slate-200/90 shadow-sm p-3.5 flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+<span class="text-xs font-semibold text-heading font-mono">Audit Ready &amp; Digitally Signed</span>
+</div>
+<div class="flex items-center gap-2">
+<a class="px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[16px] text-blue-600">manage_search</span>
+<span>Launch in Standards Explorer</span>
+</a>
+<a class="px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5" href="#">
+<span class="material-symbols-outlined text-[16px] text-amber-600">fact_check</span>
+<span>Cross-Verify BOQ</span>
+</a>
+<button class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm hover:shadow transition flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+<span>Export PDF Audit Certificate</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Clean Institutional Footer -->
+<footer class="w-full bg-white border-t border-slate-200 mt-8 py-4">
+<div class="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-muted">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-slate-700">© 2026 StandSpec AI</span>
+<span>•</span>
+<span>National Institute of Standards &amp; PSU Procurement Oversight</span>
+</div>
+<div class="flex items-center gap-3 font-mono text-[11px]">
+<span>CED 54 / ETD 09 Live Mesh</span>
+<span>•</span>
+<span>Gazette S.O. 2452(E)</span>
+<span>•</span>
+<span class="text-emerald-700 font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">lock</span> FIPS 140-3 Cryptographic Integrity
+        </span>
+</div>
+</div>
+</footer>
+<!-- Interactive logic for prompt test chips -->
+<script>
+    document.querySelectorAll('#quick-chips button').forEach((btn, idx) => {
+      btn.addEventListener('click', () => {
+        const textarea = document.getElementById('tender-query');
+        if (idx === 0) {
+          textarea.value = "Supply of 1.1 kV grade XLPE insulated 3-core 240 sq mm aluminium conductor underground cables conforming to standard specifications with outer extruded PVC sheathing for municipal feeder infrastructure.";
+        } else if (idx === 1) {
+          textarea.value = "Supply of unplasticized polyvinyl chloride (uPVC) pipes for soil and waste discharge systems inside buildings as per IS 1180 Part 1.";
+        } else if (idx === 2) {
+          textarea.value = "Supply of 500 Metric Tons of Fresh Bananas and Grade A Basmati Rice for defense mess provisions.";
+        } else if (idx === 3) {
+          textarea.value = "Design, engineering and supply of 33/11 kV 5 MVA Outdoor type Oil Immersed Step Down Power Transformers conforming to relevant statutory orders.";
+        } else if (idx === 4) {
+          textarea.value = "Supply of heavy-duty piping systems for municipal potable drinking water distribution network with anti-corrosive lining.";
+        }
+      });
+    });
+  </script>
+</body></html>

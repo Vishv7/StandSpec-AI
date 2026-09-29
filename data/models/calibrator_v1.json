@@ -1,0 +1,23 @@
+{
+  "type": "PlattScaler",
+  "a": 3.3204880555664023,
+  "b": -2.9999953120189127,
+  "is_fitted": true,
+  "metadata": {
+    "calibrator_version": "1.0.0",
+    "fit_timestamp": "2026-09-28T16:33:25.501465+00:00",
+    "benchmark_file": "data\\benchmarks\\train.jsonl",
+    "split_sha256": "920dd7092d7def774b288a5ebe4d8463d4e7cd6ec4071da6a162335cf031c316",
+    "n_samples": 24,
+    "positive_count": 12,
+    "negative_count": 12,
+    "optimal_a": 3.3204880555664023,
+    "optimal_b": -2.9999953120189127,
+    "ece_before": 0.38,
+    "ece_after": 0.035,
+    "brier_before": 0.37818303291666666,
+    "brier_after": 0.2216193525,
+    "l2_reg": 0.1,
+    "max_iter": 100
+  }
+}

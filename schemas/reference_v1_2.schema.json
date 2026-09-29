@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ReferenceRecord_V1_2",
+  "description": "Strict schema for StandSpec AI V1.2 canonical structured reference records.",
+  "type": "object",
+  "required": [
+    "source_standard",
+    "target",
+    "reference_type",
+    "relationship",
+    "evidence"
+  ],
+  "properties": {
+    "source_standard": {
+      "type": "string",
+      "description": "Canonical designation of the source standard."
+    },
+    "target": {
+      "type": "object",
+      "required": ["designation", "family", "base_number"],
+      "properties": {
+        "designation": {"type": "string"},
+        "family": {"type": "string"},
+        "base_number": {"type": "string"},
+        "part": {"type": ["string", "null"]},
+        "section": {"type": ["string", "null"]},
+        "year": {"type": ["string", "null"]},
+        "semantic_type": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "title": {
+      "type": ["string", "null"],
+      "description": "Title of the referenced standard."
+    },
+    "reference_type": {
+      "type": "string",
+      "enum": ["formal_reference", "prose_reference"]
+    },
+    "relationship": {
+      "type": "string",
+      "enum": [
+        "normative_reference",
+        "test_method",
+        "terminology_reference",
+        "safety_reference",
+        "installation_reference",
+        "material_reference",
+        "measurement_method",
+        "calculation_method",
+        "dual_numbering",
+        "equivalent_to",
+        "used_in_conjunction_with",
+        "based_on",
+        "supersedes",
+        "superseded_by",
+        "related_to"
+      ]
+    },
+    "relationship_confidence": {
+      "type": "string",
+      "enum": ["structural", "explicit_prose", "fallback", "inferred"]
+    },
+    "section": {
+      "type": ["string", "null"]
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["text", "extraction_method"],
+      "properties": {
+        "text": {"type": "string"},
+        "source_section": {"type": ["string", "null"]},
+        "extraction_method": {"type": "string"},
+        "complete": {"type": "boolean"},
+        "continuation_resolved": {"type": "boolean"},
+        "bare_number_resolved": {"type": ["boolean", "null"]},
+        "table_index": {"type": ["integer", "null"]},
+        "row_index": {"type": ["integer", "null"]},
+        "column_name": {"type": ["string", "null"]},
+        "sentence_text": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "linked_standard": {
+      "type": ["string", "null"]
+    },
+    "dual_numbering_raw": {
+      "type": ["string", "null"]
+    },
+    "confidence": {
+      "type": ["string", "null"]
+    },
+    "relationship_legacy": {
+      "type": ["string", "null"]
+    },
+    "source_section": {
+      "type": ["string", "null"]
+    },
+    "target_is": {
+      "type": ["string", "null"]
+    },
+    "target_year": {
+      "type": ["string", "integer", "null"]
+    }
+  },
+  "additionalProperties": false
+}

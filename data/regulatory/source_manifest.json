@@ -1,0 +1,195 @@
+{
+  "manifest_version": "1.1",
+  "generated_at": "2026-09-28T00:00:00Z",
+  "jurisdiction": "IN",
+  "authorities": [
+    "Department for Promotion of Industry and Internal Trade (DPIIT)",
+    "Ministry of Steel",
+    "Ministry of Power",
+    "Ministry of Chemicals and Petrochemicals",
+    "Ministry of Electronics and Information Technology (MeitY)",
+    "Bureau of Indian Standards (BIS)"
+  ],
+  "sources": [
+    {
+      "source_id": "REG_DPIIT_CEMENT_2024",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 2282(E)",
+      "order_title": "Cement (Quality Control) Order, 2024",
+      "source_url": "https://egazette.gov.in/WriteReadData/2024/254922.pdf",
+      "source_artifact": "egazette_so_2282_e_2024.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 269", "IS 8112", "IS 12269", "IS 1489 (Part 1)", "IS 455", "IS 6452"]
+    },
+    {
+      "source_id": "REG_STEEL_PRODUCTS_2024",
+      "authority": "Ministry of Steel",
+      "gazette_id": "S.O. 3716(E)",
+      "order_title": "Steel and Steel Products (Quality Control) Order, 2024",
+      "source_url": "https://egazette.gov.in/WriteReadData/2024/256976.pdf",
+      "source_artifact": "egazette_so_3716_e_2024.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 1239 (Part 1)", "IS 1786", "IS 2062", "IS 800"]
+    },
+    {
+      "source_id": "REG_DPIIT_HDPE_PIPES_2023",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 4531(E)",
+      "order_title": "High-Density Polyethylene (HDPE) Pipes (Quality Control) Order, 2023",
+      "source_url": "https://egazette.gov.in/WriteReadData/2023/249531.pdf",
+      "source_artifact": "egazette_so_4531_e_2023.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 4984", "IS 14885"]
+    },
+    {
+      "source_id": "REG_DPIIT_UPVC_PIPES_2023",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 4532(E)",
+      "order_title": "Unplasticized Polyvinyl Chloride (uPVC) Pipes (Quality Control) Order, 2023",
+      "source_url": "https://egazette.gov.in/WriteReadData/2023/249532.pdf",
+      "source_artifact": "egazette_so_4532_e_2023.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 4985", "IS 12818"]
+    },
+    {
+      "source_id": "REG_DPIIT_CAST_IRON_2023",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 5013(E)",
+      "order_title": "Cast Iron Products (Quality Control) Order, 2023",
+      "source_url": "https://egazette.gov.in/WriteReadData/2023/250013.pdf",
+      "source_artifact": "egazette_so_5013_e_2023.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 1536", "IS 1538", "IS 8329"]
+    },
+    {
+      "source_id": "REG_MOP_SMART_METERS_2023",
+      "authority": "Ministry of Power / DPIIT",
+      "gazette_id": "S.O. 3154(E)",
+      "order_title": "Smart Meters (Quality Control) Order, 2023",
+      "source_url": "https://egazette.gov.in/WriteReadData/2023/247154.pdf",
+      "source_artifact": "egazette_so_3154_e_2023.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 16444 (Part 1)", "IS 16444 (Part 2)", "IS 15884", "IS 13779", "IS 14697"]
+    },
+    {
+      "source_id": "REG_MEITY_CRS_LED_2014",
+      "authority": "MeitY",
+      "gazette_id": "S.O. 2905(E)",
+      "order_title": "Electronics and Information Technology Goods (Compulsory Registration Scheme) Order, Phase II",
+      "source_url": "https://www.crsbis.in/BIS/app_resources/Notification_2905E.pdf",
+      "source_artifact": "meity_so_2905_e_2014.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 16102 (Part 1)", "IS 16102 (Part 2)", "IS 15885 (Part 2/Sec 13)", "IS 16103 (Part 1)"]
+    },
+    {
+      "source_id": "REG_DPIIT_ELEC_APP_2023",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 1060(E)",
+      "order_title": "Electrical Appliances for Household and Similar Purposes (Quality Control) Order, 2023",
+      "source_url": "https://egazette.gov.in/WriteReadData/2023/244060.pdf",
+      "source_artifact": "egazette_so_1060_e_2023.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 302 (Part 1)", "IS 302 (Part 2/Sec 16)", "IS 302 (Part 2/Sec 30)", "IS 302 (Part 2/Sec 35)", "IS 366"]
+    },
+    {
+      "source_id": "REG_MEITY_CRS_IT_2012",
+      "authority": "MeitY",
+      "gazette_id": "S.O. 2357(E)",
+      "order_title": "Electronics and Information Technology Goods (Requirements for Compulsory Registration) Order, 2012",
+      "source_url": "https://www.meity.gov.in/writereaddata/files/cro.pdf",
+      "source_artifact": "meity_so_2357_e_2012.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 13252 (Part 1)"]
+    },
+    {
+      "source_id": "REG_DPIIT_XLPE_CABLES_2023",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 4501(E)",
+      "order_title": "Crosslinked Polyethylene Insulated Cables (Quality Control) Order, 2023",
+      "source_url": "https://egazette.gov.in/WriteReadData/2023/249501.pdf",
+      "source_artifact": "egazette_so_4501_e_2023.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 7098 (Part 1)", "IS 7098 (Part 2)", "IS 7098 (Part 3)"]
+    },
+    {
+      "source_id": "REG_DPIIT_PVC_CABLES_2023",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 4502(E)",
+      "order_title": "Electrical Wires and PVC Cables (Quality Control) Order, 2023",
+      "source_url": "https://egazette.gov.in/WriteReadData/2023/249502.pdf",
+      "source_artifact": "egazette_so_4502_e_2023.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 694", "IS 1554 (Part 1)", "IS 1554 (Part 2)"]
+    },
+    {
+      "source_id": "REG_DPIIT_TRANSFORMERS_2014",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 1024(E)",
+      "order_title": "Electrical Transformers (Quality Control) Order, 2014",
+      "source_url": "https://egazette.gov.in/WriteReadData/2014/158024.pdf",
+      "source_artifact": "egazette_so_1024_e_2014.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 1180 (Part 1)", "IS 2026 (Part 1)"]
+    },
+    {
+      "source_id": "REG_DPIIT_GLASS_2023",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 4390(E)",
+      "order_title": "Transparent Float Glass and Architectural Glass (Quality Control) Order, 2023",
+      "source_url": "https://egazette.gov.in/WriteReadData/2023/249390.pdf",
+      "source_artifact": "egazette_so_4390_e_2023.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 14900", "IS 2553 (Part 1)"]
+    },
+    {
+      "source_id": "REG_MHI_SWITCHGEAR_2023",
+      "authority": "Ministry of Heavy Industries",
+      "gazette_id": "S.O. 5234(E)",
+      "order_title": "Low-Voltage Switchgear and Controlgear (Quality Control) Order, 2023",
+      "source_url": "https://egazette.gov.in/WriteReadData/2023/250234.pdf",
+      "source_artifact": "egazette_so_5234_e_2023.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS/IEC 60947 (Part 1)", "IS/IEC 60947 (Part 2)", "IS/IEC 60947 (Part 3)", "IS 13947 (Part 1)"]
+    },
+    {
+      "source_id": "REG_MNRE_CRS_SOLAR_PV_2017",
+      "authority": "MNRE",
+      "gazette_id": "S.O. 2920(E)",
+      "order_title": "Solar Photovoltaics, Systems, Devices and Components (Compulsory Registration) Order, 2017",
+      "source_url": "https://egazette.gov.in/WriteReadData/2017/178920.pdf",
+      "source_artifact": "egazette_so_2920_e_2017.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 14286", "IS 16221 (Part 1)", "IS 16221 (Part 2)", "IS 16169"]
+    },
+    {
+      "source_id": "REG_DPIIT_MOTORS_PUMPS_2024",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 2010(E)",
+      "order_title": "Electric Motors and Centrifugal Pumps (Quality Control) Order, 2024",
+      "source_url": "https://egazette.gov.in/WriteReadData/2024/254010.pdf",
+      "source_artifact": "egazette_so_2010_e_2024.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 12615", "IS 8034", "IS 9079"]
+    },
+    {
+      "source_id": "REG_DPIIT_DOORS_TIMBER_2023",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 3840(E)",
+      "order_title": "Wooden Flush Door Shutters and Plywood (Quality Control) Order, 2023",
+      "source_url": "https://egazette.gov.in/WriteReadData/2023/248840.pdf",
+      "source_artifact": "egazette_so_3840_e_2023.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS 2202 (Part 1)", "IS 1003 (Part 1)", "IS 303", "IS 710"]
+    },
+    {
+      "source_id": "REG_DPIIT_DIST_BOARDS_2024",
+      "authority": "DPIIT",
+      "gazette_id": "S.O. 1450(E)",
+      "order_title": "Low-Voltage Switchgear and Controlgear Assemblies (Distribution Boards) (Quality Control) Order, 2024",
+      "source_url": "https://egazette.gov.in/WriteReadData/2024/253450.pdf",
+      "source_artifact": "egazette_so_1450_e_2024.pdf",
+      "retrieved_at": "2026-09-28T00:00:00Z",
+      "standard_coverage": ["IS/IEC 61439 (Part 1)", "IS/IEC 61439 (Part 3)"]
+    }
+  ]
+}

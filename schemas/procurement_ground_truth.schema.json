@@ -1,0 +1,553 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ProcurementGroundTruthBenchmarkRecord_V2",
+  "description": "V2.1 schema for expert-annotated procurement ground truth records. Includes 5 orthogonal benchmark dimensions, 12 technical attributes, HN1-HN8 hard negative classes, and two-tier decision state annotations.",
+  "type": "object",
+  "required": [
+    "query_id",
+    "schema_version",
+    "source",
+    "query",
+    "benchmark_dimensions",
+    "technical_requirements",
+    "gold_standards",
+    "hard_negatives",
+    "version_requirement",
+    "certification_requirement",
+    "expected_decision",
+    "expert_review"
+  ],
+  "properties": {
+    "query_id": {
+      "type": "string",
+      "pattern": "^Q_[A-Z0-9]+_[0-9]{3,}$",
+      "description": "Unique identifier for the benchmark query (e.g. Q_AYD_001, Q_ETD_104)."
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "2.1",
+      "description": "Schema version for forward compatibility."
+    },
+    "dataset_split": {
+      "type": "string",
+      "enum": ["A_discovery", "B_development", "C_validation", "D_blind_test"],
+      "description": "Which benchmark dataset this query belongs to. Governed by BENCHMARK_SPLIT_POLICY.md."
+    },
+    "source": {
+      "type": "object",
+      "required": ["type", "organization", "tender_publication_date"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "government_tender",
+            "gem_procurement",
+            "defence_procurement",
+            "railway_specification",
+            "cppp_tender",
+            "psu_tender",
+            "state_procurement",
+            "industry_rfp",
+            "synthetic_expert",
+            "constructed_expert_case"
+          ],
+          "description": "Origin of the procurement query."
+        },
+        "organization": {
+          "type": "string",
+          "description": "Procuring authority or department."
+        },
+        "tender_id": {
+          "type": ["string", "null"],
+          "description": "Official tender or bid number."
+        },
+        "tender_publication_date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "Date of tender publication (YYYY-MM-DD). Used for temporal lifecycle evaluation."
+        },
+        "evaluation_as_of_date": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "The date at which the recommendation should be evaluated. For current procurement, same as annotation date. For historical audits, the original tender date."
+        },
+        "portal_url": {
+          "type": ["string", "null"],
+          "description": "URL to source tender or public notice."
+        }
+      },
+      "additionalProperties": false
+    },
+    "query": {
+      "type": "object",
+      "required": ["raw_text", "language", "domain"],
+      "properties": {
+        "raw_text": {
+          "type": "string",
+          "minLength": 5,
+          "description": "The exact procurement text, tender item description, or user prompt."
+        },
+        "language": {
+          "type": "string",
+          "enum": ["en", "hi", "gu", "hinglish", "ta", "te", "bn", "mr", "mixed"],
+          "description": "Primary language or script."
+        },
+        "domain": {
+          "type": "string",
+          "enum": [
+            "AYUSH",
+            "ELECTROTECHNICAL",
+            "CHEMICAL",
+            "CIVIL_ENGINEERING",
+            "MECHANICAL",
+            "FOOD_AGRICULTURE",
+            "MEDICAL_EQUIPMENT",
+            "TEXTILES",
+            "PETROLEUM_COAL",
+            "CROSS_SECTOR"
+          ],
+          "description": "BIS technical domain."
+        },
+        "product_family": {
+          "type": ["string", "null"],
+          "description": "Product family for split stratification (e.g. 'Electrical Wires & Cables', 'AYUSH Herbal Products')."
+        }
+      },
+      "additionalProperties": false
+    },
+    "benchmark_dimensions": {
+      "type": "object",
+      "required": ["query_explicitness", "difficulty", "language", "temporal_context", "ambiguity_class"],
+      "description": "5 orthogonal, non-mutually-exclusive benchmark labeling dimensions.",
+      "properties": {
+        "query_explicitness": {
+          "type": "string",
+          "enum": ["implicit", "semi_explicit", "explicit"],
+          "description": "implicit: describes product without IS number (target 60%). semi_explicit: partial standard reference (20%). explicit: cites standard number (20%)."
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["easy", "medium", "hard", "adversarial"],
+          "description": "Difficulty level based on disambiguation complexity."
+        },
+        "language": {
+          "type": "string",
+          "enum": ["en", "hi", "gu", "hinglish"],
+          "description": "Language dimension for the benchmark (may differ from query.language if transliterated)."
+        },
+        "temporal_context": {
+          "type": "string",
+          "enum": ["current", "historical"],
+          "description": "current: contemporary procurement. historical: retrospective tender audit."
+        },
+        "ambiguity_class": {
+          "type": "string",
+          "enum": [
+            "CLASS_1_CLEAR",
+            "CLASS_2_MULTIPLE_STANDARDS",
+            "CLASS_3_INSUFFICIENT_INFORMATION",
+            "CLASS_4_NO_MATCH_UNKNOWN"
+          ],
+          "description": "Expected ambiguity state of the query."
+        }
+      },
+      "additionalProperties": false
+    },
+    "technical_requirements": {
+      "type": "object",
+      "description": "12-attribute decomposed technical requirements extracted from the procurement text.",
+      "properties": {
+        "product": {
+          "type": ["string", "null"],
+          "description": "1. Target product, material, or service."
+        },
+        "scope_keywords": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "2. Key scope terms that should match the standard's scope clause."
+        },
+        "material_grade": {
+          "type": ["string", "null"],
+          "description": "3. Specific material grade, alloy, botanical species, or formulation (e.g. 'XLPE', 'PVC', 'Withania somnifera')."
+        },
+        "rating_capacity": {
+          "type": ["string", "null"],
+          "description": "4. Voltage, pressure, capacity, dosage, or power rating (e.g. '11 kV', '500 kPa')."
+        },
+        "application": {
+          "type": ["string", "null"],
+          "description": "5. Intended usage context (e.g. 'domestic wiring', 'underground burial', 'clinical oral administration')."
+        },
+        "environment": {
+          "type": ["string", "null"],
+          "description": "6. Operating environment (e.g. 'tropical outdoor', 'marine', 'sterile hospital')."
+        },
+        "performance_thresholds": {
+          "type": ["string", "null"],
+          "description": "7. Key performance requirements (e.g. 'tensile strength ≥ 400 MPa', 'FRLS rated')."
+        },
+        "safety_requirements": {
+          "type": ["string", "null"],
+          "description": "8. Critical safety clauses or hazard protections."
+        },
+        "installation_method": {
+          "type": ["string", "null"],
+          "description": "9. Installation type (e.g. 'conduit burial', 'aerial bundling', 'wall surface mounting')."
+        },
+        "testing_requirements": {
+          "type": ["string", "null"],
+          "description": "10. Test types required (e.g. 'type test', 'routine test', 'acceptance test')."
+        },
+        "packaging_marking": {
+          "type": ["string", "null"],
+          "description": "11. Packaging or marking requirements."
+        },
+        "target_product": {
+          "type": ["string", "null"],
+          "description": "Target product specification description."
+        },
+        "voltage_rating": {
+          "type": ["string", "null"],
+          "description": "Voltage rating or electrical capacity."
+        },
+        "application_domain": {
+          "type": ["string", "null"],
+          "description": "Domain or operational application area."
+        },
+        "operating_environment": {
+          "type": ["string", "null"],
+          "description": "Operating environmental conditions."
+        },
+        "performance_parameters": {
+          "type": ["string", "null"],
+          "description": "Performance parameters and limits."
+        },
+        "scope_inclusions_required": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Mandatory scope inclusions."
+        },
+        "scope_exclusions_forbidden": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Forbidden scope exclusions."
+        },
+        "missing_parameters": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "12. Parameters NOT stated in the procurement text that would be needed for disambiguation."
+        }
+      },
+      "additionalProperties": false
+    },
+    "gold_standards": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "required": ["standard_designation", "applicability", "reason"],
+        "properties": {
+          "standard_designation": {
+            "type": "string",
+            "description": "Canonical standard designation (e.g. IS 7098 (Part 2):2011)."
+          },
+          "applicability": {
+            "type": "string",
+            "enum": [
+              "primary_product",
+              "primary_test_method",
+              "normative_mandatory",
+              "safety_essential",
+              "allied_guideline"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "description": "Domain expert justification."
+          },
+          "evidence_span": {
+            "type": ["string", "null"],
+            "description": "Verbatim excerpt from the standard's scope or clause proving applicability."
+          },
+          "evidence_source_tier": {
+            "type": ["integer", "null"],
+            "minimum": 1,
+            "maximum": 4,
+            "description": "Source tier of the evidence (1-4; Tier 5 is never valid evidence)."
+          },
+          "relationship_obligation": {
+            "type": "string",
+            "enum": ["MANDATORY", "CONDITIONAL", "INFORMATIVE", "RELATED", "UNKNOWN"],
+            "description": "Obligation level per RELATIONSHIP_TAXONOMY.md."
+          },
+          "mandatory_by_regulation": {
+            "type": "boolean",
+            "description": "True if an active QCO mandates this standard."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "allied_standards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["standard_designation", "relationship", "obligation", "reason"],
+        "properties": {
+          "standard_designation": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "normative_reference",
+              "test_method",
+              "terminology_reference",
+              "safety_reference",
+              "installation_reference",
+              "material_reference",
+              "measurement_method",
+              "calculation_method",
+              "used_in_conjunction_with",
+              "dual_numbering",
+              "equivalent_to",
+              "based_on",
+              "supersedes",
+              "superseded_by",
+              "related_to"
+            ],
+            "description": "Canonical relationship type from RELATIONSHIP_TAXONOMY.md."
+          },
+          "obligation": {
+            "type": "string",
+            "enum": ["MANDATORY", "CONDITIONAL", "INFORMATIVE", "RELATED", "UNKNOWN"],
+            "description": "Obligation level."
+          },
+          "reason": {
+            "type": "string"
+          },
+          "evidence_span": {
+            "type": ["string", "null"],
+            "description": "Verbatim evidence for the relationship."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "expected_coverage_state": {
+      "type": "string",
+      "enum": ["IN_PROTOTYPE_COVERAGE", "OUTSIDE_PROTOTYPE_COVERAGE"],
+      "description": "Whether the required standard family is within the prototype CED/ETD coverage boundary."
+    },
+    "prototype_coverage_state": {
+      "type": "string",
+      "enum": ["IN_PROTOTYPE_COVERAGE", "OUTSIDE_PROTOTYPE_COVERAGE"],
+      "description": "Whether the required standard family is within the prototype CED/ETD coverage boundary (Section 7.2)."
+    },
+    "expected_safe_decision": {
+      "type": "string",
+      "enum": [
+        "PRIMARY_RECOMMENDATION_AVAILABLE",
+        "MULTIPLE_POSSIBLE_STANDARDS",
+        "INSUFFICIENT_INFORMATION",
+        "NO_CONFIDENT_MATCH",
+        "EXPERT_REVIEW_REQUIRED",
+        "CONDITIONAL_RECOMMENDATION",
+        "OUTSIDE_PROTOTYPE_COVERAGE"
+      ],
+      "description": "Safe expected decision contract accounting for KB evidence readiness."
+    },
+    "expected_evidence_state": {
+      "type": "string",
+      "enum": ["SCOPE_AVAILABLE", "SCOPE_UNAVAILABLE", "UNHYDRATED_STUB", "LIFECYCLE_UNVERIFIED"],
+      "description": "Expected evidentiary state of gold standard in the knowledge base."
+    },
+    "expected_review_reason": {
+      "type": ["string", "null"],
+      "description": "Expected justification when demoted to EXPERT_REVIEW_REQUIRED."
+    },
+    "gold_in_scope": {
+      "type": "boolean",
+      "description": "Whether the gold standard has verified scope in the knowledge base."
+    },
+    "gold_in_graph": {
+      "type": "boolean",
+      "description": "Whether the gold standard exists in the knowledge graph (Section 7.2)."
+    },
+    "gold_primary_candidate_eligible": {
+      "type": "boolean",
+      "description": "Whether the gold standard is eligible as a primary candidate (Section 7.2)."
+    },
+    "gold_evidence_state": {
+      "type": "string",
+      "enum": ["COMPLETE", "PARTIAL", "SCOPE_UNAVAILABLE"],
+      "description": "Evidentiary state of the gold standard (Section 7.2)."
+    },
+    "gold_recommendation_ready": {
+      "type": "boolean",
+      "description": "Whether the gold standard has sufficient evidence for primary promotion (Section 7.2)."
+    },
+    "hard_negatives": {
+      "type": "array",
+      "minItems": 0,
+      "description": "Verified hard negatives per query (at least 2 recommended).",
+      "items": {
+        "type": "object",
+        "required": ["standard_designation", "hn_class", "confusability_reason", "rejection_reason"],
+        "properties": {
+          "standard_designation": {
+            "type": "string",
+            "description": "Plausible standard that must NOT be recommended as primary."
+          },
+          "hn_class": {
+            "type": "string",
+            "enum": ["HN1", "HN2", "HN3", "HN4", "HN5", "HN6", "HN7", "HN8"],
+            "description": "Hard negative class: HN1=Same Product Wrong Application, HN2=Same Keyword Different Product, HN3=Similar Title Scope Exclusion, HN4=Old/Superseded Version, HN5=Related But Not Primary, HN6=Unproven International Equivalent, HN7=Cross-Department Semantic Trap, HN8=Certification-Only Confusion."
+          },
+          "confusability_reason": {
+            "type": "string",
+            "description": "Why a naive model might rank this standard high."
+          },
+          "rejection_reason": {
+            "type": "string",
+            "description": "Technical or regulatory justification for rejection."
+          },
+          "rejection_evidence_span": {
+            "type": ["string", "null"],
+            "description": "Verbatim evidence supporting rejection (e.g. scope exclusion clause)."
+          },
+          "source_tier": {
+            "type": ["integer", "null"],
+            "minimum": 1,
+            "maximum": 4,
+            "description": "Source tier of the rejection evidence."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "version_requirement": {
+      "type": "object",
+      "required": ["policy", "acceptable_years"],
+      "properties": {
+        "policy": {
+          "type": "string",
+          "enum": [
+            "latest_active_only",
+            "point_in_time_exact",
+            "amendment_sensitive",
+            "superseded_permissible"
+          ]
+        },
+        "acceptable_years": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "superseded_standards_to_flag": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "certification_requirement": {
+      "type": "object",
+      "required": ["regulatory_status"],
+      "properties": {
+        "regulatory_status": {
+          "type": "string",
+          "enum": [
+            "MANDATORY",
+            "VOLUNTARY_NO_MANDATE_FOUND",
+            "NOT_APPLICABLE",
+            "CONFLICTING_EVIDENCE",
+            "UNKNOWN"
+          ],
+          "description": "Regulatory status from the 5-state model."
+        },
+        "certification_scheme": {
+          "type": ["string", "null"],
+          "enum": [null, "Scheme I", "Scheme II", "Scheme IV", "Scheme X", "Hallmarking", "Management Systems", "Other"],
+          "description": "BIS conformity assessment scheme."
+        },
+        "qco_order_reference": {
+          "type": ["string", "null"],
+          "description": "Gazette notification or order ID."
+        },
+        "enforcement_date": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "exemptions": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "expected_decision": {
+      "type": "object",
+      "required": ["query_level_state"],
+      "description": "The expected two-tier decision output for this query.",
+      "properties": {
+        "query_level_state": {
+          "type": "string",
+          "enum": [
+            "PRIMARY_RECOMMENDATION_AVAILABLE",
+            "MULTIPLE_POSSIBLE_STANDARDS",
+            "INSUFFICIENT_INFORMATION",
+            "NO_CONFIDENT_MATCH",
+            "EXPERT_REVIEW_REQUIRED",
+            "OUTSIDE_PROTOTYPE_COVERAGE"
+          ],
+          "description": "Expected query-level outcome."
+        },
+        "expected_abstention_reason": {
+          "type": ["string", "null"],
+          "description": "If abstention is expected, the primary reason (e.g. 'voltage rating not specified')."
+        }
+      },
+      "additionalProperties": false
+    },
+    "expert_review": {
+      "type": "object",
+      "required": ["reviewers_count", "agreement_status"],
+      "properties": {
+        "reviewers_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewer_ids": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "confidence_score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "agreement_status": {
+          "type": "string",
+          "enum": ["unanimous", "majority_consensus", "disputed"]
+        },
+        "field_specific_agreement": {
+          "type": ["object", "null"],
+          "description": "Per-field inter-annotator agreement scores (Kappa/Alpha).",
+          "properties": {
+            "primary_standard_kappa": {"type": ["number", "null"]},
+            "applicability_kappa": {"type": ["number", "null"]},
+            "ambiguity_class_kappa": {"type": ["number", "null"]},
+            "hard_negatives_kappa": {"type": ["number", "null"]},
+            "evidence_span_alpha": {"type": ["number", "null"]}
+          },
+          "additionalProperties": false
+        },
+        "notes": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

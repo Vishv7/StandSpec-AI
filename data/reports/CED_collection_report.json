@@ -1,0 +1,65 @@
+{
+  "run_id": "2026-09-27T19:09:03.013433+00:00",
+  "first_run_started_at": "2026-09-27T19:09:03.013433+00:00",
+  "last_run_started_at": "2026-09-27T19:09:03.013433+00:00",
+  "run_completed_at": "2026-09-27T19:11:27.676650+00:00",
+  "department": "CED",
+  "input_file": "Civil Engineering Department (CED).xlsx",
+  "input_rows": 1935,
+  "run_manifest": {
+    "input_sha256": "2a8c6925af59dfa57431a3cb5ea86d40d942c95bce7a66e9067afc559b510b94",
+    "source_snapshot_sha256": "2a8c6925af59dfa57431a3cb5ea86d40d942c95bce7a66e9067afc559b510b94",
+    "parser_version": "1.2.0",
+    "collector_version": "1.2.0",
+    "schema_version": "1.2",
+    "first_run_started_at": "2026-09-27T19:09:03.013433+00:00",
+    "last_run_started_at": "2026-09-27T19:09:03.013433+00:00",
+    "source_collection_timestamp": "2026-09-27T19:09:03.013433+00:00",
+    "code_commit": null,
+    "code_version_source": "NO_GIT_METADATA"
+  },
+  "statistics": {
+    "input_rows_count": 1935,
+    "attempted_count": 1935,
+    "skipped_cache_count": 0,
+    "reparsed_count": 0,
+    "output_snapshot_count": 1935
+  },
+  "standards": {
+    "processed": 1935,
+    "success": 798,
+    "partial_success": 1113,
+    "failed": 24,
+    "review_required": 1110,
+    "note": "review_required is a quality flag, not a status. success+partial+failed=processed."
+  },
+  "evidence": {
+    "verified": 835,
+    "version_uncertain": 5,
+    "note": "version_uncertain pages have content but years differ from requested."
+  },
+  "content": {
+    "scope_present": 803,
+    "scope_fallback": 0,
+    "scope_found": 803,
+    "foreword_found": 27,
+    "notes_found": 62
+  },
+  "references": {
+    "standards_with_references": 501,
+    "total_reference_records": 3253,
+    "formal_reference_rows": 3152,
+    "extracted_references": 3253,
+    "international_references": 124,
+    "sp_references": 18,
+    "dual_numbered_references": 101,
+    "continuation_resolved": 465
+  },
+  "output_paths": {
+    "standards_jsonl": "data\\processed\\CED\\CED_standards.jsonl",
+    "references_jsonl": "data\\processed\\CED\\CED_references.jsonl",
+    "source_availability_jsonl": "data\\processed\\CED\\CED_source_availability.jsonl",
+    "source_availability_csv": "data\\processed\\CED\\CED_source_availability.csv",
+    "enriched_excel": "data\\processed\\CED\\CED_enriched.xlsx"
+  }
+}

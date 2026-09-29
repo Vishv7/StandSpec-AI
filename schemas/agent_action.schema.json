@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentAction",
+  "description": "Schema for structured actions emitted by the StandSpec LLM Agent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action"],
+  "properties": {
+    "action": {
+      "type": "string",
+      "enum": ["TOOL_CALL", "ASK_CLARIFICATION", "FINAL_PROPOSAL"]
+    },
+    "tool": {
+      "type": "string",
+      "description": "Name of tool to call when action is TOOL_CALL"
+    },
+    "arguments": {
+      "type": "object",
+      "description": "Arguments for the tool call"
+    },
+    "thought": {
+      "type": "string",
+      "description": "Optional concise technical rationale for selecting this action"
+    },
+    "question": {
+      "type": "string",
+      "description": "User clarification question when action is ASK_CLARIFICATION"
+    },
+    "clarification_reason": {
+      "type": "string",
+      "description": "Underlying structured missing field category"
+    },
+    "answer": {
+      "type": "object",
+      "description": "Proposed final structured response when action is FINAL_PROPOSAL"
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "benchmark": "data/benchmarks/test.jsonl",
+  "stages": [
+    {
+      "stage": "1. BM25 Alone",
+      "retriever_mode": "bm25_only",
+      "reranker_mode": "none",
+      "RAW_RETRIEVAL_TOP1": 0.4615,
+      "EFFECTIVE_CANDIDATE_TOP1": 0.6154,
+      "VERIFIED_PRIMARY_TOP1": 0.3846,
+      "top1_accuracy": 0.6154,
+      "recall_at_5": 0.6923,
+      "recall_at_10": 0.6923,
+      "mrr": 0.641,
+      "hnrr_at1": 1.0,
+      "hn_intrusion_rate_5": 0.0769
+    },
+    {
+      "stage": "2. Deterministic Dense Alone",
+      "retriever_mode": "dense_deterministic",
+      "reranker_mode": "none",
+      "RAW_RETRIEVAL_TOP1": 0.3077,
+      "EFFECTIVE_CANDIDATE_TOP1": 0.2308,
+      "VERIFIED_PRIMARY_TOP1": 0.0,
+      "top1_accuracy": 0.2308,
+      "recall_at_5": 0.6154,
+      "recall_at_10": 0.6923,
+      "mrr": 0.4135,
+      "hnrr_at1": 1.0,
+      "hn_intrusion_rate_5": 0.0769
+    },
+    {
+      "stage": "3. Neural Dense Alone",
+      "retriever_mode": "dense_neural",
+      "reranker_mode": "none",
+      "RAW_RETRIEVAL_TOP1": 0.3077,
+      "EFFECTIVE_CANDIDATE_TOP1": 0.2308,
+      "VERIFIED_PRIMARY_TOP1": 0.0,
+      "top1_accuracy": 0.2308,
+      "recall_at_5": 0.6154,
+      "recall_at_10": 0.6923,
+      "mrr": 0.4135,
+      "hnrr_at1": 1.0,
+      "hn_intrusion_rate_5": 0.0769
+    },
+    {
+      "stage": "4. Hybrid RRF (BM25 + Dense)",
+      "retriever_mode": "hybrid_deterministic",
+      "reranker_mode": "none",
+      "RAW_RETRIEVAL_TOP1": 0.3846,
+      "EFFECTIVE_CANDIDATE_TOP1": 0.3077,
+      "VERIFIED_PRIMARY_TOP1": 0.0,
+      "top1_accuracy": 0.3077,
+      "recall_at_5": 0.7692,
+      "recall_at_10": 0.8462,
+      "mrr": 0.5302,
+      "hnrr_at1": 1.0,
+      "hn_intrusion_rate_5": 0.0769
+    },
+    {
+      "stage": "5. Full Pipeline (RRF + Reranker + Gate)",
+      "retriever_mode": "hybrid_deterministic",
+      "reranker_mode": "rule_based",
+      "RAW_RETRIEVAL_TOP1": 0.2308,
+      "EFFECTIVE_CANDIDATE_TOP1": 0.2308,
+      "VERIFIED_PRIMARY_TOP1": 0.1538,
+      "top1_accuracy": 0.2308,
+      "recall_at_5": 0.4615,
+      "recall_at_10": 0.5385,
+      "mrr": 0.3077,
+      "hnrr_at1": 1.0,
+      "hn_intrusion_rate_5": 0.0
+    }
+  ]
+}

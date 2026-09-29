@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LLMExtractionResponse",
+  "description": "JSON schema for bounded, evidence-grounded LLM extraction from tender text (Phase P1-C.6).",
+  "type": "object",
+  "properties": {
+    "product": {"$ref": "#/$defs/grounded_field"},
+    "material": {"$ref": "#/$defs/grounded_field"},
+    "grade": {"$ref": "#/$defs/grounded_field"},
+    "dimensions": {"$ref": "#/$defs/grounded_field"},
+    "voltage": {"$ref": "#/$defs/grounded_field"},
+    "capacity": {"$ref": "#/$defs/grounded_field"},
+    "application": {"$ref": "#/$defs/grounded_field"},
+    "installation": {"$ref": "#/$defs/grounded_field"},
+    "domain": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "grounded_field": {
+      "oneOf": [
+        {"type": "string"},
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["value"],
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "Extracted technical value."
+            },
+            "evidence_text": {
+              "type": "string",
+              "description": "Verbatim substring from tender text grounding the extracted value."
+            },
+            "start_char": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "0-indexed start character offset in tender text."
+            },
+            "end_char": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "0-indexed end character offset in tender text."
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Extraction confidence score."
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+}

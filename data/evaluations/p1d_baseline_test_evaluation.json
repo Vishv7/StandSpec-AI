@@ -1,0 +1,251 @@
+{
+  "benchmark_path": "data/benchmarks/test.jsonl",
+  "graph_path": "data/processed/standards_graph.json",
+  "top_k": 5,
+  "metrics": {
+    "n_queries": 13,
+    "retrieval_accuracy": 0.5384615384615384,
+    "candidate_recall_at_k": 0.7692307692307693,
+    "candidate_recall_at_5": 0.7692307692307693,
+    "candidate_recall_at_10": 0.7692307692307693,
+    "primary_accuracy": 0.23076923076923078,
+    "in_scope_primary_accuracy": 0.23076923076923078,
+    "outside_coverage_accuracy": 1.0,
+    "decision_accuracy_raw": 0.0,
+    "safe_decision_accuracy": 0.23076923076923078,
+    "safe_abstention_rate": 0.8333333333333334,
+    "unsafe_primary_rate": 0.0,
+    "regulatory_accuracy": 0.07692307692307693,
+    "hnrr_at1": 1.0,
+    "hn_intrusion_rate_5": 0.07692307692307693,
+    "hn_intrusion_rate_10": 0.07692307692307693,
+    "mean_hn_rank": 2.0,
+    "worst_hn_rank": 2,
+    "total_hard_negatives": 27,
+    "ece": 0.4315,
+    "brier_score": 0.47552877692307693
+  },
+  "per_query_results": [
+    {
+      "query_id": "Q_CED_020",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "EXPERT_REVIEW_REQUIRED",
+      "primary_recommendation": null,
+      "review_candidate": "IS 4984:2016",
+      "expected_golds": [
+        "IS 4984:2016"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": true,
+      "primary_correct": false,
+      "hit_in_top_k": true,
+      "confidence": 0.0,
+      "calibrated_prob": 0.0
+    },
+    {
+      "query_id": "Q_CED_021",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 7634 (Part 3):2003",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 4985:2021"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "hit_in_top_k": true,
+      "confidence": 1.0,
+      "calibrated_prob": 0.5794
+    },
+    {
+      "query_id": "Q_CED_022",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "EXPERT_REVIEW_REQUIRED",
+      "primary_recommendation": "IS 11594:2025",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 1239 (Part 1):2004"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "hit_in_top_k": false,
+      "confidence": 0.999,
+      "calibrated_prob": 0.5786
+    },
+    {
+      "query_id": "Q_CED_023",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "EXPERT_REVIEW_REQUIRED",
+      "primary_recommendation": null,
+      "review_candidate": "IS 1536:2023",
+      "expected_golds": [
+        "IS 1536:2023"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": true,
+      "primary_correct": false,
+      "hit_in_top_k": true,
+      "confidence": 0.0,
+      "calibrated_prob": 0.0
+    },
+    {
+      "query_id": "Q_CED_024",
+      "decision_state": "NO_CONFIDENT_MATCH",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "EXPERT_REVIEW_REQUIRED",
+      "primary_recommendation": null,
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 800:2007"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "hit_in_top_k": false,
+      "confidence": 0.0,
+      "calibrated_prob": 0.0
+    },
+    {
+      "query_id": "Q_CED_025",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "review_candidate": "IS 6452:2026",
+      "expected_golds": [
+        "IS 6452:2026"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "hit_in_top_k": true,
+      "confidence": 0.0,
+      "calibrated_prob": 0.0
+    },
+    {
+      "query_id": "Q_ETD_019",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "EXPERT_REVIEW_REQUIRED",
+      "primary_recommendation": "IS 13779:2020",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 16444 (Part 1):2015"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "hit_in_top_k": false,
+      "confidence": 1.0,
+      "calibrated_prob": 0.5794
+    },
+    {
+      "query_id": "Q_ETD_020",
+      "decision_state": "INSUFFICIENT_INFORMATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 15707:2006",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 13010:2002"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "hit_in_top_k": true,
+      "confidence": 0.9707,
+      "calibrated_prob": 0.5556
+    },
+    {
+      "query_id": "Q_ETD_021",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 3624:1987",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 3624:1987"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": true,
+      "hit_in_top_k": true,
+      "confidence": 1.0,
+      "calibrated_prob": 0.5794
+    },
+    {
+      "query_id": "Q_ETD_022",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 6804:1972",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 2711:1979"
+      ],
+      "retrieval_correct": false,
+      "safe_decision_correct": false,
+      "primary_correct": false,
+      "hit_in_top_k": true,
+      "confidence": 0.9996,
+      "calibrated_prob": 0.5791
+    },
+    {
+      "query_id": "Q_ETD_023",
+      "decision_state": "CONDITIONAL_RECOMMENDATION",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 2053:1974",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 2053:1974"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": true,
+      "hit_in_top_k": true,
+      "confidence": 0.9988,
+      "calibrated_prob": 0.5785
+    },
+    {
+      "query_id": "Q_ETD_024",
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "EXPERT_REVIEW_REQUIRED",
+      "primary_recommendation": null,
+      "review_candidate": "IS 302 (Part 2/Sec 16):2026",
+      "expected_golds": [
+        "IS 302 (Part 2/Sec 16):2026"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": true,
+      "primary_correct": false,
+      "hit_in_top_k": true,
+      "confidence": 0.0,
+      "calibrated_prob": 0.0
+    },
+    {
+      "query_id": "Q_ETD_025",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "expected_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": "IS 16102 (Part 1):2012",
+      "review_candidate": null,
+      "expected_golds": [
+        "IS 16102 (Part 1):2012"
+      ],
+      "retrieval_correct": true,
+      "safe_decision_correct": false,
+      "primary_correct": true,
+      "hit_in_top_k": true,
+      "confidence": 0.9997,
+      "calibrated_prob": 0.5792
+    }
+  ]
+}

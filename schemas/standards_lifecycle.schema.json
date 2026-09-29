@@ -1,0 +1,184 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StandardsLifecycleRecord",
+  "description": "Schema for Layer 2 lifecycle and temporal knowledge records. Tracks historical lineage, current validity, amendments, and reaffirmations for Indian Standards.",
+  "type": "object",
+  "required": [
+    "standard_designation",
+    "schema_version",
+    "lifecycle_status",
+    "provenance"
+  ],
+  "properties": {
+    "standard_designation": {
+      "type": "string",
+      "description": "Canonical standard designation (e.g. IS 694:2010, IS 7098 (Part 2):2011)."
+    },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version for forward compatibility."
+    },
+    "lifecycle_status": {
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "SUPERSEDED",
+        "WITHDRAWN",
+        "REAFFIRMED",
+        "UNDER_REVISION",
+        "UNKNOWN"
+      ],
+      "description": "Current lifecycle status. UNKNOWN must NEVER default to ACTIVE."
+    },
+    "publication_date": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "Original publication date (YYYY-MM-DD)."
+    },
+    "effective_date": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "Date when the standard became effective (may differ from publication)."
+    },
+    "reaffirmation_year": {
+      "type": ["integer", "null"],
+      "description": "Year of most recent reaffirmation (e.g. 2020)."
+    },
+    "reaffirmation_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["year"],
+        "properties": {
+          "year": {"type": "integer"},
+          "gazette_reference": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      },
+      "description": "Complete reaffirmation history."
+    },
+    "amendments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["amendment_number"],
+        "properties": {
+          "amendment_number": {
+            "type": "integer",
+            "description": "Amendment sequence number (1, 2, 3...)."
+          },
+          "date": {
+            "type": ["string", "null"],
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "description": {
+            "type": ["string", "null"],
+            "description": "Brief description of what the amendment changed."
+          },
+          "gazette_reference": {
+            "type": ["string", "null"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "List of amendments applied to this standard."
+    },
+    "predecessors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["designation", "relationship"],
+        "properties": {
+          "designation": {
+            "type": "string",
+            "description": "Designation of the predecessor standard."
+          },
+          "relationship": {
+            "type": "string",
+            "enum": ["supersedes", "revises", "replaces_partially"],
+            "description": "How this standard relates to its predecessor."
+          },
+          "effective_date": {
+            "type": ["string", "null"],
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "successors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["designation", "relationship"],
+        "properties": {
+          "designation": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": ["superseded_by", "revised_by", "replaced_partially_by"]
+          },
+          "effective_date": {
+            "type": ["string", "null"],
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "international_counterpart": {
+      "type": ["object", "null"],
+      "properties": {
+        "designation": {
+          "type": "string",
+          "description": "ISO/IEC counterpart designation."
+        },
+        "equivalence_degree": {
+          "type": "string",
+          "enum": ["identical", "modified", "not_equivalent", "unknown"],
+          "description": "Degree of equivalence with the international standard."
+        }
+      },
+      "additionalProperties": false
+    },
+    "gazette_reference": {
+      "type": ["string", "null"],
+      "description": "BIS Gazette notification reference for the status determination."
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["source_tier", "source_document", "verification_status"],
+      "properties": {
+        "source_tier": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4,
+          "description": "Source tier per DATA_PROVENANCE_CONTRACT.md."
+        },
+        "source_document": {
+          "type": "string",
+          "description": "Human-readable name of the source."
+        },
+        "source_url": {
+          "type": ["string", "null"]
+        },
+        "verification_status": {
+          "type": "string",
+          "enum": ["VERIFIED", "UNVERIFIED", "CONTESTED", "PENDING_REVIEW"]
+        },
+        "extraction_timestamp": {
+          "type": ["string", "null"],
+          "description": "ISO 8601 timestamp of data extraction."
+        },
+        "verified_by": {
+          "type": ["string", "null"],
+          "description": "Human reviewer ID or automated verification method."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

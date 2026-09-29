@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "StandardsKnowledgeGraph",
+  "description": "JSON Schema for the StandSpec AI standards knowledge graph artifact.",
+  "type": "object",
+  "required": [
+    "graph_version",
+    "schema_version",
+    "parser_version",
+    "built_at",
+    "source_type",
+    "source_path",
+    "nodes_count",
+    "hydrated_nodes_count",
+    "edges_count",
+    "nodes",
+    "edges"
+  ],
+  "properties": {
+    "graph_version": {"type": "string"},
+    "schema_version": {"type": "string"},
+    "parser_version": {"type": "string"},
+    "release_id": {"type": ["string", "null"]},
+    "content_hash": {"type": ["string", "null"]},
+    "built_at": {"type": "string"},
+    "source_type": {"type": "string", "enum": ["jsonl", "html_dir"]},
+    "source_path": {"type": "string"},
+    "description": {"type": ["string", "null"]},
+    "nodes_count": {"type": "integer", "minimum": 0},
+    "hydrated_nodes_count": {"type": "integer", "minimum": 0},
+    "unhydrated_nodes_count": {"type": "integer", "minimum": 0},
+    "recommendation_eligible_count": {"type": "integer", "minimum": 0},
+    "primary_candidate_count": {"type": "integer", "minimum": 0},
+    "supporting_candidate_count": {"type": "integer", "minimum": 0},
+    "context_count": {"type": "integer", "minimum": 0},
+    "applicability_ready_count": {"type": "integer", "minimum": 0},
+    "recommendation_ready_count": {"type": "integer", "minimum": 0},
+    "edges_count": {"type": "integer", "minimum": 0},
+    "direct_edges_count": {"type": "integer", "minimum": 0},
+    "inferred_edges_count": {"type": "integer", "minimum": 0},
+    "reciprocal_pairs_count": {"type": "integer", "minimum": 0},
+    "reciprocal_pairs": {
+      "type": "array"
+    },
+    "reciprocal_classification": {
+      "type": "object",
+      "additionalProperties": {"type": "integer"}
+    },
+    "source_departments": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "department_node_counts": {
+      "type": "object",
+      "additionalProperties": {"type": "integer"}
+    },
+    "department_hydrated_counts": {
+      "type": "object",
+      "additionalProperties": {"type": "integer"}
+    },
+    "nodes": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/node"}
+    },
+    "edges": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/edge"}
+    }
+  },
+  "$defs": {
+    "node": {
+      "type": "object",
+      "required": [
+        "id",
+        "node_type",
+        "designation",
+        "source_departments",
+        "candidate_status",
+        "metadata_available",
+        "document_available"
+      ],
+      "properties": {
+        "id": {"type": "string"},
+        "node_type": {"type": "string", "enum": ["INDIAN_STANDARD", "EXTERNAL_STANDARD"]},
+        "designation": {"type": "string"},
+        "title": {"type": ["string", "null"]},
+        "header_text": {"type": ["string", "null"]},
+        "committee": {"type": ["string", "null"]},
+        "technical_committees": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "primary_department": {"type": ["string", "null"]},
+        "source_departments": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "family": {"type": ["string", "null"]},
+        "base_number": {"type": ["string", "null"]},
+        "part": {"type": ["string", "null"]},
+        "section": {"type": ["string", "null"]},
+        "year": {"type": ["string", "null"]},
+        "ics_raw": {"type": ["string", "null"]},
+        "ics_codes": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "scope": {"type": ["string", "null"]},
+        "scope_status": {"type": ["string", "null"]},
+        "references_status": {
+          "type": "string",
+          "enum": ["parsed", "referenced_in_annex_not_in_preview", "truncated_or_empty_in_preview", "none_found", "absent"]
+        },
+        "has_cached_preview": {"type": "boolean"},
+        "is_hydrated": {"type": "boolean"},
+        "is_recommendation_eligible": {"type": "boolean"},
+        "preview_id": {"type": ["string", "null"]},
+        "candidate_status": {
+          "type": "string",
+          "enum": ["ELIGIBLE", "SUPPORTING_ONLY", "CONTEXT_ONLY", "EXCLUDED"]
+        },
+        "candidate_reason": {"type": ["string", "null"]},
+        "metadata_available": {"type": "boolean"},
+        "details_available": {"type": "boolean"},
+        "identity_verified": {"type": "boolean"},
+        "document_available": {"type": "boolean"},
+        "scope_evidence_available": {"type": "boolean"},
+        "reference_evidence_available": {"type": "boolean"},
+        "lifecycle_evidence_available": {"type": "boolean"},
+        "regulatory_evidence_available": {"type": "boolean"},
+        "metadata_ready": {"type": "boolean"},
+        "retrieval_ready": {"type": "boolean"},
+        "applicability_ready": {"type": "boolean"},
+        "recommendation_ready": {"type": "boolean"},
+        "standard_role": {
+          "type": ["string", "null"],
+          "enum": [
+            "PRIMARY_PRODUCT",
+            "COMPONENT",
+            "DIMENSIONAL_MOUNTING",
+            "TEST_METHOD",
+            "INSTALLATION_CODE",
+            "DESIGN_CODE",
+            "SAFETY_STANDARD",
+            "TERMINOLOGY",
+            "SUPPORTING_OTHER",
+            "UNKNOWN_ROLE",
+            null
+          ]
+        },
+        "role_confidence": {"type": ["number", "null"]},
+        "role_reason": {"type": ["string", "null"]},
+        "role_source": {"type": ["string", "null"]},
+        "role_classifier_version": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "edge": {
+      "type": "object",
+      "required": [
+        "source",
+        "target",
+        "relationship",
+        "relationship_obligation",
+        "edge_origin",
+        "source_identity_state",
+        "relationship_observation"
+      ],
+      "properties": {
+        "source": {"type": "string"},
+        "target": {"type": "string"},
+        "source_department": {"type": ["string", "null"]},
+        "relationship": {"type": "string"},
+        "relationship_obligation": {"type": "string"},
+        "edge_origin": {"type": "string", "enum": ["DIRECT", "INFERRED"]},
+        "edge_type": {"type": "string", "enum": ["DIRECT", "INFERRED"]},
+        "source_identity_state": {
+          "type": "string",
+          "enum": ["VERIFIED", "SELF_IDENTIFIED", "UNRESOLVED"]
+        },
+        "relationship_observation": {
+          "type": "string",
+          "enum": ["EXPLICIT_FROM_SOURCE", "CORROBORATED", "INFERRED"]
+        },
+        "relationship_confidence_state": {
+          "type": "string",
+          "enum": ["HIGH", "MEDIUM", "LOW", "UNRESOLVED"]
+        },
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "source_tier": {"type": "integer"},
+        "verified": {"type": "boolean"},
+        "edge_verification_status": {"type": "string"},
+        "manifest_identity_verified": {"type": "boolean"},
+        "page_self_identified": {"type": "boolean"},
+        "source_extracted": {"type": "boolean"},
+        "source_page_identity_verified": {"type": "boolean"},
+        "relationship_verified": {"type": "boolean"},
+        "evidence_span": {"type": ["string", "null"]},
+        "extraction_details": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

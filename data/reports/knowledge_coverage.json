@@ -1,0 +1,762 @@
+{
+  "audit_timestamp": "2026-09-29T12:00:00Z",
+  "total_nodes": 6082,
+  "total_scope_bearing_nodes": 2560,
+  "total_recommendation_ready_nodes": 2345,
+  "total_primary_candidate_eligible_nodes": 4109,
+  "usable_scope_coverage_percentage": 42.09,
+  "usable_readiness_percentage": 38.56,
+  "roles_breakdown": {
+    "PRIMARY_PRODUCT": {
+      "count": 1408,
+      "scope_availability": 803,
+      "scope_percentage": 57.03,
+      "provenance_availability": 0,
+      "lifecycle_availability": 0,
+      "department_availability": 0,
+      "candidate_readiness": 777,
+      "hydration_count": 1388,
+      "regulatory_mapping_count": 0
+    },
+    "UNKNOWN_ROLE": {
+      "count": 3072,
+      "scope_availability": 1000,
+      "scope_percentage": 32.55,
+      "provenance_availability": 0,
+      "lifecycle_availability": 0,
+      "department_availability": 0,
+      "candidate_readiness": 853,
+      "hydration_count": 2181,
+      "regulatory_mapping_count": 0
+    },
+    "DESIGN_CODE": {
+      "count": 413,
+      "scope_availability": 219,
+      "scope_percentage": 53.03,
+      "provenance_availability": 0,
+      "lifecycle_availability": 0,
+      "department_availability": 0,
+      "candidate_readiness": 206,
+      "hydration_count": 409,
+      "regulatory_mapping_count": 0
+    },
+    "TEST_METHOD": {
+      "count": 834,
+      "scope_availability": 336,
+      "scope_percentage": 40.29,
+      "provenance_availability": 0,
+      "lifecycle_availability": 0,
+      "department_availability": 0,
+      "candidate_readiness": 314,
+      "hydration_count": 821,
+      "regulatory_mapping_count": 0
+    },
+    "COMPONENT": {
+      "count": 94,
+      "scope_availability": 61,
+      "scope_percentage": 64.89,
+      "provenance_availability": 0,
+      "lifecycle_availability": 0,
+      "department_availability": 0,
+      "candidate_readiness": 60,
+      "hydration_count": 94,
+      "regulatory_mapping_count": 0
+    },
+    "TERMINOLOGY": {
+      "count": 143,
+      "scope_availability": 75,
+      "scope_percentage": 52.45,
+      "provenance_availability": 0,
+      "lifecycle_availability": 0,
+      "department_availability": 0,
+      "candidate_readiness": 72,
+      "hydration_count": 134,
+      "regulatory_mapping_count": 0
+    },
+    "INSTALLATION_CODE": {
+      "count": 59,
+      "scope_availability": 28,
+      "scope_percentage": 47.46,
+      "provenance_availability": 0,
+      "lifecycle_availability": 0,
+      "department_availability": 0,
+      "candidate_readiness": 28,
+      "hydration_count": 59,
+      "regulatory_mapping_count": 0
+    },
+    "DIMENSIONAL_MOUNTING": {
+      "count": 9,
+      "scope_availability": 7,
+      "scope_percentage": 77.78,
+      "provenance_availability": 0,
+      "lifecycle_availability": 0,
+      "department_availability": 0,
+      "candidate_readiness": 7,
+      "hydration_count": 8,
+      "regulatory_mapping_count": 0
+    },
+    "SUPPORTING_OTHER": {
+      "count": 8,
+      "scope_availability": 8,
+      "scope_percentage": 100.0,
+      "provenance_availability": 0,
+      "lifecycle_availability": 0,
+      "department_availability": 0,
+      "candidate_readiness": 8,
+      "hydration_count": 8,
+      "regulatory_mapping_count": 0
+    },
+    "SAFETY_STANDARD": {
+      "count": 42,
+      "scope_availability": 23,
+      "scope_percentage": 54.76,
+      "provenance_availability": 0,
+      "lifecycle_availability": 0,
+      "department_availability": 0,
+      "candidate_readiness": 20,
+      "hydration_count": 42,
+      "regulatory_mapping_count": 0
+    }
+  },
+  "benchmark_golds_audit": {
+    "total_golds_evaluated": 36,
+    "golds_in_graph": 36,
+    "golds_with_scope": 36,
+    "golds_recommendation_ready": 36,
+    "golds_by_evidence_state": {
+      "COMPLETE": 36
+    },
+    "details": {
+      "IS 4984:2016": {
+        "gold_designation": "IS 4984:2016",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl",
+          "adversarial.jsonl",
+          "challenge.jsonl"
+        ],
+        "query_count": 3
+      },
+      "IS 4985:2021": {
+        "gold_designation": "IS 4985:2021",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl",
+          "adversarial.jsonl",
+          "challenge.jsonl"
+        ],
+        "query_count": 3
+      },
+      "IS 1239 (Part 1):2004": {
+        "gold_designation": "IS 1239 (Part 1):2004",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 1536:2023": {
+        "gold_designation": "IS 1536:2023",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 800:2007": {
+        "gold_designation": "IS 800:2007",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "DESIGN_CODE",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 6452:2026": {
+        "gold_designation": "IS 6452:2026",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 16444 (Part 1):2015": {
+        "gold_designation": "IS 16444 (Part 1):2015",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl",
+          "adversarial.jsonl",
+          "challenge.jsonl"
+        ],
+        "query_count": 3
+      },
+      "IS 13010:2002": {
+        "gold_designation": "IS 13010:2002",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 3624:1987": {
+        "gold_designation": "IS 3624:1987",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 2711:1979": {
+        "gold_designation": "IS 2711:1979",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "UNKNOWN_ROLE",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 2053:1974": {
+        "gold_designation": "IS 2053:1974",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "UNKNOWN_ROLE",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 302 (Part 2/Sec 16):2026": {
+        "gold_designation": "IS 302 (Part 2/Sec 16):2026",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "UNKNOWN_ROLE",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 16102 (Part 1):2012": {
+        "gold_designation": "IS 16102 (Part 1):2012",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "test.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 19609:2026": {
+        "gold_designation": "IS 19609:2026",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 17953:2023": {
+        "gold_designation": "IS 17953:2023",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "COMPONENT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 18648:2024": {
+        "gold_designation": "IS 18648:2024",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 14900:2018": {
+        "gold_designation": "IS 14900:2018",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 2553 (Part 1):2018": {
+        "gold_designation": "IS 2553 (Part 1):2018",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 16231 (Part 1):2019": {
+        "gold_designation": "IS 16231 (Part 1):2019",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "DESIGN_CODE",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 16231 (Part 2):2019": {
+        "gold_designation": "IS 16231 (Part 2):2019",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "DESIGN_CODE",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 1180 (Part 1):2014": {
+        "gold_designation": "IS 1180 (Part 1):2014",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl",
+          "adversarial.jsonl",
+          "challenge.jsonl"
+        ],
+        "query_count": 3
+      },
+      "IS 2026 (Part 1):2011": {
+        "gold_designation": "IS 2026 (Part 1):2011",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl",
+          "adversarial.jsonl"
+        ],
+        "query_count": 2
+      },
+      "IS/IEC 60947 (Part 2):2016": {
+        "gold_designation": "IS/IEC 60947 (Part 2):2016",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "UNKNOWN_ROLE",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl",
+          "adversarial.jsonl"
+        ],
+        "query_count": 2
+      },
+      "IS/IEC 61439 (Part 3):2024": {
+        "gold_designation": "IS/IEC 61439 (Part 3):2024",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "UNKNOWN_ROLE",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 15086 (Part 10):2026": {
+        "gold_designation": "IS 15086 (Part 10):2026",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "UNKNOWN_ROLE",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 302 (Part 1):2024": {
+        "gold_designation": "IS 302 (Part 1):2024",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "UNKNOWN_ROLE",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "val.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 2062:2011": {
+        "gold_designation": "IS 2062:2011",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "adversarial.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 694:2010": {
+        "gold_designation": "IS 694:2010",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "adversarial.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 7098 (Part 1):1988": {
+        "gold_designation": "IS 7098 (Part 1):1988",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "adversarial.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 1489 (Part 1):2015": {
+        "gold_designation": "IS 1489 (Part 1):2015",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "adversarial.jsonl",
+          "challenge.jsonl"
+        ],
+        "query_count": 2
+      },
+      "IS 13779:1999": {
+        "gold_designation": "IS 13779:1999",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "adversarial.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 269:2015": {
+        "gold_designation": "IS 269:2015",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "adversarial.jsonl",
+          "challenge.jsonl"
+        ],
+        "query_count": 2
+      },
+      "IS 1786:2008": {
+        "gold_designation": "IS 1786:2008",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "adversarial.jsonl",
+          "challenge.jsonl"
+        ],
+        "query_count": 2
+      },
+      "IS 7098 (Part 2):2011": {
+        "gold_designation": "IS 7098 (Part 2):2011",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "challenge.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 8329:2000": {
+        "gold_designation": "IS 8329:2000",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "challenge.jsonl"
+        ],
+        "query_count": 1
+      },
+      "IS 1554 (Part 1):1988": {
+        "gold_designation": "IS 1554 (Part 1):1988",
+        "gold_in_graph": true,
+        "prototype_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "role": "PRIMARY_PRODUCT",
+        "candidate_status": "ELIGIBLE",
+        "scope_available": true,
+        "provenance_available": false,
+        "lifecycle_available": false,
+        "gold_primary_candidate_eligible": true,
+        "gold_recommendation_ready": true,
+        "gold_evidence_state": "COMPLETE",
+        "referenced_in_benchmarks": [
+          "challenge.jsonl"
+        ],
+        "query_count": 1
+      }
+    }
+  },
+  "acquisition_queue_summary": {
+    "total_standards_in_queue": 3737,
+    "high_priority_count": 1222,
+    "medium_priority_count": 2318
+  }
+}

@@ -1,0 +1,243 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RecommendationResult",
+  "description": "Authoritative contract for StandSpec AI final procurement recommendation output.",
+  "type": "object",
+  "required": [
+    "query",
+    "normalized_requirements",
+    "decision_state",
+    "primary_recommendation",
+    "candidate_recommendations",
+    "allied_standards",
+    "rejected_candidates",
+    "calibration",
+    "provenance"
+  ],
+  "properties": {
+    "query": {
+      "type": "object",
+      "required": ["raw_text"],
+      "properties": {
+        "raw_text": {"type": "string"},
+        "query_id": {"type": ["string", "null"]},
+        "language": {"type": "string"},
+        "domain": {"type": ["string", "null"]}
+      }
+    },
+    "normalized_requirements": {
+      "type": "object",
+      "description": "Structured requirements conforming to normalized_requirement.schema.json"
+    },
+    "decision_state": {
+      "type": "string",
+      "enum": [
+        "PRIMARY_RECOMMENDATION_AVAILABLE",
+        "CONDITIONAL_RECOMMENDATION",
+        "MULTIPLE_POSSIBLE_STANDARDS",
+        "INSUFFICIENT_INFORMATION",
+        "NO_CONFIDENT_MATCH",
+        "STANDARD_DATA_UNAVAILABLE",
+        "OUTSIDE_PROTOTYPE_COVERAGE",
+        "EXPERT_REVIEW_REQUIRED",
+        "CLARIFICATION_REQUIRED"
+      ]
+    },
+    "abstention_reason": {
+      "type": ["string", "null"]
+    },
+    "claim_level": {
+      "type": "string",
+      "enum": [
+        "VERIFIED_FOR_RECOMMENDATION",
+        "CONDITIONALLY_SUPPORTED",
+        "REVIEW_REQUIRED",
+        "DISCOVERED",
+        "PLAUSIBLE",
+        "ABSTAINED"
+      ]
+    },
+    "data_coverage": {
+      "type": "object",
+      "properties": {
+        "is_hydrated": {"type": "boolean"},
+        "has_scope": {"type": "boolean"},
+        "recommendation_ready": {"type": "boolean"},
+        "coverage_level": {
+          "type": "string",
+          "enum": ["COMPLETE", "PARTIAL", "MINIMAL", "UNAVAILABLE"]
+        }
+      }
+    },
+    "evidence_coverage": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["SUFFICIENT", "CONDITIONAL", "INSUFFICIENT", "DATA_UNAVAILABLE"]
+        },
+        "details": {"type": ["string", "null"]}
+      }
+    },
+    "failure_trace": {
+      "type": "object",
+      "properties": {
+        "extraction": {"type": ["string", "null"]},
+        "exact_designation": {"type": ["string", "null"]},
+        "query_sufficiency": {"type": ["string", "null"]},
+        "retrieval": {"type": ["string", "null"]},
+        "fusion": {"type": ["string", "null"]},
+        "graph_expansion": {"type": ["string", "null"]},
+        "rerank": {"type": ["string", "null"]},
+        "candidate_role": {"type": ["string", "null"]},
+        "applicability": {"type": ["string", "null"]},
+        "evidence_gate": {"type": ["string", "null"]},
+        "lifecycle": {"type": ["string", "null"]},
+        "regulatory": {"type": ["string", "null"]},
+        "calibration": {"type": ["string", "null"]},
+        "final_decision": {"type": ["string", "null"]},
+        "first_failure_stage": {"type": ["string", "null"]}
+      }
+    },
+    "decision_trace": {
+      "type": "array",
+      "description": "Chronological audit trace of each decision pipeline stage with blocking status.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "stage": {"type": "string"},
+          "status": {"type": "string"},
+          "reason": {"type": "string"},
+          "evidence": {},
+          "blocking": {"type": "boolean"}
+        }
+      }
+    },
+    "review_candidate": {
+      "type": ["object", "null"],
+      "description": "Strongest plausible candidate surfaced for expert review when formal recommendation is blocked by missing/insufficient evidence.",
+      "properties": {
+        "designation": {"type": "string"},
+        "standard_designation": {"type": "string"},
+        "title": {"type": ["string", "null"]},
+        "candidate_relevance": {
+          "type": "string",
+          "enum": ["HIGH", "MEDIUM", "LOW", "PLAUSIBLE", "UNKNOWN"]
+        },
+        "applicability_state": {"type": "string"},
+        "evidence_state": {"type": "string"},
+        "missing_evidence": {
+          "type": ["string", "array", "null"],
+          "items": {"type": "string"}
+        },
+        "review_reason": {"type": "string"},
+        "retrieval_diagnostics": {"type": "object"},
+        "provenance": {"type": ["object", "null"]}
+      }
+    },
+    "primary_recommendation": {
+      "type": ["object", "null"],
+      "properties": {
+        "standard_designation": {"type": "string"},
+        "title": {"type": ["string", "null"]},
+        "confidence_score": {"type": "number", "minimum": 0, "maximum": 1},
+        "calibrated_probability": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "applicability": {"type": "object"},
+        "lifecycle": {"type": "object"},
+        "regulatory": {"type": "object"},
+        "relevance_signals": {"type": "object"},
+        "retrieval_diagnostics": {"type": "object"},
+        "recommendation_ready": {"type": "boolean"},
+        "evidence_exception": {"type": ["string", "null"]},
+        "candidate_relevance": {"type": ["string", "null"]},
+        "applicability_state": {"type": ["string", "null"]},
+        "evidence_state": {"type": ["string", "null"]},
+        "recommendability": {"type": ["string", "null"]},
+        "claim_level": {"type": ["string", "null"]}
+      }
+    },
+    "alternative_standards": {
+      "type": "array",
+      "items": {"type": "object"}
+    },
+    "candidate_recommendations": {
+      "type": "array",
+      "items": {"type": "object"}
+    },
+    "allied_standards": {
+      "type": "array",
+      "items": {"type": "object"}
+    },
+    "rejected_candidates": {
+      "type": "array",
+      "items": {"type": "object"}
+    },
+    "supporting_context_pack": {
+      "type": "object",
+      "properties": {
+        "normative_references": {"type": "array"},
+        "test_methods": {"type": "array"},
+        "materials": {"type": "array"},
+        "installation_codes": {"type": "array"},
+        "hierarchy_explanation": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "calibration": {
+      "type": "object",
+      "properties": {
+        "method": {"type": "string"},
+        "calibrated_probability": {"type": ["number", "null"]},
+        "abstention_threshold": {"type": "number"},
+        "margin_delta": {"type": "number"},
+        "is_abstained": {"type": "boolean"}
+      }
+    },
+    "evaluation_as_of_date": {
+      "type": ["string", "null"]
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["engine_version", "graph_release_id", "retriever_mode", "reranker_mode"],
+      "properties": {
+        "engine_version": {"type": "string"},
+        "graph_release_id": {"type": "string"},
+        "retriever_mode": {"type": "string"},
+        "reranker_mode": {"type": "string"},
+        "execution_mode": {"type": "string"}
+      }
+    },
+    "natural_language_explanation": {
+      "type": ["string", "null"],
+      "description": "Evidence-grounded explanation synthesized by EvidenceGroundedExplainer."
+    },
+    "agent_metadata": {
+      "type": ["object", "null"],
+      "description": "Orchestration metadata for StandSpecAgent runs."
+    },
+    "llm_metadata": {
+      "type": ["object", "null"],
+      "description": "Metadata regarding LLM provider, tokens, latency, or fallback reasons."
+    },
+    "tool_calls": {
+      "type": ["array", "null"],
+      "description": "Audit trace of tool calls executed during orchestration."
+    },
+    "clarifications": {
+      "type": ["array", "null"],
+      "description": "List of clarification questions or missing parameter notifications."
+    },
+    "reasoning_summary": {
+      "type": ["string", "null"],
+      "description": "Summary of agent evidence reasoning."
+    },
+    "validator_status": {
+      "type": ["string", "null"],
+      "description": "Result of deterministic safety validation gate (ACCEPT, REVISE, REJECT)."
+    },
+    "response_format_version": {
+      "type": ["string", "null"],
+      "description": "Version string of recommendation response schema format."
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NormalizedRequirementObject",
+  "description": "JSON Schema for structured procurement requirement extraction from tender text.",
+  "type": "object",
+  "required": [
+    "query_id",
+    "raw_text",
+    "language",
+    "extraction_timestamp",
+    "requirements",
+    "missing_discriminators",
+    "language_detection"
+  ],
+  "properties": {
+    "query_id": {
+      "type": "string",
+      "description": "Identifier for the procurement query or tender line item."
+    },
+    "raw_text": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Original raw procurement text or tender specification."
+    },
+    "language": {
+      "type": "string",
+      "enum": ["en", "hi", "gu", "hinglish", "unknown"],
+      "description": "Primary detected language of the procurement text."
+    },
+    "extraction_timestamp": {
+      "type": "string",
+      "description": "ISO 8601 UTC timestamp of extraction."
+    },
+    "input_hash": {
+      "type": "string",
+      "description": "Deterministic SHA-256 hash of the normalized input text."
+    },
+    "extractor_version": {
+      "type": "string",
+      "description": "Semantic version of the requirement extractor subsystem."
+    },
+    "model_version": {
+      "type": "string",
+      "description": "Model or pipeline identifier used for extraction."
+    },
+    "product_status": {
+      "type": "string",
+      "enum": ["EXTRACTED", "MISSING"],
+      "description": "Status of product extraction: EXTRACTED if grounded, MISSING if no product identified."
+    },
+    "requirements": {
+      "type": "object",
+      "required": ["product"],
+      "properties": {
+        "product": {"$ref": "#/$defs/extracted_field"},
+        "material": {"$ref": "#/$defs/extracted_field"},
+        "grade": {"$ref": "#/$defs/extracted_field"},
+        "voltage": {"$ref": "#/$defs/extracted_field"},
+        "current": {"$ref": "#/$defs/extracted_field"},
+        "frequency": {"$ref": "#/$defs/extracted_field"},
+        "dimensions": {"$ref": "#/$defs/extracted_field"},
+        "capacity": {"$ref": "#/$defs/extracted_field"},
+        "temperature": {"$ref": "#/$defs/extracted_field"},
+        "installation": {"$ref": "#/$defs/extracted_field"},
+        "environment": {"$ref": "#/$defs/extracted_field"},
+        "application": {"$ref": "#/$defs/extracted_field"},
+        "performance": {"$ref": "#/$defs/extracted_field"},
+        "testing": {"$ref": "#/$defs/extracted_field"},
+        "safety": {"$ref": "#/$defs/extracted_field"},
+        "marking": {"$ref": "#/$defs/extracted_field"},
+        "quantity": {"$ref": "#/$defs/extracted_field"},
+        "tender_date": {"$ref": "#/$defs/extracted_field"},
+        "location": {"$ref": "#/$defs/extracted_field"},
+        "standard_family": {"$ref": "#/$defs/extracted_field"}
+      },
+      "additionalProperties": false
+    },
+    "procurement_intent": {
+      "type": "object",
+      "properties": {
+        "procurement_object": {
+          "type": ["string", "null", "object"]
+        },
+        "object_type": {
+          "type": "string",
+          "enum": [
+            "FINISHED_ASSEMBLY",
+            "FINISHED_PRODUCT",
+            "COMPONENT",
+            "RAW_MATERIAL",
+            "INSTALLATION_SERVICE",
+            "DESIGN_ACTIVITY",
+            "TESTING_SERVICE"
+          ]
+        },
+        "technical_intent": {
+          "type": "string",
+          "enum": [
+            "SUPPLY",
+            "INSTALLATION",
+            "SUPPLY_AND_INSTALLATION",
+            "DESIGN",
+            "TESTING"
+          ]
+        }
+      }
+    },
+    "query_sufficiency": {
+      "type": "object",
+      "description": "Assessment of technical specificity and readiness for standard matching."
+    },
+    "missing_discriminators": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Critical technical parameters missing from the query required to disambiguate standards."
+    },
+    "contradictions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Contradictions detected within tender text."
+    },
+    "extractor_mode": {
+      "type": "string",
+      "enum": [
+        "DETERMINISTIC",
+        "DETERMINISTIC_ONLY",
+        "LLM_ASSISTED",
+        "LLM_PROVIDER_UNAVAILABLE",
+        "LLM_ERROR_FALLBACK",
+        "LLM_DISABLED_FALLBACK",
+        "DETERMINISTIC_FALLBACK",
+        "LLM_UNAVAILABLE"
+      ],
+      "description": "Mode of extraction used to generate this normalized requirement."
+    },
+    "language_detection": {
+      "type": "object",
+      "required": ["detected", "confidence", "contains_hinglish", "contains_hindi"],
+      "properties": {
+        "detected": {"type": "string"},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "contains_hinglish": {"type": "boolean"},
+        "contains_hindi": {"type": "boolean"},
+        "contains_gujarati": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "extracted_field": {
+      "type": ["object", "null"],
+      "required": ["value", "confidence", "source_span"],
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "Extracted technical value or specification."
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Model confidence in this extracted attribute."
+        },
+        "source_span": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "required": ["start", "end", "text"],
+              "properties": {
+                "start": {"type": "integer"},
+                "end": {"type": "integer"},
+                "text": {"type": "string"}
+              },
+              "additionalProperties": false
+            }
+          ],
+          "description": "Exact text span or structured offset object grounding this extraction."
+        },
+        "start_char": {
+          "type": "integer",
+          "description": "0-indexed start character offset in raw_text."
+        },
+        "end_char": {
+          "type": "integer",
+          "description": "0-indexed end character offset in raw_text."
+        },
+        "normalization": {
+          "type": ["string", "null"],
+          "description": "Standardized canonical representation (e.g. SI units, standard product category)."
+        },
+        "voltage_pairs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["side", "value"],
+            "properties": {
+              "side": {"type": "string", "enum": ["HIGH", "LOW"]},
+              "value": {"type": "string"}
+            },
+            "additionalProperties": false
+          }
+        },
+        "high_side": {
+          "type": "string"
+        },
+        "low_side": {
+          "type": "string"
+        },
+        "modifiers": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "base_product": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

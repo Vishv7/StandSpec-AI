@@ -1,0 +1,23 @@
+{
+  "department": "ETD",
+  "input_file": "data/input/Electrotechnical Department (ETD).xlsx",
+  "input_sha256": "898eed769ccca7367310a819de24abc969607ff5bcb77b56e6c9ab8b54de92a8",
+  "input_rows": 1944,
+  "outputs": {
+    "standards_jsonl": {
+      "path": "data/processed/ETD/ETD_standards.jsonl",
+      "sha256": "f6843efc5ebbd95baa7cd7dc3ee586f218498a581d38f9e20b7767e937938454",
+      "record_count": 1944
+    },
+    "references_jsonl": {
+      "path": "data/processed/ETD/ETD_references.jsonl",
+      "sha256": "bf972048594076f52c60ff65e5c85102edcd91758c4040a73aa4aa718a7f65fe",
+      "record_count": 2175
+    },
+    "availability_jsonl": {
+      "path": "data/processed/ETD/ETD_source_availability.jsonl",
+      "sha256": "f9adbcb4f312199d629a69cbe1ae4922661b279907a862f1673ce86b87340b07",
+      "record_count": 1944
+    }
+  }
+}
