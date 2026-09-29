@@ -38,3 +38,11 @@ Thumbs.db
 data/logs/
 data/raw/
 data/processed/pilot_etd/
+
+# Exclude all review, audit, spec, and doc markdown files (keep only root README.md)
+*.md
+!README.md
+docs/
+data/**/*.md
+frontend/*.md
+stitch_standspec_ai_studio/**/*.md
