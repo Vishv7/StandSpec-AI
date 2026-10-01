@@ -27,7 +27,7 @@ class ExplanationFacts:
     standard_designation: Optional[str] = None
     title: Optional[str] = None
     matched_attributes: List[str] = field(default_factory=list)
-    regulatory_state: str = "VOLUNTARY_OR_UNLISTED"
+    regulatory_state: str = "NOT_VERIFIED_IN_CURRENT_CORPUS"
     qco_order_number: Optional[str] = None
     abstention_reason: Optional[str] = None
     evidence_gaps: List[str] = field(default_factory=list)
@@ -55,7 +55,7 @@ class ExplanationFacts:
         app = primary_rec.get("applicability", {})
         matched = app.get("matched_attributes", [])
         reg = primary_rec.get("regulatory", {})
-        reg_state = reg.get("regulatory_state", "VOLUNTARY_OR_UNLISTED")
+        reg_state = reg.get("regulatory_state", "NOT_VERIFIED_IN_CURRENT_CORPUS")
         qco = reg.get("qco_order_number") or reg.get("gazette_so_number")
         edition = primary_rec.get("lifecycle", {}).get("recommended_edition")
         amend_notes = primary_rec.get("lifecycle", {}).get("amendment_notes")
@@ -104,12 +104,17 @@ class EvidenceGroundedExplainer:
 
         if facts.regulatory_state == "MANDATORY_CONFIRMED":
             parts.append(f"Statutory Mandate: MANDATORY under Gazette Order {facts.qco_order_number or 'QCO'}.")
-        elif facts.regulatory_state in ("NOT_VERIFIED_IN_CURRENT_CORPUS", "UNVERIFIED", "UNKNOWN"):
+        elif facts.regulatory_state in ("NOT_VERIFIED_IN_CURRENT_CORPUS", "UNVERIFIED", "UNKNOWN", "MANDATE_NOT_FOUND_IN_SEARCHED_SOURCES"):
             parts.append("Statutory Mandate: Regulatory mandatory status was not verified in the current regulatory corpus.")
         elif facts.regulatory_state == "CONFLICTING_EVIDENCE":
             parts.append("Statutory Mandate: Conflicting regulatory evidence prevents a verified mandate conclusion.")
+        elif facts.regulatory_state == "REGULATORY_SOURCE_UNAVAILABLE":
+            parts.append("Statutory Mandate: Regulatory source unavailable in current corpus.")
         elif facts.regulatory_state == "VOLUNTARY_OR_UNLISTED":
-            parts.append("Statutory Mandate: VOLUNTARY_OR_UNLISTED (No mandatory QCO identified in searched official gazette notifications).")
+            # Legacy state: treat as unverified rather than asserting voluntary
+            parts.append("Statutory Mandate: Regulatory mandatory status was not verified in the current regulatory corpus.")
+        elif facts.regulatory_state == "MANDATORY_CONDITIONALLY_APPLICABLE":
+            parts.append(f"Statutory Mandate: Mandatory subject to stated conditions ({facts.qco_order_number or 'conditional mandate'}).")
         else:
             parts.append(f"Statutory Mandate: {facts.regulatory_state}.")
 
@@ -143,7 +148,7 @@ class EvidenceGroundedExplainer:
         if facts.regulatory_state == "MANDATORY_CONFIRMED":
             if "voluntary" in lower or "optional" in lower or "not mandatory" in lower or "non-mandatory" in lower:
                 return False
-        elif facts.regulatory_state in ("NOT_VERIFIED_IN_CURRENT_CORPUS", "UNVERIFIED", "UNKNOWN"):
+        elif facts.regulatory_state in ("NOT_VERIFIED_IN_CURRENT_CORPUS", "UNVERIFIED", "UNKNOWN", "MANDATE_NOT_FOUND_IN_SEARCHED_SOURCES", "VOLUNTARY_OR_UNLISTED", "REGULATORY_SOURCE_UNAVAILABLE"):
             # When unverified, output must NEVER claim "not mandatory", "voluntary", or "mandatory"
             if "not mandatory" in lower or "non-mandatory" in lower or "voluntary" in lower:
                 return False
@@ -154,9 +159,6 @@ class EvidenceGroundedExplainer:
             if "not mandatory" in lower or "non-mandatory" in lower or "voluntary" in lower:
                 return False
             if "mandatory under qco" in lower or "statutory requirement" in lower:
-                return False
-        elif facts.regulatory_state == "VOLUNTARY_OR_UNLISTED":
-            if "mandatory under qco" in lower or "statutory requirement" in lower or "mandatory under gazette" in lower:
                 return False
         else:
             if "mandatory under qco" in lower:

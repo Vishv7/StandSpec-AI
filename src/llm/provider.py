@@ -54,8 +54,8 @@ class MockLLMProvider(BaseLLMProvider):
 
 class GeminiLLMProvider(BaseLLMProvider):
     """
-    Google Gemini LLM Provider (Phase P1-C.5).
-    Calls Google Generative AI API using the official google-generativeai SDK.
+    Google Gemini LLM Provider (Phase P1-C.5 / V3.0).
+    Calls Google GenAI API using the official google-genai SDK (with fallback to google-generativeai).
     Supports bounded timeouts, json_mode, and fail-closed error handling.
     """
 
@@ -70,43 +70,70 @@ class GeminiLLMProvider(BaseLLMProvider):
         self.model_name = model_name or os.environ.get("STANDSPEC_LLM_MODEL", "gemini-3.8-flash")
         timeout_env = os.environ.get("STANDSPEC_LLM_TIMEOUT_SECONDS")
         self.timeout_seconds = timeout_seconds or (int(timeout_env) if timeout_env else 15)
-        self._configured = False
+        self._client = None
+        self._legacy_configured = False
 
     def is_available(self) -> bool:
         llm_enabled = os.environ.get("STANDSPEC_LLM_ENABLED", "").lower() in ("1", "true", "yes")
         return llm_enabled and bool(self.api_key)
 
-    def _ensure_configured(self):
-        if not self._configured:
-            import google.generativeai as genai
-            genai.configure(api_key=self.api_key)
-            self._configured = True
+    def _get_client(self):
+        if self._client is None:
+            try:
+                from google import genai
+                from google.genai import types
+                self._client = genai.Client(
+                    api_key=self.api_key,
+                    http_options=types.HttpOptions(timeout=self.timeout_seconds * 1000)
+                )
+            except ImportError:
+                self._client = False
+        return self._client
 
     def generate(self, prompt: str, system_instruction: Optional[str] = None, json_mode: bool = False) -> str:
         if not self.is_available():
             raise RuntimeError("GeminiLLMProvider unavailable: LLM is disabled or API key is not configured.")
 
         try:
-            import google.generativeai as genai
-            self._ensure_configured()
+            client = self._get_client()
+            if client:
+                from google.genai import types
+                config = types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    response_mime_type="application/json" if json_mode else None,
+                )
+                response = client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                    config=config,
+                )
+                if response and response.text:
+                    return response.text
+                raise RuntimeError("Gemini returned empty response.")
+            else:
+                # Fallback to legacy SDK if google-genai is not installed
+                import google.generativeai as genai
+                if not self._legacy_configured:
+                    genai.configure(api_key=self.api_key)
+                    self._legacy_configured = True
 
-            generation_config = {}
-            if json_mode:
-                generation_config["response_mime_type"] = "application/json"
+                generation_config = {}
+                if json_mode:
+                    generation_config["response_mime_type"] = "application/json"
 
-            model = genai.GenerativeModel(
-                model_name=self.model_name,
-                system_instruction=system_instruction,
-                generation_config=generation_config,
-            )
+                model = genai.GenerativeModel(
+                    model_name=self.model_name,
+                    system_instruction=system_instruction,
+                    generation_config=generation_config,
+                )
 
-            response = model.generate_content(
-                prompt,
-                request_options={"timeout": self.timeout_seconds},
-            )
-            if response and response.text:
-                return response.text
-            raise RuntimeError("Gemini returned empty response.")
+                response = model.generate_content(
+                    prompt,
+                    request_options={"timeout": self.timeout_seconds},
+                )
+                if response and response.text:
+                    return response.text
+                raise RuntimeError("Gemini returned empty response.")
         except Exception as e:
             err_msg = str(e)
             if self.api_key and self.api_key in err_msg:

@@ -159,3 +159,43 @@ def test_explainer_rejects_hallucinated_order_number():
     # Hallucinated order number 9999(E)
     hallucinated_order_llm = "Standard IS 694:2010 is mandatory under S.O. 9999(E) for power cables."
     assert explainer._validate_llm_response(hallucinated_order_llm, facts) is False
+
+
+def test_legacy_voluntary_or_unlisted_safety():
+    """VOLUNTARY_OR_UNLISTED legacy state must map to unverified and reject voluntary claims."""
+    facts = ExplanationFacts(
+        decision_state="PRIMARY_RECOMMENDATION_AVAILABLE",
+        is_recommended=True,
+        standard_designation="IS 9999:2020",
+        title="Unlisted Sample Standard",
+        regulatory_state="VOLUNTARY_OR_UNLISTED",
+    )
+    explainer = EvidenceGroundedExplainer()
+    explanation = explainer._generate_deterministic_explanation(facts)
+    assert "Regulatory mandatory status was not verified in the current regulatory corpus" in explanation
+    assert "voluntary" not in explanation.lower()
+
+    # Reject LLM claiming voluntary
+    assert explainer._validate_llm_response("IS 9999:2020 is voluntary.", facts) is False
+
+
+def test_answer_builder_regulatory_truthfulness():
+    """AnswerBuilder must produce truthful unverified statements without claiming voluntary."""
+    from src.agent.answer_builder import AnswerBuilder
+
+    res_unverified = AnswerBuilder.build_deterministic_answer(
+        decision_state="PRIMARY_RECOMMENDATION_AVAILABLE",
+        primary_candidate={"designation": "IS 1000", "title": "Test Pipe", "matched_attributes": ["pipe"]},
+        regulatory_meta={"regulatory_state": "NOT_VERIFIED_IN_CURRENT_CORPUS"},
+    )
+    assert "not verified" in res_unverified["regulatory"]["statement"].lower()
+    assert "voluntary" not in res_unverified["regulatory"]["statement"].lower()
+
+    res_legacy = AnswerBuilder.build_deterministic_answer(
+        decision_state="PRIMARY_RECOMMENDATION_AVAILABLE",
+        primary_candidate={"designation": "IS 1000", "title": "Test Pipe", "matched_attributes": ["pipe"]},
+        regulatory_meta={"regulatory_state": "VOLUNTARY_OR_UNLISTED"},
+    )
+    assert "not verified" in res_legacy["regulatory"]["statement"].lower()
+    assert "voluntary" not in res_legacy["regulatory"]["statement"].lower()
+

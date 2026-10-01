@@ -77,12 +77,18 @@ class AnswerBuilder:
             if reg_state == "MANDATORY_CONFIRMED":
                 qco = (regulatory_meta or {}).get("qco_order_number") or "QCO"
                 reg_statement = f"Statutory Mandate: MANDATORY under Gazette Order {qco}."
-            elif reg_state in ("NOT_VERIFIED_IN_CURRENT_CORPUS", "UNVERIFIED", "UNKNOWN"):
+            elif reg_state == "MANDATORY_CONDITIONALLY_APPLICABLE":
+                qco = (regulatory_meta or {}).get("qco_order_number") or "conditional mandate"
+                reg_statement = f"Statutory Mandate: Mandatory subject to stated conditions ({qco})."
+            elif reg_state in ("NOT_VERIFIED_IN_CURRENT_CORPUS", "UNVERIFIED", "UNKNOWN", "MANDATE_NOT_FOUND_IN_SEARCHED_SOURCES"):
                 reg_statement = "Statutory Mandate: Regulatory mandatory status was not verified in the current regulatory corpus."
             elif reg_state == "CONFLICTING_EVIDENCE":
                 reg_statement = "Statutory Mandate: Conflicting regulatory evidence prevents a verified mandate conclusion."
             elif reg_state == "VOLUNTARY_OR_UNLISTED":
-                reg_statement = "Statutory Mandate: VOLUNTARY_OR_UNLISTED (No mandatory QCO identified in searched official gazette notifications)."
+                # Legacy state: treat as unverified rather than asserting voluntary
+                reg_statement = "Statutory Mandate: Regulatory mandatory status was not verified in the current regulatory corpus."
+            elif reg_state == "REGULATORY_SOURCE_UNAVAILABLE":
+                reg_statement = "Statutory Mandate: Regulatory source unavailable in current corpus."
             else:
                 reg_statement = f"Statutory Mandate: {reg_state}."
 
