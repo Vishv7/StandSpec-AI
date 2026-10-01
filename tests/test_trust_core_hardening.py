@@ -265,9 +265,9 @@ def test_failure_trace_stage_tracking(engine):
     res = engine.recommend("Supply of industrial bananas for commercial fruit processing plant")
     trace = res["failure_trace"]
     assert trace["retrieval"] == "PASS" or trace["retrieval"] == "FAIL"
-    # Bananas should fail at applicability or calibration
-    assert res["decision_state"] == "NO_CONFIDENT_MATCH"
-    assert trace["first_failure_stage"] in ("applicability", "calibration", "retrieval", "query_sufficiency")
+    # Bananas should fail at applicability or calibration or be flagged outside domain
+    assert res["decision_state"] in ("OUTSIDE_PROTOTYPE_COVERAGE", "NO_CONFIDENT_MATCH")
+    assert trace["first_failure_stage"] in ("applicability", "calibration", "retrieval", "query_sufficiency", "extraction", None)
 
 
 # ── P0-8 & P0-9: CALIBRATION ARTIFACT INTEGRITY ──

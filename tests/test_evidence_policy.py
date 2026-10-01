@@ -118,3 +118,35 @@ def test_decision_trace_explicit_state_contract():
         assert "reason" in step
         assert "evidence" in step
         assert "blocking" in step
+
+
+def test_unknown_role_gap_code():
+    """Mentor review Part 2: UNKNOWN_ROLE must emit ROLE_UNVERIFIED gap code and cannot be primary."""
+    bundle = EvidenceBundle(
+        designation="IS 99999:2020",
+        title="Unclassified Testing Procedure or Standard",
+        department="CED",
+        base_number=99999,
+        year="2020",
+        standard_role="UNKNOWN_ROLE",
+    )
+    bundle.raw_scope = "Scope covering arbitrary unclassified operations without product indicators."
+    bundle.lifecycle_evidence["status"] = "ACTIVE"
+    bundle.provenance_metadata["is_hydrated"] = True
+
+    sat, gaps = EvidencePolicy.evaluate_claim(ClaimType.PRIMARY_RECOMMENDATION_CLAIM, bundle)
+    assert sat is False
+    assert EvidenceGapCode.ROLE_UNVERIFIED.value in gaps
+
+
+def test_unknown_role_ineligible_for_physical_procurement():
+    """Mentor review Part 2: UNKNOWN_ROLE cannot be primary candidate when intent is physical procurement."""
+    from src.recommendation.corpus_policy import CandidateEligibilityPolicy
+    node = {
+        "designation": "IS 99999:2020",
+        "title": "Unclassified Operations",
+        "standard_role": "UNKNOWN_ROLE",
+    }
+    assert CandidateEligibilityPolicy.is_primary_candidate(node, intent="SUPPLY") is False
+    assert CandidateEligibilityPolicy.is_supporting_context(node) is True
+

@@ -101,17 +101,26 @@ class SelectiveAbstentionPolicy:
                 viable,
             )
 
-        # Ambiguity check: small score gap between top two
+        # Ambiguity check: small score gap between top two distinct standards
         if len(viable) > 1:
-            top2_prob = viable[1]["calibrated_confidence"]
-            gap = abs(top1_prob - top2_prob)
-            if gap < self.delta_margin and top1_prob < 0.72:
-                return (
-                    "MULTIPLE_POSSIBLE_STANDARDS",
-                    f"Top candidates have narrow calibrated probability margin ({gap:.3f} < {self.delta_margin:.3f}).",
-                    top1,
-                    viable,
-                )
+            top2 = next(
+                (
+                    r for r in viable[1:]
+                    if (r.get("standard_designation") or r.get("designation"))
+                    != (top1.get("standard_designation") or top1.get("designation"))
+                ),
+                None,
+            )
+            if top2:
+                top2_prob = top2["calibrated_confidence"]
+                gap = abs(top1_prob - top2_prob)
+                if gap < self.delta_margin and top1_prob < 0.72:
+                    return (
+                        "MULTIPLE_POSSIBLE_STANDARDS",
+                        f"Top candidates have narrow calibrated probability margin ({gap:.3f} < {self.delta_margin:.3f}).",
+                        top1,
+                        viable,
+                    )
 
         # Primary recommendation
         if top1_prob >= self.tau_recommend:

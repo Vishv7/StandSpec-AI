@@ -40,7 +40,8 @@
         "STANDARD_DATA_UNAVAILABLE",
         "OUTSIDE_PROTOTYPE_COVERAGE",
         "EXPERT_REVIEW_REQUIRED",
-        "CLARIFICATION_REQUIRED"
+        "CLARIFICATION_REQUIRED",
+        "CONTRADICTORY_SPECIFICATIONS"
       ]
     },
     "abstention_reason": {
@@ -237,6 +238,14 @@
     "response_format_version": {
       "type": ["string", "null"],
       "description": "Version string of recommendation response schema format."
+    },
+    "contradictions": {
+      "type": ["array", "null"],
+      "description": "Detected conflicting technical parameters or product categories."
+    },
+    "clarification_prompt": {
+      "type": ["string", "null"],
+      "description": "Actionable clarification guidance for contradictory or underspecified requirements."
     }
   },
   "additionalProperties": false

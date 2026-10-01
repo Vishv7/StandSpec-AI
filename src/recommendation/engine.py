@@ -49,6 +49,7 @@ from src.recommendation.evidence_bundle import (
     EvidenceGapCode,
 )
 from src.calibration.policy import SelectiveAbstentionPolicy
+from src.recommendation.consistency_gate import RequirementConsistencyGate
 
 
 class StandSpecRecommendationEngine:
@@ -162,6 +163,7 @@ class StandSpecRecommendationEngine:
             delta_margin=delta_margin if delta_margin is not None else 0.04,
         )
         self.designation_resolver = DesignationResolver(standards_graph) if standards_graph else DesignationResolver()
+        self.consistency_gate = RequirementConsistencyGate()
 
         self.standards_graph = standards_graph
         self.primary_candidates: List[Dict[str, Any]] = []
@@ -302,14 +304,26 @@ class StandSpecRecommendationEngine:
 
         acronyms = []
         full_lower = f"{mat} {raw_text}".lower()
-        if "polyvinyl chloride" in full_lower:
-            acronyms.extend(["pvc", "upvc"])
-        if "polyethylene" in full_lower:
+        if "polyvinyl chloride" in full_lower or "pvc" in full_lower:
+            acronyms.extend(["pvc", "upvc", "unplasticized"])
+        if "polyethylene" in full_lower or "hdpe" in full_lower:
             acronyms.extend(["hdpe", "pe"])
         if "mild steel" in full_lower or "steel tubes" in target_prod.lower():
             acronyms.extend(["erw", "tubulars"])
-        if "cast iron" in full_lower:
-            acronyms.extend(["spun iron"])
+        if "cast iron" in full_lower or "spun iron" in full_lower:
+            acronyms.extend(["spun iron", "centrifugally cast"])
+        if "ductile iron" in full_lower or "di pipe" in full_lower:
+            acronyms.extend(["ductile iron", "spun ductile", "centrifugally cast"])
+        if any(w in full_lower for w in ["steel", "rebar", "fe 500", "fe 415", "tmt", "reinforcement"]):
+            acronyms.extend(["high strength deformed steel bars wires reinforcement concrete"])
+        if "piano switch" in full_lower or "flush-mounted" in full_lower:
+            acronyms.extend(["switches domestic similar purposes"])
+        if "gypsum" in full_lower or "plaster board" in full_lower:
+            acronyms.extend(["gypsum plaster boards"])
+        if "rapid hardening" in full_lower:
+            acronyms.extend(["rapid hardening portland cement"])
+        if "coarse aggregate" in full_lower or "crushed stone" in full_lower:
+            acronyms.extend(["coarse fine aggregate concrete"])
         acronym_str = " ".join(acronyms)
 
         # Retain all technical discriminators in focused_query so BM25 and dense retrieval never drop them
@@ -330,13 +344,23 @@ class StandSpecRecommendationEngine:
                     c_dict["rerank_signals"] = {"exact_designation_matched": 5.0}
                     explicit_candidates.append(c_dict)
 
-        # Step 1.6: Boundary & Query-Sufficiency Checks (P1-A / Points 5 & 13)
+        # Step 1.6: Boundary, Consistency & Query-Sufficiency Checks (Mentor Review Part 3)
+        consistency_gate = getattr(self, "consistency_gate", None)
+        if consistency_gate is None:
+            from src.recommendation.consistency_gate import RequirementConsistencyGate
+            consistency_gate = RequirementConsistencyGate()
+            self.consistency_gate = consistency_gate
+
+        consistency_result = consistency_gate.check(raw_text, requirements=req_obj.get("requirements"))
+        has_contradictions = (not consistency_result.is_consistent) or bool(req_obj.get("contradictions"))
+
         outside_keywords = [
             "banana", "bananas", "fruit", "fruits", "vegetable", "mango", "grain", "wheat", "rice",
             "spice", "spices", "milk", "dairy", "meat", "tea", "coffee", "food processing",
             "cotton", "silk", "wool", "textile", "garment", "apparel", "yarn",
             "crude oil", "aviation turbine fuel", "petroleum refining",
             "pharmaceutical", "tablet", "injections", "vaccine", "medical implant", "surgical",
+            "mri", "magnetic resonance", "superconducting magnet",
             "satellite", "ku-band", "ground station",
         ]
         raw_lower = raw_text.lower()
@@ -566,8 +590,23 @@ class StandSpecRecommendationEngine:
                 "retrieval_diagnostics": cand.get("retrieval_diagnostics", {}),
             })
 
+        # Deduplicate resolved candidates (prevent multiple superseded editions from duplicating top candidate)
+        seen_resolved = set()
+        deduped_resolved = []
+        for r in resolved_recommendations:
+            r_desig = r["standard_designation"]
+            if r_desig not in seen_resolved:
+                seen_resolved.add(r_desig)
+                deduped_resolved.append(r)
+        resolved_recommendations = deduped_resolved
+
         # Step 9: Calibrated Selective Abstention Policy
-        if is_outside_domain:
+        if has_contradictions:
+            decision_state = "INSUFFICIENT_INFORMATION"
+            abstention_reason = consistency_result.abstention_reason or f"Contradictory technical specifications detected: {'; '.join(req_obj.get('contradictions', []))}"
+            primary_rec = None
+            viable_recs = []
+        elif is_outside_domain:
             decision_state = "OUTSIDE_PROTOTYPE_COVERAGE"
             abstention_reason = "Query specifies products outside the CED (Civil) and ETD (Electrotechnical) prototype coverage boundary."
             primary_rec = None
@@ -688,7 +727,40 @@ class StandSpecRecommendationEngine:
                 ):
                     decision_state = "PRIMARY_RECOMMENDATION_AVAILABLE"
 
-        else:
+            if decision_state in (
+                "INSUFFICIENT_INFORMATION",
+                "MULTIPLE_POSSIBLE_STANDARDS",
+                "NO_CONFIDENT_MATCH",
+                "OUTSIDE_PROTOTYPE_COVERAGE",
+                "EXPERT_REVIEW_REQUIRED",
+            ):
+                if is_explicit_request and primary_rec and not review_candidate:
+                    review_candidate = {
+                        "designation": primary_rec.get("standard_designation") or orig_desig,
+                        "standard_designation": primary_rec.get("standard_designation") or orig_desig,
+                        "title": primary_rec.get("title"),
+                        "role": (primary_rec.get("evidence_bundle") or {}).get("standard_role", "PRODUCT_STANDARD"),
+                        "candidate_relevance": "HIGH",
+                        "applicability_state": cand_app_state or "APPLICABLE",
+                        "claim_level": "REVIEW_REQUIRED",
+                        "evidence_state": "SUFFICIENT",
+                        "missing_evidence": [],
+                        "evidence_gaps": [],
+                        "lifecycle_state": (primary_rec.get("lifecycle") or {}).get("lifecycle_state") or "UNKNOWN",
+                        "regulatory_state": (primary_rec.get("regulatory") or {}).get("regulatory_state") or "UNVERIFIED",
+                        "review_reason": abstention_reason or "Verification required against missing procurement specifications.",
+                        "evidence_bundle": primary_rec.get("evidence_bundle"),
+                        "retrieval_diagnostics": primary_rec.get("retrieval_diagnostics", {}),
+                        "provenance": {
+                            "engine_version": self.ENGINE_VERSION,
+                            "graph_release_id": self.graph_release_id,
+                            "retrieval_source": (primary_rec.get("relevance_signals") or {}).get("retrieval_source", "exact_designation"),
+                        }
+                    }
+                primary_rec = None
+                claim_level = "ABSTAINED" if decision_state in ("INSUFFICIENT_INFORMATION", "NO_CONFIDENT_MATCH", "OUTSIDE_PROTOTYPE_COVERAGE") else ("REVIEW_REQUIRED" if decision_state == "EXPERT_REVIEW_REQUIRED" else "PLAUSIBLE")
+
+        elif not has_contradictions and not is_outside_domain and not is_query_underspecified:
             # No primary recommendation reached threshold or survived applicability.
             # Check if an explicit candidate or an unready candidate blocked by evidence exists
             cand_to_review = None
@@ -779,7 +851,7 @@ class StandSpecRecommendationEngine:
                         "retrieval_source": cand_to_review.get("retrieval_source", "hybrid"),
                     }
                 }
-            else:
+            elif decision_state not in ("MULTIPLE_POSSIBLE_STANDARDS", "INSUFFICIENT_INFORMATION", "EXPERT_REVIEW_REQUIRED"):
                 decision_state = "NO_CONFIDENT_MATCH"
                 abstention_reason = "No candidate standard achieved technical applicability and grounding."
                 primary_rec = None
@@ -888,10 +960,10 @@ class StandSpecRecommendationEngine:
              False),
 
             ("query_sufficiency",
-             "BLOCKED" if (req_obj.get("query_sufficiency") or {}).get("state") == "INSUFFICIENT" else "PASS",
-             (req_obj.get("query_sufficiency") or {}).get("reason") or "Query context sufficient for retrieval",
-             req_obj.get("query_sufficiency"),
-             bool((req_obj.get("query_sufficiency") or {}).get("state") == "INSUFFICIENT")),
+             "CONFLICT" if has_contradictions else ("BLOCKED" if (req_obj.get("query_sufficiency") or {}).get("state") == "INSUFFICIENT" else "PASS"),
+             abstention_reason if has_contradictions else ((req_obj.get("query_sufficiency") or {}).get("reason") or "Query context sufficient for retrieval"),
+             {"query_sufficiency": req_obj.get("query_sufficiency"), "contradictions": [c.to_dict() for c in consistency_result.contradictions] if not consistency_result.is_consistent else req_obj.get("contradictions", [])},
+             bool(has_contradictions or (req_obj.get("query_sufficiency") or {}).get("state") == "INSUFFICIENT")),
 
             ("retrieval",
              "PASS" if (bm25_candidates or dense_candidates) else "FAIL",
@@ -1036,6 +1108,8 @@ class StandSpecRecommendationEngine:
             "normalized_requirements": req_obj,
             "decision_state": decision_state,
             "abstention_reason": abstention_reason,
+            "contradictions": [c.to_dict() for c in consistency_result.contradictions] if not consistency_result.is_consistent else req_obj.get("contradictions", []),
+            "clarification_prompt": consistency_result.clarification_message if not consistency_result.is_consistent else None,
             "claim_level": claim_level,
             "data_coverage": data_coverage,
             "evidence_coverage": evidence_coverage,
@@ -1062,6 +1136,8 @@ class StandSpecRecommendationEngine:
                 "graph_release_id": self.graph_release_id,
                 "retriever_mode": self.retriever_mode,
                 "reranker_mode": self.reranker_mode,
+                "dense_retriever": self.dense_retriever.get_metadata() if getattr(self, "dense_retriever", None) else None,
+                "dense_effective_mode": getattr(self.dense_retriever, "effective_mode", "UNKNOWN") if getattr(self, "dense_retriever", None) else None,
             },
             "natural_language_explanation": self.explainer.explain({
                 "decision_state": decision_state,

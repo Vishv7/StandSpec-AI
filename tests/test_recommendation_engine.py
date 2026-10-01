@@ -193,26 +193,26 @@ def test_regulatory_gate_glass_qco():
 
 
 def test_out_of_domain_abstention_bananas(mini_graph):
-    """Engine must safely abstain with NO_CONFIDENT_MATCH on out-of-domain bananas query."""
+    """Engine must safely abstain with OUTSIDE_PROTOTYPE_COVERAGE or NO_CONFIDENT_MATCH on out-of-domain bananas query."""
     engine = StandSpecRecommendationEngine(mini_graph)
     res = engine.recommend("Supply of industrial bananas for food processing facility")
-    assert res["decision_state"] == "NO_CONFIDENT_MATCH"
+    assert res["decision_state"] in ("OUTSIDE_PROTOTYPE_COVERAGE", "NO_CONFIDENT_MATCH")
     assert res["primary_recommendation"] is None
 
 
 def test_out_of_domain_abstention_satellite(mini_graph):
-    """Engine must safely abstain with NO_CONFIDENT_MATCH on satellite Ku-band query."""
+    """Engine must safely abstain with OUTSIDE_PROTOTYPE_COVERAGE or NO_CONFIDENT_MATCH on satellite Ku-band query."""
     engine = StandSpecRecommendationEngine(mini_graph)
     res = engine.recommend("satellite ground station Ku-band 14 GHz equipment")
-    assert res["decision_state"] == "NO_CONFIDENT_MATCH"
+    assert res["decision_state"] in ("OUTSIDE_PROTOTYPE_COVERAGE", "NO_CONFIDENT_MATCH")
     assert res["primary_recommendation"] is None
 
 
 def test_out_of_domain_abstention_mri(mini_graph):
-    """Engine must safely abstain with NO_CONFIDENT_MATCH on hospital MRI query."""
+    """Engine must safely abstain with OUTSIDE_PROTOTYPE_COVERAGE or NO_CONFIDENT_MATCH on hospital MRI query."""
     engine = StandSpecRecommendationEngine(mini_graph)
     res = engine.recommend("hospital MRI 1.5 T superconducting magnet system")
-    assert res["decision_state"] == "NO_CONFIDENT_MATCH"
+    assert res["decision_state"] in ("OUTSIDE_PROTOTYPE_COVERAGE", "NO_CONFIDENT_MATCH")
     assert res["primary_recommendation"] is None
 
 

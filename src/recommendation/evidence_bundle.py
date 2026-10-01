@@ -155,8 +155,8 @@ class EvidencePolicy:
             if bundle.standard_role in disallowed_roles:
                 gaps.append(EvidenceGapCode.ROLE_MISMATCH.value)
             elif bundle.standard_role == "UNKNOWN_ROLE":
-                # Unknown role in physical procurement cannot be primary
-                pass
+                # Unknown role cannot be promoted as primary — must be resolved first
+                gaps.append(EvidenceGapCode.ROLE_UNVERIFIED.value)
 
             if context:
                 if context.get("mismatched_attributes"):
@@ -425,6 +425,12 @@ class EvidenceBundle:
             "regulatory": self.regulatory_evidence,
             "provenance": self.provenance_metadata,
             "readiness": self.get_readiness_report(),
+            "scope_ready": self.scope_ready,
+            "applicability_ready": self.applicability_ready,
+            "lifecycle_ready": self.lifecycle_ready,
+            "regulatory_ready": self.regulatory_ready,
+            "provenance_ready": self.provenance_ready,
+            "recommendation_ready": self.recommendation_ready,
         }
 
     @classmethod
@@ -443,7 +449,10 @@ class EvidenceBundle:
         part = str(node.get("part")) if node.get("part") is not None else None
         section = str(node.get("section")) if node.get("section") is not None else None
         year = str(node.get("year")) if node.get("year") is not None else None
-        role = node.get("standard_role") or "UNKNOWN_ROLE"
+        role = node.get("standard_role")
+        if not role or role == "UNKNOWN_ROLE":
+            from src.recommendation.role_classifier import RoleClassifier
+            role = RoleClassifier.classify_with_evidence(node).get("standard_role", "UNKNOWN_ROLE")
 
         bundle = cls(
             designation=desig,

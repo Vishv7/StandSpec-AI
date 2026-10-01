@@ -57,6 +57,11 @@ class CandidateEligibilityPolicy:
         if classified_role in cls.NON_PRIMARY_ROLES:
             return False
 
+        # Mentor review Part 2: UNKNOWN_ROLE cannot be primary candidate when intent is physical procurement
+        effective_role = role if role != "UNKNOWN_ROLE" else classified_role
+        if intent in ("SUPPLY", "PHYSICAL_PROCUREMENT", "PROCUREMENT") and effective_role == "UNKNOWN_ROLE":
+            return False
+
         # If candidate_status is SUPPORTING_ONLY, only exclude if role is NOT a primary product or component
         if cand_status == "SUPPORTING_ONLY" and role not in ("PRIMARY_PRODUCT", "PRODUCT_SPECIFICATION", "COMPONENT"):
             return False
@@ -80,7 +85,7 @@ class CandidateEligibilityPolicy:
             return False
         cand_status = node.get("candidate_status")
         role = node.get("standard_role")
-        return cand_status == "SUPPORTING_ONLY" or role in cls.NON_PRIMARY_ROLES
+        return cand_status == "SUPPORTING_ONLY" or role in cls.NON_PRIMARY_ROLES or role == "UNKNOWN_ROLE"
 
     @classmethod
     def is_external_reference(cls, node: Dict[str, Any]) -> bool:
