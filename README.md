@@ -3,7 +3,7 @@
 
 [![Tests](https://img.shields.io/badge/Tests-Passing%20(100%25%20Hermetic)-brightgreen.svg)]()
 [![Network Isolation](https://img.shields.io/badge/Network-Socket%20Blockade%20Active-blue.svg)]()
-[![Knowledge Graph](https://img.shields.io/badge/Graph-6081%20Nodes%20%7C%205428%20Edges-purple.svg)]()
+[![Knowledge Graph](https://img.shields.io/badge/Graph-6082%20Nodes%20%7C%205428%20Edges-purple.svg)]()
 
 ---
 
@@ -37,7 +37,7 @@
 │ KNOWLEDGE BASE LAYERS (LAYERS 2, 3, 4)                                      │
 │ ├─ Layer 2: Lifecycle Knowledge Layer (Generic edition chains, validity)   │
 │ ├─ Layer 3: Regulatory & Conformity Layer (Governed QCO/CRS JSONL datasets) │
-│ └─ Layer 4: Relational Knowledge Graph (6,081 nodes, 5,428 direct edges)     │
+│ └─ Layer 4: Relational Knowledge Graph (6,082 nodes, 5,428 direct edges)     │
 └─────────────────────────────────────┬───────────────────────────────────────┘
                                       │
 ┌─────────────────────────────────────▼───────────────────────────────────────┐

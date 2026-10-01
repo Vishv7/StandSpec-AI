@@ -59,7 +59,7 @@
     "evaluation_artifacts": {
       "test": {
         "path": "data/evaluations/test_evaluation.json",
-        "sha256": "d84dc8c3abaf77ffb0dc09a034acbadcb72a1210d390326a08ab1dba55d6056d"
+        "sha256": "286f3b8f8fdf4edd1bccd1bf40144eb77718dd0084920cca7714d5f0861c1503"
       },
       "val": {
         "path": "data/evaluations/val_evaluation.json",
@@ -67,7 +67,7 @@
       },
       "open_world": {
         "path": "data/evaluations/open_world_evaluation.json",
-        "sha256": "5421525ea13159e065c12a0220580beab2adad9c36940fe1e45a9f97cccffdca"
+        "sha256": "096f9d4f9cc6f544d9da5d68a8b786ffd73bb2fafc68dc77a975d8f91bbe4e18"
       },
       "adversarial": {
         "path": "data/evaluations/adversarial_evaluation.json",
@@ -84,7 +84,7 @@
     },
     "calibrator": {
       "path": "data/models/calibrator_v1.json",
-      "sha256": "f02c2c0fe31536db5d49c9842fa9abec3cc29a9f61e240b3dc3299c3c5f10c12",
+      "sha256": "28590e01d3a32a9e11f891d37f1166a209fcb8a46adc08b434298bd05a620a1b",
       "status": "CALIBRATION_INSUFFICIENT_DATA",
       "n_samples": 24,
       "note": "Calibrator sample size (N=24) insufficient for statistical calibration claims; flagged CALIBRATION_INSUFFICIENT_DATA."
@@ -92,17 +92,17 @@
     "regulatory_datasets": {
       "qco_orders": {
         "path": "data/regulatory/qco_orders.jsonl",
-        "sha256": "f06424e623f72ae3feb40cb848fa98b70c492454ad0c73a1ff0994f92d358df1",
+        "sha256": "adff946f0eae9f07974fb47b0d0853f320272b0cca6f40ab723d9ab61ed8bef3",
         "record_count": 17
       },
       "crs_rules": {
         "path": "data/regulatory/crs_rules.jsonl",
-        "sha256": "cea479e7652b22251ed1c7ea4c1e0ae6646de48c2f900871efd3ae67067f41f4",
+        "sha256": "65f4c9ec2b6f1e331fd7dd31ead149f1d3455262e6706f68fd9eb809eac233ff",
         "record_count": 2
       },
       "source_manifest": {
         "path": "data/regulatory/source_manifest.json",
-        "sha256": "5e6309d3f164e408ba4c7c6ff09d231d4da8d6e73fa553da1d898236027543f5"
+        "sha256": "a1c8d699acee6a94da4b37b8d6a503bfbb5f308152d65c5ffeebe679d9c19ed3"
       }
     }
   },
@@ -112,19 +112,19 @@
     "evaluation_artifact": "data/evaluations/test_evaluation.json",
     "total_queries": 13,
     "metrics": {
-      "retrieval_gold_accuracy_top1": 0.2308,
-      "candidate_recall_at_5": 0.3846,
-      "verified_primary_rec_accuracy": 0.1538,
+      "retrieval_gold_accuracy_top1": 0.0769,
+      "candidate_recall_at_5": 0.8462,
+      "verified_primary_rec_accuracy": 0.0769,
       "safe_decision_contract_accuracy": 0.0769,
-      "legacy_raw_decision_match": 0.0,
+      "legacy_raw_decision_match": 0.0769,
       "safe_abstention_rate_on_unready": 1.0,
-      "unsafe_primary_promotion_rate": 0.6154,
-      "regulatory_mandate_accuracy": 0.1538,
+      "unsafe_primary_promotion_rate": 0.0,
+      "regulatory_mandate_accuracy": 0.0769,
       "hard_negative_rejection_at_1": 1.0,
-      "hard_negative_intrusion_at_5": 0.0,
-      "hard_negative_intrusion_at_10": 0.0,
-      "expected_calibration_error_diagnostic": 0.2785,
-      "brier_score_diagnostic": 0.2578
+      "hard_negative_intrusion_at_5": 0.0769,
+      "hard_negative_intrusion_at_10": 0.0769,
+      "expected_calibration_error_diagnostic": 0.0335,
+      "brier_score_diagnostic": 0.0146
     }
   },
   "departments": [
