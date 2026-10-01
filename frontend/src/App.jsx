@@ -50,11 +50,11 @@ export default function App() {
           <div className="flex items-center gap-4 text-[11px]">
             <span>Bureau of Indian Standards Act 2016</span>
             <span>•</span>
-            <span>DPIIT / CPWD Schedule Compliant</span>
+            <span>Prototype Coverage: CED + ETD</span>
             <span>•</span>
             <span className="text-emerald-700 font-semibold flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-              Zero-Hallucination Guard Active
+              Deterministic Safety Guard Active
             </span>
           </div>
         </div>

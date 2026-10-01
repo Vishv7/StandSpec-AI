@@ -10,10 +10,15 @@ export default function Header({
   return (
     <header className="sticky top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-slate-200">
       <div className="h-16 w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
-        {/* Left: Logo & Engine Scope */}
+        {/* Left: Branding & Scope */}
         <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('query')}>
-            <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shadow-sm">
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => setActiveTab('query')}
+            role="button"
+            tabIndex={0}
+          >
+            <div className="w-9 h-9 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shadow-xs">
               <span className="material-symbols-outlined text-[22px]">verified_user</span>
             </div>
             <div className="flex flex-col">
@@ -21,12 +26,12 @@ export default function Header({
                 <span className="font-display font-bold text-lg tracking-tight text-slate-900">
                   StandSpec<span className="text-emerald-600">.AI</span>
                 </span>
-                <span className="font-mono text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
-                  v{health?.engine_version || '1.2.0'} • CED+ETD
+                <span className="font-mono text-[10px] uppercase font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  Prototype Scope: CED + ETD
                 </span>
               </div>
               <span className="text-xs text-slate-500 hidden sm:block">
-                National Standard Regulatory Corroboration
+                National Standard Recommendation Assistant
               </span>
             </div>
           </div>
@@ -53,7 +58,7 @@ export default function Header({
                   : 'font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              Tender PDF Studio
+              Tender PDF
             </button>
             <button
               onClick={() => setActiveTab('standards')}
@@ -78,43 +83,35 @@ export default function Header({
           </nav>
         </div>
 
-        {/* Right: Operational Status & Officer Profile */}
+        {/* Right: Operational Status & Settings */}
         <div className="flex items-center gap-3 sm:gap-4">
-          {/* Live Status Pill */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs font-medium text-slate-700">
-            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-            <span>
-              Engine: <strong className="text-slate-900">{health?.status || 'READY'}</strong>
-            </span>
-            <span className="text-slate-300">|</span>
-            <span>{(health?.indexed_standards || 6082).toLocaleString()} Standards</span>
-            <span className="text-slate-300">|</span>
-            <span className="text-amber-700 font-semibold bg-amber-50 px-1.5 rounded border border-amber-200/50">
-              QCO Active ({health?.mandatory_qco_records || 163})
+          {/* Status Pill: Reflects truthful connection state */}
+          <div className={`flex items-center gap-2 px-3 py-1 rounded-full border text-xs font-medium ${
+            health?.status === "READY"
+              ? "bg-emerald-50/60 border-emerald-200 text-emerald-800"
+              : (health?.status === "OFFLINE"
+                  ? "bg-amber-50 border-amber-200 text-amber-800"
+                  : "bg-slate-50 border-slate-200 text-slate-700")
+          }`}>
+            <span className={`w-2 h-2 rounded-full ${
+              health?.status === "READY" ? "bg-emerald-600" : (health?.status === "OFFLINE" ? "bg-amber-500" : "bg-slate-400 animate-pulse")
+            }`}></span>
+            <span className="font-medium">
+              {health?.status === "READY" ? "System Ready" : (health?.status === "OFFLINE" ? "Backend Offline" : "Connecting...")}
             </span>
           </div>
 
           {/* As Of Date Pill */}
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-slate-200 text-xs font-medium text-slate-700 shadow-xs">
             <span className="material-symbols-outlined text-[16px] text-slate-500">calendar_today</span>
-            <span className="hidden sm:inline">As-Of:</span>
+            <span className="hidden sm:inline text-slate-500">As-Of:</span>
             <input
               type="date"
               value={evaluationDate}
               onChange={(e) => setEvaluationDate(e.target.value)}
               className="bg-transparent border-0 p-0 text-xs font-semibold text-slate-900 focus:outline-none focus:ring-0 cursor-pointer"
+              title="Evaluation as-of date for historical standards and amendments"
             />
-          </div>
-
-          {/* User Profile Pill */}
-          <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-            <div className="flex flex-col text-right hidden xl:flex">
-              <span className="text-xs font-semibold text-slate-800">Chief Tender Officer</span>
-              <span className="text-[10px] text-slate-500 font-mono">GeM / CPWD Auth</span>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-700 text-white flex items-center justify-center font-semibold text-xs shadow-sm">
-              TO
-            </div>
           </div>
         </div>
       </div>

@@ -11,13 +11,14 @@ export async function fetchHealth() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   } catch (err) {
-    console.warn("Backend health check failed, using fallback status", err);
+    console.warn("Backend health check failed", err);
     return {
-      status: "READY",
-      engine_version: "3.0.0",
-      release_id: "STANDSPEC_PROTOTYPE_CED_ETD_V3_0_0",
-      indexed_standards: 6082,
-      mandatory_qco_records: 163,
+      status: "OFFLINE",
+      error: `Backend API unreachable at ${API_BASE_URL}. Start backend with: python -m uvicorn src.api.server:app`,
+      engine_version: null,
+      release_id: null,
+      indexed_standards: null,
+      mandatory_qco_records: null,
       default_evaluation_date: null,
       supported_departments: ["CED", "ETD"],
     };
@@ -60,13 +61,16 @@ export async function extractRequirements(query) {
   return await res.json();
 }
 
-export async function uploadTenderPdf(file, evaluationDate = null) {
+export async function uploadTenderPdf(file, evaluationDate = null, autoVerify = false) {
   const formData = new FormData();
   formData.append("file", file);
 
   const url = new URL(`${API_BASE_URL}/api/v1/tender/upload`);
   if (evaluationDate) {
     url.searchParams.append("evaluation_date", evaluationDate);
+  }
+  if (autoVerify) {
+    url.searchParams.append("auto_verify", "true");
   }
 
   const res = await fetch(url.toString(), {
