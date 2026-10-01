@@ -128,6 +128,13 @@ class TenderPDFExtractor:
             "steel", "rebar", "door", "window", "fitting", "valves", "aggregate", "panel"
         ]
 
+        # Administrative / Commercial keywords
+        admin_keywords = [
+            "earnest money", "emd", "security deposit", "bid validity", "payment terms",
+            "penalty", "liquidated damages", "arbitration", "jurisdiction", "eligibility criteria",
+            "turnover", "experience", "force majeure", "termination", "submission of bid"
+        ]
+
         for p in pages:
             page_no = p["page_number"]
             page_text = p["text"]
@@ -143,11 +150,14 @@ class TenderPDFExtractor:
 
                 m = item_pattern.match(l_strip)
                 if m:
-                    # Flush previous clause if technical
+                    # Flush previous clause
                     if current_clause_text:
                         full_clause = " ".join(current_clause_text).strip()
-                        if any(kw in full_clause.lower() for kw in tech_keywords) and len(full_clause) > 25:
-                            clauses.append(self._format_clause(item_counter, current_clause_num, full_clause, page_no))
+                        if len(full_clause) > 25:
+                            is_tech = any(kw in full_clause.lower() for kw in tech_keywords)
+                            is_adm = any(kw in full_clause.lower() for kw in admin_keywords)
+                            c_type = "TECHNICAL_PROCUREMENT" if is_tech or not is_adm else "ADMINISTRATIVE_COMMERCIAL"
+                            clauses.append(self._format_clause(item_counter, current_clause_num, full_clause, page_no, c_type))
                             item_counter += 1
                         current_clause_text = []
 
@@ -157,15 +167,18 @@ class TenderPDFExtractor:
                 else:
                     if current_clause_text:
                         current_clause_text.append(l_strip)
-                    elif any(kw in l_strip.lower() for kw in tech_keywords) and len(l_strip) > 30:
-                        # Direct unnumbered technical line
+                    elif (any(kw in l_strip.lower() for kw in tech_keywords) or any(kw in l_strip.lower() for kw in admin_keywords)) and len(l_strip) > 30:
+                        # Direct unnumbered line
                         current_clause_num = str(item_counter)
                         current_clause_text.append(l_strip)
 
             if current_clause_text:
                 full_clause = " ".join(current_clause_text).strip()
-                if any(kw in full_clause.lower() for kw in tech_keywords) and len(full_clause) > 25:
-                    clauses.append(self._format_clause(item_counter, current_clause_num, full_clause, page_no))
+                if len(full_clause) > 25:
+                    is_tech = any(kw in full_clause.lower() for kw in tech_keywords)
+                    is_adm = any(kw in full_clause.lower() for kw in admin_keywords)
+                    c_type = "TECHNICAL_PROCUREMENT" if is_tech or not is_adm else "ADMINISTRATIVE_COMMERCIAL"
+                    clauses.append(self._format_clause(item_counter, current_clause_num, full_clause, page_no, c_type))
                     item_counter += 1
 
         # Fallback: If no structured numbered items were found, chunk by paragraph
@@ -173,21 +186,26 @@ class TenderPDFExtractor:
             for p in pages:
                 paragraphs = [par.strip() for par in p["text"].split("\n\n") if len(par.strip()) > 35]
                 for par in paragraphs:
-                    if any(kw in par.lower() for kw in tech_keywords):
-                        clauses.append(self._format_clause(item_counter, str(item_counter), par, p["page_number"]))
+                    is_tech = any(kw in par.lower() for kw in tech_keywords)
+                    is_adm = any(kw in par.lower() for kw in admin_keywords)
+                    if is_tech or is_adm:
+                        c_type = "TECHNICAL_PROCUREMENT" if is_tech else "ADMINISTRATIVE_COMMERCIAL"
+                        clauses.append(self._format_clause(item_counter, str(item_counter), par, p["page_number"], c_type))
                         item_counter += 1
 
         return clauses
 
-    def _format_clause(self, counter: int, ref_num: Optional[str], text: str, page_no: int) -> Dict[str, Any]:
+    def _format_clause(self, counter: int, ref_num: Optional[str], text: str, page_no: int, clause_type: str = "TECHNICAL_PROCUREMENT") -> Dict[str, Any]:
         """Formats and extracts entities from an individual clause."""
         ref = f"Item {ref_num or counter}"
-        req_res = self.extractor.extract(text, query_id=f"ITEM_{counter:03d}")
-        reqs = req_res.get("requirements", {})
+        req_res = self.extractor.extract(text, query_id=f"ITEM_{counter:03d}") if clause_type == "TECHNICAL_PROCUREMENT" else {}
+        reqs = req_res.get("requirements", {}) if isinstance(req_res, dict) else {}
 
         # Domain heuristic
         text_lower = text.lower()
-        if any(w in text_lower for w in ["cable", "voltage", "kv", "transformer", "switchgear", "conductor", "meter", "current", "breaker"]):
+        if clause_type == "ADMINISTRATIVE_COMMERCIAL":
+            domain = "Commercial / Legal"
+        elif any(w in text_lower for w in ["cable", "voltage", "kv", "transformer", "switchgear", "conductor", "meter", "current", "breaker"]):
             domain = "Electrotechnical (ETD)"
         elif any(w in text_lower for w in ["pipe", "cement", "concrete", "steel", "rebar", "door", "window", "aggregate", "sand", "brick"]):
             domain = "Civil Engineering (CED)"
@@ -210,6 +228,8 @@ class TenderPDFExtractor:
         return {
             "item_id": f"ITEM_{counter:03d}",
             "clause_reference": f"{ref} (Page {page_no})",
+            "clause_type": clause_type,
+            "is_technical": (clause_type == "TECHNICAL_PROCUREMENT"),
             "raw_text": text,
             "page_number": page_no,
             "domain": domain,

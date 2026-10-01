@@ -8,6 +8,7 @@ import os
 import sys
 import json
 import time
+import uuid
 import logging
 from typing import Optional, Dict, Any, List
 from datetime import datetime, timezone
@@ -33,11 +34,14 @@ app = FastAPI(
     version=ENGINE_VERSION,
 )
 
-# Enable CORS for frontend development
+# Enable CORS — configurable via environment for security (Part 26)
+_cors_origins_env = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173")
+_cors_origins = [o.strip() for o in _cors_origins_env.split(",") if o.strip()]
+_allow_credentials = False if "*" in _cors_origins else True
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=_cors_origins,
+    allow_credentials=_allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -150,8 +154,9 @@ def recommend_query(payload: QueryRecommendRequest):
             }
             return res
     except Exception as e:
-        logger.exception("Error processing recommendation query")
-        raise HTTPException(status_code=500, detail=str(e))
+        request_id = str(uuid.uuid4())[:8]
+        logger.exception(f"Error processing recommendation query [request_id={request_id}]")
+        raise HTTPException(status_code=500, detail=f"Recommendation service could not complete the request. Reference: {request_id}")
 
 
 @app.post("/api/v1/query/extract")
@@ -161,55 +166,81 @@ def extract_entities(payload: ExtractOnlyRequest):
         eng = get_engine()
         return eng.extractor.extract(payload.query)
     except Exception as e:
-        logger.exception("Error extracting entities")
-        raise HTTPException(status_code=500, detail=str(e))
+        request_id = str(uuid.uuid4())[:8]
+        logger.exception(f"Error extracting entities [request_id={request_id}]")
+        raise HTTPException(status_code=500, detail=f"Entity extraction could not complete the request. Reference: {request_id}")
 
 
 @app.post("/api/v1/tender/upload")
 async def upload_tender_pdf(
     file: UploadFile = File(...),
     evaluation_date: Optional[str] = Query(None),
+    auto_verify: bool = Query(False, description="Whether to automatically run recommendation on all technical clauses immediately"),
 ):
     """
     Accepts PDF tender document, extracts text, identifies metadata,
-    and segments technical specifications into auditable line items with initial BIS recommendations.
+    and segments clauses into classified items (Technical Procurement vs Administrative).
+    If auto_verify is False (recommended), clauses are returned for user review & selection.
     """
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are supported.")
 
+    # PDF size and page limits (Part 25)
+    MAX_PDF_SIZE_MB = int(os.environ.get("MAX_PDF_SIZE_MB", "20"))
+    MAX_PDF_PAGES = int(os.environ.get("MAX_PDF_PAGES", "200"))
+
     try:
         pdf_bytes = await file.read()
+        pdf_size_mb = len(pdf_bytes) / (1024 * 1024)
+        if pdf_size_mb > MAX_PDF_SIZE_MB:
+            raise HTTPException(
+                status_code=413,
+                detail=f"PDF file exceeds maximum allowed size of {MAX_PDF_SIZE_MB} MB ({pdf_size_mb:.1f} MB uploaded)."
+            )
         extractor = get_pdf_extractor()
         doc = extractor.extract_from_bytes(pdf_bytes, filename=file.filename)
+        page_count = doc.get("page_count", 0)
+        if page_count > MAX_PDF_PAGES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"PDF has {page_count} pages, exceeding maximum of {MAX_PDF_PAGES} pages."
+            )
 
-        # Compute initial quick match for extracted clauses
-        eng = get_engine()
-        eval_date = evaluation_date or eng.default_evaluation_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        if auto_verify:
+            # Optionally compute initial quick match for extracted technical clauses
+            eng = get_engine()
+            eval_date = evaluation_date or eng.default_evaluation_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-        for cl in doc.get("clauses", []):
-            try:
-                rec = eng.recommend(raw_text=cl["raw_text"], evaluation_date=eval_date, top_k=1)
-                primary = rec.get("primary_recommendation")
-                life = primary.get("lifecycle", {}) if primary else {}
-                reg = primary.get("regulatory", {}) if primary else {}
+            for cl in doc.get("clauses", []):
+                if not cl.get("is_technical", True):
+                    cl["status"] = "EXCLUDED_ADMINISTRATIVE"
+                    continue
+                try:
+                    rec = eng.recommend(raw_text=cl["raw_text"], evaluation_date=eval_date, top_k=1)
+                    primary = rec.get("primary_recommendation")
+                    life = primary.get("lifecycle", {}) if primary else {}
+                    reg = primary.get("regulatory", {}) if primary else {}
 
-                cl["recommendation"] = {
-                    "decision_state": rec.get("decision_state", "UNKNOWN"),
-                    "designation": primary.get("standard_designation") if primary else None,
-                    "title": primary.get("title") if primary else None,
-                    "lifecycle_state": life.get("lifecycle_state", "UNKNOWN"),
-                    "is_mandatory_qco": reg.get("is_mandatory", False),
-                    "confidence_score": primary.get("confidence_score", 0.0) if primary else 0.0,
-                    "claim_level": rec.get("claim_level", "DISCOVERED"),
-                }
-                cl["status"] = "VERIFIED" if primary else "REVIEW_NEEDED"
-            except Exception:
-                cl["status"] = "UNPROCESSED"
+                    cl["recommendation"] = {
+                        "decision_state": rec.get("decision_state", "UNKNOWN"),
+                        "designation": primary.get("standard_designation") if primary else None,
+                        "title": primary.get("title") if primary else None,
+                        "lifecycle_state": life.get("lifecycle_state", "UNKNOWN"),
+                        "is_mandatory_qco": reg.get("is_mandatory", False),
+                        "confidence_score": primary.get("confidence_score", 0.0) if primary else 0.0,
+                        "claim_level": rec.get("claim_level", "DISCOVERED"),
+                    }
+                    cl["status"] = "VERIFIED" if primary else "REVIEW_NEEDED"
+                except Exception:
+                    cl["status"] = "UNPROCESSED"
 
         return doc
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.exception("Error parsing PDF tender")
-        raise HTTPException(status_code=500, detail=f"Failed to parse PDF: {str(e)}")
+        request_id = str(uuid.uuid4())[:8]
+        logger.exception(f"Error parsing PDF tender [request_id={request_id}]")
+        raise HTTPException(status_code=500, detail=f"Failed to process tender document. Reference: {request_id}")
 
 
 @app.post("/api/v1/tender/batch-recommend")
@@ -229,9 +260,11 @@ def batch_recommend(payload: BatchRecommendRequest):
             rec["item_id"] = item_id
             results.append(rec)
         except Exception as e:
+            request_id = str(uuid.uuid4())[:8]
+            logger.exception(f"Error in batch recommendation for item {item_id} [request_id={request_id}]")
             results.append({
                 "item_id": item_id,
-                "error": str(e),
+                "error": f"Recommendation could not be completed. Reference: {request_id}",
                 "decision_state": "ERROR",
             })
 
@@ -338,7 +371,9 @@ async def websocket_agent_stream(websocket: WebSocket):
                 })
                 await websocket.send_json({"event": "agent_finish", "final_answer": res})
             except Exception as ex:
-                await websocket.send_json({"event": "error", "message": str(ex)})
+                request_id = str(uuid.uuid4())[:8]
+                logger.exception(f"WebSocket agent error [request_id={request_id}]")
+                await websocket.send_json({"event": "error", "message": f"Agent could not process query. Reference: {request_id}"})
 
     except WebSocketDisconnect:
         logger.info("WebSocket client disconnected")
