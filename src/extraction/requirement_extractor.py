@@ -66,6 +66,9 @@ PRODUCT_PATTERNS: List[Tuple[re.Pattern, str]] = [
     (re.compile(r'\b(food\s+waste\s+disposer[s]?|waste\s+disposer[s]?)\b', re.IGNORECASE), "Food Waste Disposers Safety"),
     (re.compile(r'\b(self[- ]ballasted\s+led\s+lamp[s]?|led\s+lamp[s]?|led\s+bulb[s]?)\b', re.IGNORECASE), "Self-Ballasted LED Lamps"),
     (re.compile(r'\b(water\s+heater[s]?|geyser|household\s+(?:and\s+similar\s+)?electrical\s+appliance[s]?)\b', re.IGNORECASE), "Household Electrical Appliances"),
+    (re.compile(r'\b((?:flush[- ]mounted\s+)?(?:piano\s+)?switch(?:es)?|tumbler\s+switch(?:es)?)\b', re.IGNORECASE), "Switches for Domestic and Similar Purposes"),
+    (re.compile(r'\b(domestic\s+(?:electric\s+)?clothes\s+dryer[s]?|tumble\s+dryer[s]?)\b', re.IGNORECASE), "Electric Clothes Dryers"),
+    (re.compile(r'\b((?:paper[- ]faced\s+)?gypsum\s+plaster\s+board[s]?|gypsum\s+board[s]?|plaster\s+board[s]?)\b', re.IGNORECASE), "Gypsum Plaster Boards"),
     
     # Civil Engineering: Piping & Fluid Transmission
     (re.compile(r'\b(?:high\s+density\s+polyethylene(?:\s*\([a-z0-9]+\))?\s+pipe[s]?|hdpe\s+pipe[s]?)\b', re.IGNORECASE), "HDPE Pipes for Water Supply"),
@@ -78,6 +81,7 @@ PRODUCT_PATTERNS: List[Tuple[re.Pattern, str]] = [
     (re.compile(r'\b(fine\s+aggregate(?:\s*\([^)]*\))?)\b', re.IGNORECASE), "Fine Aggregate"),
 
     # Civil Engineering: Cement & Concrete
+    (re.compile(r'\b(rapid\s+hardening\s+(?:portland\s+)?cement|rhpc)\b', re.IGNORECASE), "Rapid Hardening Portland Cement"),
     (re.compile(r'\b(high\s+alumina\s+cement)\b', re.IGNORECASE), "High Alumina Cement"),
     (re.compile(r'\b(ordinary\s+portland\s+cement|opc)\b', re.IGNORECASE), "Ordinary Portland Cement"),
     (re.compile(r'\b(portland\s+pozzolana\s+cement|ppc)\b', re.IGNORECASE), "Portland Pozzolana Cement"),
@@ -88,7 +92,7 @@ PRODUCT_PATTERNS: List[Tuple[re.Pattern, str]] = [
 
     # Civil Engineering: Structural Steel & Building Codes
     (re.compile(r'\b(general\s+construction\s+in\s+steel(?:\s+code(?:\s+of\s+practice)?)?|structural\s+steel\s+code|structural\s+steel\s+building\s+frame[s]?|limit\s+state\s+design\s+.*steel)\b', re.IGNORECASE), "General Construction in Steel Code"),
-    (re.compile(r'\b(structural\s+steel|tmt\s+(?:steel\s+)?rebars?|tmt\s+bars?|reinforcement\s+bars?|steel\s+rebars?|rebars?)\b', re.IGNORECASE), "Steel Reinforcement Bars"),
+    (re.compile(r'\b(structural\s+steel|tmt\s+(?:steel\s+)?rebars?|tmt\s+bars?|(?:high\s+strength\s+)?(?:ribbed\s+|deformed\s+)?(?:steel\s+)?reinforcement\s+bars?|steel\s+rebars?|rebars?)\b', re.IGNORECASE), "Steel Reinforcement Bars"),
     (re.compile(r'\b(seismic\s+design|ductile\s+design\s+and\s+detailing|earthquake\s+resistant\s+design)\b', re.IGNORECASE), "Seismic Design Code"),
     (re.compile(r'\b(design\s+(?:wind\s+)?pressure|wind\s+load\s+resistance|wind\s+loads?)\b', re.IGNORECASE), "Wind Load Design Code"),
     
@@ -547,37 +551,11 @@ class RequirementExtractor:
     def _detect_contradictions(self, raw_text: str, requirements: dict) -> List[str]:
         """
         Detect technical contradictions in procurement requirements without forcing resolution.
+        Delegates to authoritative RequirementConsistencyGate (Mentor review Part 3).
         """
-        contradictions = []
-        q_lower = raw_text.lower()
-
-        # Cement Grade contradictions
-        has_43 = "43 grade" in q_lower or "grade 43" in q_lower
-        has_53 = "53 grade" in q_lower or "grade 53" in q_lower
-        has_33 = "33 grade" in q_lower or "grade 33" in q_lower
-        if sum([bool(has_43), bool(has_53), bool(has_33)]) > 1:
-            contradictions.append("Conflicting cement grades specified simultaneously.")
-
-        # Steel grade contradictions
-        has_fe415 = "fe 415" in q_lower or "fe415" in q_lower
-        has_fe500 = "fe 500" in q_lower or "fe500" in q_lower
-        has_fe550 = "fe 550" in q_lower or "fe550" in q_lower
-        if sum([bool(has_fe415), bool(has_fe500), bool(has_fe550)]) > 1:
-            contradictions.append("Conflicting steel reinforcement grades specified simultaneously.")
-
-        # Application contradictions
-        has_potable = "potable" in q_lower or "drinking water" in q_lower
-        has_sewage = "sewage" in q_lower or "sewerage" in q_lower or "drainage" in q_lower
-        if has_potable and has_sewage:
-            contradictions.append("Conflicting applications: potable water supply vs sewage/drainage specified.")
-
-        # Meter technology contradictions
-        has_static = "static" in q_lower
-        has_induction = "induction" in q_lower
-        if has_static and has_induction:
-            contradictions.append("Conflicting meter technologies: static vs induction specified.")
-
-        return contradictions
+        from src.recommendation.consistency_gate import RequirementConsistencyGate
+        res = RequirementConsistencyGate.check(raw_text, requirements=requirements)
+        return [c.description for c in res.contradictions]
 
     def _extract_procurement_intent(self, raw_text: str, requirements: dict) -> dict:
         """Extract procurement object, object type, and technical intent (Phase P1-A)."""

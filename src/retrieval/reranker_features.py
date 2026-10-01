@@ -333,11 +333,15 @@ class MaterialAlignment(BaseFeatureExtractor):
         "hdpe": ["hdpe", "high density polyethylene", "polyethylene"],
         "ductile iron": ["ductile iron", "ductile"],
         "cast iron": ["cast iron", "spun iron"],
+        "steel": ["steel", "tmt", "rebar", "reinforcement bar", "fe 500", "fe 415", "fe 550", "deformed bar", "carbon steel", "structural steel"],
+        "polymer": ["polymer", "gfrp", "frp", "glass fibre reinforced polymer"],
         "copper": ["copper"],
         "aluminium": ["aluminium", "aluminum"],
         "ppc": ["pozzolana", "ppc", "fly ash"],
         "opc": ["ordinary portland", "opc"],
         "psc": ["slag cement", "psc", "slag"],
+        "gypsum": ["gypsum", "plaster board"],
+        "glass": ["glass", "glazing", "float glass"],
     }
 
     def evaluate(

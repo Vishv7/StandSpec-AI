@@ -1,86 +1,105 @@
 {
-  "analysis_timestamp": "2026-09-30T00:00:00Z",
+  "analysis_timestamp": "2026-10-01T09:00:00Z",
   "total_queries_evaluated": 50,
   "benchmarks_evaluated": [
     "open_world.jsonl"
   ],
+  "candidate_set_analysis": {
+    "in_scope_queries_with_gold": 43,
+    "gold_in_kb_count": 43,
+    "gold_in_kb_rate": 1.0,
+    "gold_entered_candidate_set_count": 27,
+    "gold_candidate_recall_rate": 0.6279,
+    "gold_promoted_to_primary_count": 2,
+    "gold_primary_precision_rate": 0.0465
+  },
+  "earliest_failure_stage_distribution": {
+    "EVIDENCE_GATE": 14,
+    "APPLICABILITY_FILTER": 11,
+    "INITIAL_RETRIEVAL": 11,
+    "EXTRACTION": 6,
+    "NONE": 4,
+    "UNCLASSIFIED": 2,
+    "RERANKING_DISPLACEMENT": 1,
+    "COVERAGE_DETECTION": 1
+  },
   "metrics_summary": {
     "RAW_RETRIEVAL_TOP1": {
       "metric_name": "RAW_RETRIEVAL_TOP1",
-      "numerator": 13,
+      "numerator": 16,
       "denominator": 43,
-      "value": 0.3023,
-      "percentage": 30.23,
+      "value": 0.3721,
+      "percentage": 37.21,
       "review_candidates_counted": false
     },
     "EFFECTIVE_CANDIDATE_TOP1": {
       "metric_name": "EFFECTIVE_CANDIDATE_TOP1",
-      "numerator": 12,
+      "numerator": 11,
       "denominator": 43,
-      "value": 0.2791,
-      "percentage": 27.91,
+      "value": 0.2558,
+      "percentage": 25.58,
       "review_candidates_counted": true
     },
     "VERIFIED_PRIMARY_TOP1": {
       "metric_name": "VERIFIED_PRIMARY_TOP1",
-      "numerator": 6,
+      "numerator": 2,
       "denominator": 50,
-      "value": 0.12,
-      "percentage": 12.0,
+      "value": 0.04,
+      "percentage": 4.0,
       "review_candidates_counted": false
     },
     "recall_at_5": {
       "metric_name": "RECALL_AT_5",
       "k": 5,
-      "numerator": 22,
+      "numerator": 27,
       "denominator": 43,
-      "value": 0.5116,
-      "percentage": 51.16
+      "value": 0.6279,
+      "percentage": 62.79
     },
     "recall_at_10": {
       "metric_name": "RECALL_AT_10",
       "k": 10,
-      "numerator": 22,
+      "numerator": 27,
       "denominator": 43,
-      "value": 0.5116,
-      "percentage": 51.16
+      "value": 0.6279,
+      "percentage": 62.79
     },
     "mrr": {
       "metric_name": "MRR",
-      "value": 0.3775,
+      "value": 0.4845,
       "denominator": 43
     },
     "safety_metrics": {
-      "safe_decision_accuracy": 0.26,
-      "wrong_primary_promotion_rate": 0.2326,
-      "unsupported_primary_promotion_rate": 1.0,
+      "safe_decision_accuracy": 0.36,
+      "wrong_primary_promotion_rate": 0.0233,
+      "unsupported_primary_promotion_rate": 0.0,
       "wrong_role_primary_rate": 0.0,
       "wrong_part_primary_rate": 0.0,
       "wrong_edition_primary_rate": 0.0,
       "regulatory_false_assertion_rate": 0.0,
-      "safe_primary_rate": 0.0,
-      "unsafe_primary_rate": 0.34,
-      "safe_abstention_rate": 1.7143,
-      "hard_negative_rejection_rate": 0.92,
-      "hard_negative_intrusion_rate_5": 0.26,
+      "safe_primary_rate": 0.6667,
+      "unsafe_primary_rate": 0.02,
+      "safe_abstention_rate": 2.2857,
+      "hard_negative_rejection_rate": 0.94,
+      "hard_negative_intrusion_rate_5": 0.32,
       "supporting_as_primary_rate": 0.0,
       "coverage_detection_accuracy": 0.6667,
-      "total_primaries_emitted": 17,
+      "total_primaries_emitted": 3,
       "in_scope_with_gold_queries": 43
     }
   },
   "error_taxonomy_breakdown": {
-    "RETRIEVAL_MISS": 21,
-    "RETRIEVAL_MISS_LEXICAL_GAP": 21,
-    "EVIDENCE_MISSING": 15,
-    "EXTRACTION_MISS": 11,
-    "PRODUCT_CATEGORY_MISS": 11,
-    "WRONG_PRIMARY": 10,
-    "RERANKING_MISS": 9,
-    "RERANKING_DISPLACEMENT": 9,
-    "FALSE_ABSTENTION_THRESHOLD": 9,
-    "QUERY_INSUFFICIENT": 5,
-    "KNOWN_HARD_NEGATIVE": 1,
+    "RETRIEVAL_MISS": 16,
+    "RETRIEVAL_MISS_LEXICAL_GAP": 16,
+    "FALSE_ABSTENTION_THRESHOLD": 14,
+    "RERANKING_MISS": 11,
+    "RERANKING_DISPLACEMENT": 11,
+    "EVIDENCE_MISSING": 7,
+    "EXTRACTION_MISS": 6,
+    "PRODUCT_CATEGORY_MISS": 6,
+    "QUERY_INSUFFICIENT": 4,
+    "WRONG_PRIMARY": 1,
+    "CONTRADICTORY_QUERY": 1,
     "COVERAGE_OUTSIDE_DOMAIN": 1
   },
   "query_diagnostics": [
@@ -91,19 +110,20 @@
       "gold_standards": [
         "IS 1786:2008"
       ],
-      "primary_recommendation": "IS 18256:2023",
-      "decision_state": "CONDITIONAL_RECOMMENDATION",
+      "primary_recommendation": null,
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
-        "IS 18256:2023",
         "IS 16172:2023",
         "IS 1786:2008",
-        "IS 1786:2008",
-        "IS 1786:2008"
+        "IS 2751:1979"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 2,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
       "error_labels": [
         "RERANKING_MISS",
-        "RERANKING_DISPLACEMENT",
-        "WRONG_PRIMARY"
+        "RERANKING_DISPLACEMENT"
       ]
     },
     {
@@ -116,6 +136,10 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 4985:2021'] failed to enter candidate pool (lexical/semantic gap)",
       "error_labels": [
         "RETRIEVAL_MISS",
         "RETRIEVAL_MISS_LEXICAL_GAP"
@@ -130,13 +154,17 @@
       ],
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
-      "top_candidates": [],
+      "top_candidates": [
+        "IS 3854:2023",
+        "IS/IEC 60947-3",
+        "IS/IEC 60947-3:2012"
+      ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
-        "EXTRACTION_MISS",
-        "PRODUCT_CATEGORY_MISS",
-        "RETRIEVAL_MISS",
-        "RETRIEVAL_MISS_LEXICAL_GAP",
-        "EVIDENCE_MISSING"
+        "FALSE_ABSTENTION_THRESHOLD"
       ]
     },
     {
@@ -147,14 +175,18 @@
         "IS 383:2016"
       ],
       "primary_recommendation": null,
-      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
-        "IS 383:2025",
-        "IS 383:2025",
-        "IS 383:2025",
-        "IS 383:2025",
-        "IS 383:2025"
+        "IS 1195:2002",
+        "IS 7325:1974",
+        "IS 9142 (Part 2):2018",
+        "IS 9377:1979",
+        "IS 2686:1977"
       ],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 383:2016'] failed to enter candidate pool (lexical/semantic gap)",
       "error_labels": [
         "RETRIEVAL_MISS",
         "RETRIEVAL_MISS_LEXICAL_GAP"
@@ -171,11 +203,13 @@
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
         "IS 7098 (Part 1):2025",
-        "IS 7098 (Part 1):2025",
-        "IS 694:2010",
         "IS 694:2010",
         "IS 694"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 2,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
         "RERANKING_MISS",
         "RERANKING_DISPLACEMENT",
@@ -193,10 +227,13 @@
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
         "IS 16102 (Part 1):2026",
-        "IS 16102 (Part 1):2026",
         "IS 16102 (Part 2):2026",
-        "IS 16102 (Part 2):2026"
+        "IS 3854:2023"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
         "FALSE_ABSTENTION_THRESHOLD"
       ]
@@ -208,20 +245,21 @@
       "gold_standards": [
         "IS 8041:2026"
       ],
-      "primary_recommendation": "IS 11652:2017",
-      "decision_state": "INSUFFICIENT_INFORMATION",
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
-        "IS 11652:2017",
-        "IS 11761:2024",
-        "IS 1489 (Part 1):2015",
-        "IS 1489 (Part 1):2015",
-        "IS 12269:1987"
+        "IS 269:2015",
+        "IS 8041:2026",
+        "IS 1489 (Part 1):2015"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 2,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
-        "QUERY_INSUFFICIENT",
-        "RETRIEVAL_MISS",
-        "RETRIEVAL_MISS_LEXICAL_GAP",
-        "WRONG_PRIMARY"
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "FALSE_ABSTENTION_THRESHOLD"
       ]
     },
     {
@@ -232,17 +270,15 @@
         "IS 398 (Part 2):2025"
       ],
       "primary_recommendation": "IS 398 (Part 2):2025",
-      "decision_state": "INSUFFICIENT_INFORMATION",
+      "decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE",
       "top_candidates": [
-        "IS 398 (Part 2):2025",
-        "IS 2121 (Part 1):1981",
-        "IS 2121 (Part 1):1981",
-        "IS 2121 (Part 2):1983",
-        "IS 2121 (Part 2):1983"
+        "IS 398 (Part 2):2025"
       ],
-      "error_labels": [
-        "QUERY_INSUFFICIENT"
-      ]
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "NONE",
+      "failure_stage_explanation": "Authoritative primary standard IS 398 (Part 2):2025 correctly recommended",
+      "error_labels": []
     },
     {
       "query_id": "Q_OWP_009",
@@ -253,13 +289,17 @@
       ],
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
-      "top_candidates": [],
+      "top_candidates": [
+        "IS 2095 (Part 1):2023",
+        "IS 2547 (Part 1):1976",
+        "IS 2095 (Part 2):2022"
+      ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
-        "EXTRACTION_MISS",
-        "PRODUCT_CATEGORY_MISS",
-        "RETRIEVAL_MISS",
-        "RETRIEVAL_MISS_LEXICAL_GAP",
-        "EVIDENCE_MISSING"
+        "FALSE_ABSTENTION_THRESHOLD"
       ]
     },
     {
@@ -269,20 +309,20 @@
       "gold_standards": [
         "IS 12615:2026"
       ],
-      "primary_recommendation": "IS 14578:2025",
+      "primary_recommendation": null,
       "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
+        "IS 12615:2026",
         "IS 14578:2025",
         "IS 7538:1996",
         "IS 8151:2024",
-        "IS 8789:2021",
-        "IS 11537:1985"
+        "IS 8789:2021"
       ],
-      "error_labels": [
-        "RETRIEVAL_MISS",
-        "RETRIEVAL_MISS_LEXICAL_GAP",
-        "WRONG_PRIMARY"
-      ]
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
+      "error_labels": []
     },
     {
       "query_id": "Q_OWC_001",
@@ -294,12 +334,12 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
-        "IS 7098 (Part 1):2025",
-        "IS 7098 (Part 1):2025",
-        "IS 8308:1993",
-        "IS 8309:1993",
-        "IS 8394:1977"
+        "IS 7098 (Part 1):2025"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
         "FALSE_ABSTENTION_THRESHOLD"
       ]
@@ -311,18 +351,22 @@
       "gold_standards": [
         "IS 1180 (Part 1):2014"
       ],
-      "primary_recommendation": "IS 1180 (Part 3):2021",
+      "primary_recommendation": null,
       "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
         "IS 1180 (Part 3):2021",
         "IS 1180 (Part 1):2014",
-        "IS 2026 (Part 1):2011",
-        "IS 19059:2024"
+        "IS 14697:2021",
+        "IS 16444 (Part 2):2017",
+        "IS 2026 (Part 1):2011"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 2,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
       "error_labels": [
         "RERANKING_MISS",
-        "RERANKING_DISPLACEMENT",
-        "WRONG_PRIMARY"
+        "RERANKING_DISPLACEMENT"
       ]
     },
     {
@@ -339,6 +383,10 @@
         "IS 13801:2013",
         "IS 1443:2018"
       ],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "EXTRACTION",
+      "failure_stage_explanation": "Entity extractor failed to identify procurement product",
       "error_labels": [
         "EXTRACTION_MISS",
         "PRODUCT_CATEGORY_MISS",
@@ -354,16 +402,21 @@
       "gold_standards": [
         "IS 6452:2026"
       ],
-      "primary_recommendation": "IS 6452:2026",
-      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
-        "IS 6452:2026",
-        "IS 11652:2017",
-        "IS 6452:2026",
-        "IS 11761:2024",
-        "IS 3535:1986"
+        "IS 1786:2008",
+        "IS 432 (Part 1):2026",
+        "IS 19068:2025"
       ],
-      "error_labels": []
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 6452:2026'] failed to enter candidate pool (lexical/semantic gap)",
+      "error_labels": [
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP"
+      ]
     },
     {
       "query_id": "Q_OWC_005",
@@ -376,11 +429,14 @@
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
         "IS 1489 (Part 1):2015",
-        "IS 1489 (Part 1):2015",
         "IS 12330:1988",
         "IS 12600:1989",
         "IS 16993:2018"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 2,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
         "RERANKING_MISS",
         "RERANKING_DISPLACEMENT",
@@ -394,20 +450,22 @@
       "gold_standards": [
         "IS 4289 (Part 1):2026"
       ],
-      "primary_recommendation": "IS 1554 (Part 1):1988",
+      "primary_recommendation": null,
       "decision_state": "INSUFFICIENT_INFORMATION",
       "top_candidates": [
         "IS 1554 (Part 1):1988",
         "IS 9968 (Part 1):2025",
-        "IS 9968 (Part 1):2025",
         "IS 17505 (Part 1):2021",
         "IS 4289 (Part 1):2026"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 4,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
       "error_labels": [
         "QUERY_INSUFFICIENT",
         "RERANKING_MISS",
-        "RERANKING_DISPLACEMENT",
-        "WRONG_PRIMARY"
+        "RERANKING_DISPLACEMENT"
       ]
     },
     {
@@ -417,15 +475,16 @@
       "gold_standards": [
         "IS 12089:1987"
       ],
-      "primary_recommendation": "IS 12089:1987",
+      "primary_recommendation": null,
       "decision_state": "INSUFFICIENT_INFORMATION",
       "top_candidates": [
         "IS 12089:1987",
-        "IS 455:2015",
-        "IS 455:2015",
-        "IS 455:2015",
         "IS 455:2015"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
       "error_labels": [
         "QUERY_INSUFFICIENT"
       ]
@@ -441,11 +500,13 @@
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
         "IS 694:2010",
-        "IS 694:2010",
-        "IS 7098 (Part 1):2025",
         "IS 7098 (Part 1):2025",
         "IS 7098 (Part 2):2011"
       ],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 5820:2024'] failed to enter candidate pool (lexical/semantic gap)",
       "error_labels": [
         "RETRIEVAL_MISS",
         "RETRIEVAL_MISS_LEXICAL_GAP",
@@ -459,7 +520,7 @@
       "gold_standards": [
         "IS 996:2025"
       ],
-      "primary_recommendation": "IS 14578:2025",
+      "primary_recommendation": null,
       "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
         "IS 14578:2025",
@@ -468,10 +529,13 @@
         "IS 8789:2021",
         "IS 11537:1985"
       ],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 996:2025'] failed to enter candidate pool (lexical/semantic gap)",
       "error_labels": [
         "RETRIEVAL_MISS",
-        "RETRIEVAL_MISS_LEXICAL_GAP",
-        "WRONG_PRIMARY"
+        "RETRIEVAL_MISS_LEXICAL_GAP"
       ]
     },
     {
@@ -485,8 +549,12 @@
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
         "IS 2026 (Part 1):2011",
-        "IS 2026 (Part 1):2011"
+        "IS/IEC 61558-2-6:2021"
       ],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 7391 (Part 1):2026'] failed to enter candidate pool (lexical/semantic gap)",
       "error_labels": [
         "RETRIEVAL_MISS",
         "RETRIEVAL_MISS_LEXICAL_GAP"
@@ -502,10 +570,13 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 1786:2008'] failed to enter candidate pool (lexical/semantic gap)",
       "error_labels": [
         "RETRIEVAL_MISS",
-        "RETRIEVAL_MISS_LEXICAL_GAP",
-        "EVIDENCE_MISSING"
+        "RETRIEVAL_MISS_LEXICAL_GAP"
       ]
     },
     {
@@ -516,14 +587,18 @@
         "IS 4985:2021"
       ],
       "primary_recommendation": null,
-      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "decision_state": "INSUFFICIENT_INFORMATION",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "EXTRACTION",
+      "failure_stage_explanation": "Entity extractor failed to identify procurement product",
       "error_labels": [
+        "QUERY_INSUFFICIENT",
         "EXTRACTION_MISS",
         "PRODUCT_CATEGORY_MISS",
         "RETRIEVAL_MISS",
-        "RETRIEVAL_MISS_LEXICAL_GAP",
-        "EVIDENCE_MISSING"
+        "RETRIEVAL_MISS_LEXICAL_GAP"
       ]
     },
     {
@@ -536,6 +611,10 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "EXTRACTION",
+      "failure_stage_explanation": "Entity extractor failed to identify procurement product",
       "error_labels": [
         "EXTRACTION_MISS",
         "PRODUCT_CATEGORY_MISS",
@@ -551,14 +630,17 @@
       "gold_standards": [
         "IS 1180 (Part 1):2014"
       ],
-      "primary_recommendation": "IS 1180 (Part 1):2014",
+      "primary_recommendation": null,
       "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
         "IS 1180 (Part 1):2014",
         "IS 1180 (Part 3):2021",
-        "IS 2026 (Part 1):2011",
         "IS 2026 (Part 1):2011"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
       "error_labels": []
     },
     {
@@ -571,6 +653,10 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "EXTRACTION",
+      "failure_stage_explanation": "Entity extractor failed to identify procurement product",
       "error_labels": [
         "EXTRACTION_MISS",
         "PRODUCT_CATEGORY_MISS",
@@ -589,6 +675,10 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "EXTRACTION",
+      "failure_stage_explanation": "Entity extractor failed to identify procurement product",
       "error_labels": [
         "EXTRACTION_MISS",
         "PRODUCT_CATEGORY_MISS",
@@ -607,6 +697,10 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 8041:2026'] failed to enter candidate pool (lexical/semantic gap)",
       "error_labels": [
         "RETRIEVAL_MISS",
         "RETRIEVAL_MISS_LEXICAL_GAP",
@@ -624,11 +718,12 @@
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
         "IS 694:2010",
-        "IS 694:2010",
-        "IS 8394:1977",
-        "IS 17505 (Part 1):2021",
-        "IS 9968 (Part 1):2025"
+        "IS 8394:1977"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
         "FALSE_ABSTENTION_THRESHOLD"
       ]
@@ -643,14 +738,19 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
-        "IS 7098 (Part 1):2025",
-        "IS 7098 (Part 1):2025",
         "IS 694",
         "IS 8308:1993",
-        "IS 8309:1993"
+        "IS 8309:1993",
+        "IS 8394:1977",
+        "IS 1885 (Part 2):2017"
       ],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 7098 (Part 1):2025'] failed to enter candidate pool (lexical/semantic gap)",
       "error_labels": [
-        "FALSE_ABSTENTION_THRESHOLD"
+        "RETRIEVAL_MISS",
+        "RETRIEVAL_MISS_LEXICAL_GAP"
       ]
     },
     {
@@ -662,13 +762,17 @@
       ],
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
-      "top_candidates": [],
+      "top_candidates": [
+        "IS 2095 (Part 1):2023",
+        "IS 1542:1992",
+        "IS 2547 (Part 1):1976"
+      ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
-        "EXTRACTION_MISS",
-        "PRODUCT_CATEGORY_MISS",
-        "RETRIEVAL_MISS",
-        "RETRIEVAL_MISS_LEXICAL_GAP",
-        "EVIDENCE_MISSING"
+        "FALSE_ABSTENTION_THRESHOLD"
       ]
     },
     {
@@ -678,19 +782,20 @@
       "gold_standards": [
         "IS 1786:2008"
       ],
-      "primary_recommendation": "IS 16172:2023",
+      "primary_recommendation": null,
       "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
         "IS 16172:2023",
         "IS 1786:2008",
-        "IS 1786:2008",
-        "IS 1786:2008",
         "IS 19068:2025"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 2,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
       "error_labels": [
         "RERANKING_MISS",
-        "RERANKING_DISPLACEMENT",
-        "WRONG_PRIMARY"
+        "RERANKING_DISPLACEMENT"
       ]
     },
     {
@@ -707,8 +812,12 @@
         "IS 4985:2021",
         "IS 10124 (Part 1):2009",
         "IS 17546:2021",
-        "IS 7834 (Part 1):1987"
+        "IS 14735:1999"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 2,
+      "earliest_failure_stage": "RERANKING_DISPLACEMENT",
+      "failure_stage_explanation": "Gold standard was retrieved at rank 2 but displaced by IS 7634 (Part 3):2003",
       "error_labels": [
         "RERANKING_MISS",
         "RERANKING_DISPLACEMENT",
@@ -722,19 +831,21 @@
       "gold_standards": [
         "IS 1180 (Part 1):2014"
       ],
-      "primary_recommendation": "IS 19059:2024",
+      "primary_recommendation": null,
       "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
-        "IS 19059:2024",
         "IS 1180 (Part 3):2021",
         "IS 1180 (Part 1):2014",
-        "IS 19428:2025",
-        "IS 335:2018"
+        "IS 2026 (Part 1):2011",
+        "IS 2026 (Part 11):2021"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 2,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
       "error_labels": [
         "RERANKING_MISS",
-        "RERANKING_DISPLACEMENT",
-        "WRONG_PRIMARY"
+        "RERANKING_DISPLACEMENT"
       ]
     },
     {
@@ -744,21 +855,22 @@
       "gold_standards": [
         "IS 694:2010"
       ],
-      "primary_recommendation": "IS 1554 (Part 1):1988",
+      "primary_recommendation": null,
       "decision_state": "INSUFFICIENT_INFORMATION",
       "top_candidates": [
         "IS 1554 (Part 1):1988",
         "IS 7098 (Part 1):2025",
-        "IS 7098 (Part 1):2025",
         "IS 3961 (Part 6):2016",
         "IS 694:2010"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 4,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
       "error_labels": [
         "QUERY_INSUFFICIENT",
         "RERANKING_MISS",
-        "RERANKING_DISPLACEMENT",
-        "WRONG_PRIMARY",
-        "KNOWN_HARD_NEGATIVE"
+        "RERANKING_DISPLACEMENT"
       ]
     },
     {
@@ -772,11 +884,14 @@
       "decision_state": "NO_CONFIDENT_MATCH",
       "top_candidates": [
         "IS 7098 (Part 1):2025",
-        "IS 7098 (Part 1):2025",
         "IS 3961 (Part 6):2016",
         "IS 694",
         "IS 17048:2018"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
       "error_labels": [
         "FALSE_ABSTENTION_THRESHOLD"
       ]
@@ -791,12 +906,12 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
-        "IS 2430:1986",
-        "IS 2430:1986",
-        "IS 383:2025",
-        "IS 383:2025",
         "IS 383:2025"
       ],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 383:2016'] failed to enter candidate pool (lexical/semantic gap)",
       "error_labels": [
         "RETRIEVAL_MISS",
         "RETRIEVAL_MISS_LEXICAL_GAP"
@@ -811,13 +926,19 @@
       ],
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
-      "top_candidates": [],
+      "top_candidates": [
+        "IS/IEC 60669-2-1:2002",
+        "IS/IEC 60669-2-2:2006",
+        "IS 3854:2023"
+      ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 3,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
-        "EXTRACTION_MISS",
-        "PRODUCT_CATEGORY_MISS",
-        "RETRIEVAL_MISS",
-        "RETRIEVAL_MISS_LEXICAL_GAP",
-        "EVIDENCE_MISSING"
+        "RERANKING_MISS",
+        "RERANKING_DISPLACEMENT",
+        "FALSE_ABSTENTION_THRESHOLD"
       ]
     },
     {
@@ -830,12 +951,14 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
-        "IS 1489 (Part 1):2015",
+        "IS 2110:1980",
         "IS 3535:1986",
-        "IS 1489 (Part 1):2015",
-        "IS 1489 (Part 1):2015",
-        "IS 12269:1987"
+        "IS 1489 (Part 1):2015"
       ],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "INITIAL_RETRIEVAL",
+      "failure_stage_explanation": "Gold standard ['IS 12330:1988'] failed to enter candidate pool (lexical/semantic gap)",
       "error_labels": [
         "RETRIEVAL_MISS",
         "RETRIEVAL_MISS_LEXICAL_GAP"
@@ -852,11 +975,14 @@
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
         "IS 16102 (Part 1):2026",
-        "IS 16102 (Part 1):2026",
-        "IS 15111 (Part 1):2002",
         "IS 16614 (Part 1):2026",
-        "IS 2418 (Part 1):2018"
+        "IS 9974 (Part 1):1981",
+        "IS 16103 (Part 1):2025"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
         "FALSE_ABSTENTION_THRESHOLD"
       ]
@@ -870,13 +996,16 @@
       ],
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
-      "top_candidates": [],
+      "top_candidates": [
+        "IS 2095 (Part 1):2023",
+        "IS 2547 (Part 1):1976"
+      ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
-        "EXTRACTION_MISS",
-        "PRODUCT_CATEGORY_MISS",
-        "RETRIEVAL_MISS",
-        "RETRIEVAL_MISS_LEXICAL_GAP",
-        "EVIDENCE_MISSING"
+        "FALSE_ABSTENTION_THRESHOLD"
       ]
     },
     {
@@ -884,16 +1013,22 @@
       "benchmark_file": "open_world.jsonl",
       "query_text": "Procurement of unplasticized PVC pipes nominal diameter 110 mm rated for 33 kV h",
       "gold_standards": [],
-      "primary_recommendation": "IS 10151:2019",
-      "decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE",
+      "primary_recommendation": null,
+      "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
-        "IS 10151:2019",
+        "IS 7098 (Part 2):2011",
         "IS 13592:2013",
         "IS 15265:2003",
         "IS 18166:2025",
         "IS 4985:2021"
       ],
-      "error_labels": []
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
+      "error_labels": [
+        "CONTRADICTORY_QUERY"
+      ]
     },
     {
       "query_id": "Q_OWX_002",
@@ -901,11 +1036,15 @@
       "query_text": "Supply of 400 kV extra high voltage pole mounted distribution transformer with 5",
       "gold_standards": [],
       "primary_recommendation": null,
-      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
-        "IS 2026 (Part 1):2011",
+        "IS 1180 (Part 3):2021",
         "IS 2026 (Part 1):2011"
       ],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "UNCLASSIFIED",
+      "failure_stage_explanation": "Decision outcome: MULTIPLE_POSSIBLE_STANDARDS",
       "error_labels": []
     },
     {
@@ -916,6 +1055,10 @@
       "primary_recommendation": null,
       "decision_state": "NO_CONFIDENT_MATCH",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "NONE",
+      "failure_stage_explanation": "Correctly abstained on out-of-scope query",
       "error_labels": []
     },
     {
@@ -926,6 +1069,10 @@
       "primary_recommendation": null,
       "decision_state": "NO_CONFIDENT_MATCH",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "NONE",
+      "failure_stage_explanation": "Correctly abstained on out-of-scope query",
       "error_labels": []
     },
     {
@@ -936,6 +1083,10 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "COVERAGE_DETECTION",
+      "failure_stage_explanation": "Failed to identify out-of-scope procurement category",
       "error_labels": [
         "COVERAGE_OUTSIDE_DOMAIN"
       ]
@@ -946,16 +1097,17 @@
       "query_text": "Supply of high-strength deformed rebar made entirely of copper alloy with 500 MP",
       "gold_standards": [],
       "primary_recommendation": null,
-      "decision_state": "EXPERT_REVIEW_REQUIRED",
+      "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
-        "IS 19068:2025",
         "IS 16172:2023",
         "IS 1786:2008",
-        "IS 1786:2008"
+        "IS 432 (Part 1):2026"
       ],
-      "error_labels": [
-        "EVIDENCE_MISSING"
-      ]
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "UNCLASSIFIED",
+      "failure_stage_explanation": "Decision outcome: MULTIPLE_POSSIBLE_STANDARDS",
+      "error_labels": []
     },
     {
       "query_id": "Q_OWX_007",
@@ -968,11 +1120,13 @@
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [
         "IS 2553 (Part 1):2018",
-        "IS 2553 (Part 1):2018",
         "IS 14900:2018",
-        "IS 16978 (Part 1):2022",
         "IS 17004:2018"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "EVIDENCE_GATE",
+      "failure_stage_explanation": "Candidate held for expert review due to unverified scope or lifecycle evidence",
       "error_labels": [
         "FALSE_ABSTENTION_THRESHOLD"
       ]
@@ -984,7 +1138,7 @@
       "gold_standards": [
         "IS 14900:2018"
       ],
-      "primary_recommendation": "IS 14900:2018",
+      "primary_recommendation": null,
       "decision_state": "MULTIPLE_POSSIBLE_STANDARDS",
       "top_candidates": [
         "IS 14900:2018",
@@ -993,6 +1147,10 @@
         "IS 2553 (Part 1):2018",
         "IS 3438:2023"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "APPLICABILITY_FILTER",
+      "failure_stage_explanation": "Candidate standard filtered out by technical applicability rules",
       "error_labels": []
     },
     {
@@ -1007,9 +1165,12 @@
       "top_candidates": [
         "IS 4984:2016",
         "IS 1536:2023",
-        "IS 1536:2023",
         "IS 8329:2000"
       ],
+      "did_gold_enter_candidates": true,
+      "gold_candidate_rank": 1,
+      "earliest_failure_stage": "NONE",
+      "failure_stage_explanation": "Authoritative primary standard IS 4984:2016 correctly recommended",
       "error_labels": []
     },
     {
@@ -1020,6 +1181,10 @@
       "primary_recommendation": null,
       "decision_state": "EXPERT_REVIEW_REQUIRED",
       "top_candidates": [],
+      "did_gold_enter_candidates": false,
+      "gold_candidate_rank": null,
+      "earliest_failure_stage": "EXTRACTION",
+      "failure_stage_explanation": "Entity extractor failed to identify procurement product",
       "error_labels": [
         "EXTRACTION_MISS",
         "PRODUCT_CATEGORY_MISS",

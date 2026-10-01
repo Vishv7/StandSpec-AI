@@ -195,10 +195,11 @@ def is_primary_unsupported(primary: Dict[str, Any]) -> bool:
         has_prov = bool(primary.get("provenance") or primary.get("source_department"))
         return not (has_scope and has_prov)
     
-    scope_ready = bundle.get("scope_ready", False)
-    applicability_ready = bundle.get("applicability_ready", False)
-    lifecycle_ready = bundle.get("lifecycle_ready", False)
-    provenance_ready = bundle.get("provenance_ready", False)
+    dims = (bundle.get("readiness") or {}).get("evidence_dimensions") or {}
+    scope_ready = bundle.get("scope_ready", dims.get("scope_ready", False))
+    applicability_ready = bundle.get("applicability_ready", dims.get("applicability_ready", False))
+    lifecycle_ready = bundle.get("lifecycle_ready", dims.get("lifecycle_ready", False))
+    provenance_ready = bundle.get("provenance_ready", dims.get("provenance_ready", False))
     return not (scope_ready and applicability_ready and lifecycle_ready and provenance_ready)
 
 
