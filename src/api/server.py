@@ -126,6 +126,19 @@ class BatchRecommendRequest(BaseModel):
 
 # ── REST Endpoints ──
 
+@app.get("/")
+def root():
+    """Root status endpoint providing API directory and health reference."""
+    return {
+        "service": "StandSpec AI Gateway",
+        "status": "ONLINE",
+        "version": ENGINE_VERSION,
+        "release_id": RELEASE_ID,
+        "docs_url": "/docs",
+        "health_url": "/api/v1/health",
+    }
+
+
 @app.get("/api/v1/health")
 def health():
     """Returns engine operational status and release metadata."""
