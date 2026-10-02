@@ -35,7 +35,7 @@ app = FastAPI(
 )
 
 # Enable CORS — configurable via environment for security (PS 26108 P1)
-_cors_origins_env = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173")
+_cors_origins_env = os.environ.get("CORS_ALLOWED_ORIGINS", "*")
 _cors_origins = [o.strip() for o in _cors_origins_env.split(",") if o.strip()]
 _allow_credentials = False if "*" in _cors_origins else True
 app.add_middleware(
@@ -43,7 +43,7 @@ app.add_middleware(
     allow_origins=_cors_origins,
     allow_credentials=_allow_credentials,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+    allow_headers=["*"],
 )
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
