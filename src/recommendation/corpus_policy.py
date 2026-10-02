@@ -8,7 +8,60 @@ Determines candidate corpus eligibility strictly via semantic metadata:
 Eliminates arbitrary base-number exclusion lists and fragile substring heuristics.
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional, Set
+
+
+class PrototypeCoveragePolicy:
+    """
+    Central governance policy enforcing prototype department boundary (CED + ETD).
+    Under Problem Statement 26108, the prototype scope is strictly Civil Engineering
+    and Electrotechnical departments. Standards from other departments or with unverified
+    departments cannot be promoted as primary product recommendations.
+    """
+    SUPPORTED_PRIMARY_DEPARTMENTS: Set[str] = {"CED", "ETD"}
+
+    @classmethod
+    def resolve_department(cls, node: Dict[str, Any]) -> Optional[str]:
+        """
+        Resolves canonical department from node metadata:
+        1. primary_department
+        2. department / source_department
+        3. technical committee (e.g. 'ETD 09' -> 'ETD', 'CED 02' -> 'CED')
+        4. source_departments
+        Returns resolved department code (e.g. 'CED', 'ETD', 'TXD') or None.
+        """
+        dept = node.get("primary_department") or node.get("department") or node.get("source_department")
+        if dept and str(dept).strip():
+            d = str(dept).strip().upper()
+            if " " in d:
+                d = d.split()[0]
+            return d
+
+        committee = node.get("committee") or node.get("technical_committee")
+        if committee and str(committee).strip():
+            c = str(committee).strip().upper()
+            prefix = c.split()[0] if " " in c else c
+            if prefix in cls.SUPPORTED_PRIMARY_DEPARTMENTS:
+                return prefix
+
+        src_depts = node.get("source_departments") or []
+        if isinstance(src_depts, list):
+            for sd in src_depts:
+                if sd and str(sd).strip():
+                    d = str(sd).strip().upper()
+                    if " " in d:
+                        d = d.split()[0]
+                    return d
+
+        return None
+
+    @classmethod
+    def is_in_primary_coverage(cls, node: Dict[str, Any]) -> bool:
+        """
+        Returns True if node resolves to a supported primary department (CED or ETD).
+        """
+        dept = cls.resolve_department(node)
+        return bool(dept and dept in cls.SUPPORTED_PRIMARY_DEPARTMENTS)
 
 
 class CandidateEligibilityPolicy:
@@ -16,7 +69,7 @@ class CandidateEligibilityPolicy:
     Authoritative corpus segregation policy for StandSpec AI.
 
     Corpus Segregation Invariants:
-      - PRIMARY_CANDIDATE_CORPUS: Product specifications & design codes (ELIGIBLE).
+      - PRIMARY_CANDIDATE_CORPUS: Product specifications & design codes in CED/ETD (ELIGIBLE).
       - SUPPORTING_CONTEXT_CORPUS: Test methods, terminology, dimensions, codes of practice (SUPPORTING_ONLY).
       - EXTERNAL_REFERENCE_CORPUS: Non-BIS / international standards (ISO, IEC, ASTM).
       - UNKNOWN_ROLE: Searchable for exact references, but NOT promoted as primary product candidate.
@@ -35,8 +88,12 @@ class CandidateEligibilityPolicy:
     def is_primary_candidate(cls, node: Dict[str, Any], intent: str = "SUPPLY") -> bool:
         """
         Determines whether a graph node is eligible for the primary recommendation corpus.
-        Section 6.1: Segregation governed by candidate_status + standard_role + node_type.
+        Section 6.1: Segregation governed by candidate_status + standard_role + node_type + department.
         """
+        # 0. Enforce prototype department boundary (CED + ETD only)
+        if not PrototypeCoveragePolicy.is_in_primary_coverage(node):
+            return False
+
         # 1. External standards belong to external corpus only
         if node.get("node_type") == "EXTERNAL_STANDARD":
             return False

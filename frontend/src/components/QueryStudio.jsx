@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { recommendQuery } from '../api';
 import QueryInput from './QueryStudio/QueryInput';
 import EmptyState from './QueryStudio/EmptyState';
 import AnalysisProgress from './QueryStudio/AnalysisProgress';
@@ -30,23 +31,7 @@ export default function QueryStudio({ evaluationDate }) {
     setError(null);
 
     try {
-      const response = await fetch('/api/v1/query/recommend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: trimmed,
-          mode: mode,
-          evaluation_date: evaluationDate || null,
-          top_k: 5,
-        }),
-      });
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.detail || `Server returned error status ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await recommendQuery(trimmed, mode, evaluationDate);
       setQueryResult(data);
     } catch (err) {
       console.error("Analysis request failed:", err);
@@ -59,8 +44,9 @@ export default function QueryStudio({ evaluationDate }) {
   // Inspect results
   const decisionState = queryResult?.decision_state;
   const primaryRec = queryResult?.primary_recommendation;
-  const isReviewCandidate = decisionState === 'EXPERT_REVIEW_REQUIRED';
-  const displayStandard = primaryRec || (isReviewCandidate && queryResult?.candidate_for_review);
+  const reviewCandidate = queryResult?.review_candidate || queryResult?.candidate_for_review;
+  const isReviewCandidate = decisionState === 'EXPERT_REVIEW_REQUIRED' || (Boolean(reviewCandidate) && !primaryRec);
+  const displayStandard = primaryRec || reviewCandidate;
   const candidates = queryResult?.candidate_recommendations || queryResult?.candidates || [];
   const alliedStandards = queryResult?.allied_standards || [];
   const rejectedCandidates = queryResult?.rejected_candidates || [];
@@ -71,6 +57,8 @@ export default function QueryStudio({ evaluationDate }) {
     'CLARIFICATION_REQUIRED',
     'NO_CONFIDENT_MATCH',
     'OUTSIDE_PROTOTYPE_COVERAGE',
+    'CONTRADICTORY_SPECIFICATIONS',
+    'STANDARD_DATA_UNAVAILABLE',
     'SUPERSEDED_STANDARD_IN_QUERY',
     'AMBIGUOUS_QUERY_VOLTAGE_OR_MATERIAL_ABSENT',
   ].includes(decisionState);

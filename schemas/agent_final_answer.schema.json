@@ -23,7 +23,8 @@
         "STANDARD_DATA_UNAVAILABLE",
         "OUTSIDE_PROTOTYPE_COVERAGE",
         "EXPERT_REVIEW_REQUIRED",
-        "CLARIFICATION_REQUIRED"
+        "CLARIFICATION_REQUIRED",
+        "CONTRADICTORY_SPECIFICATIONS"
       ]
     },
     "primary_recommendation": {

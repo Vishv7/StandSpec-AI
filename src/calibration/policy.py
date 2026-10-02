@@ -2,6 +2,9 @@
 Calibrated Selective Abstention Policy — StandSpec AI (Layer 5 Calibration)
 Decides whether to recommend or abstain based on calibrated posterior probabilities,
 confidence margins, technical applicability, and missing discriminators.
+
+Phase 10 Enhancement: Evidence-aware abstention with structured reasons,
+integration with discriminator policy, and abstention metadata.
 """
 
 from typing import List, Dict, Any, Optional, Tuple
@@ -137,3 +140,100 @@ class SelectiveAbstentionPolicy:
                 None,
                 viable,
             )
+
+    def build_abstention_metadata(
+        self,
+        decision_state: str,
+        abstention_reason: Optional[str],
+        primary_rec: Optional[Dict[str, Any]],
+        viable_recs: List[Dict[str, Any]],
+        missing_discriminators: Optional[List[str]] = None,
+        evidence_gaps: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Build structured abstention metadata for any decision outcome.
+        Phase 10: Provides structured, actionable abstention context.
+        """
+        is_abstention = decision_state in (
+            "NO_CONFIDENT_MATCH", "INSUFFICIENT_INFORMATION",
+            "OUTSIDE_PROTOTYPE_COVERAGE", "CONTRADICTORY_SPECIFICATIONS",
+        )
+        is_review = decision_state == "EXPERT_REVIEW_REQUIRED"
+        is_conditional = decision_state == "CONDITIONAL_RECOMMENDATION"
+        is_ambiguous = decision_state == "MULTIPLE_POSSIBLE_STANDARDS"
+
+        metadata = {
+            "decision_state": decision_state,
+            "is_abstention": is_abstention,
+            "is_review": is_review,
+            "is_conditional": is_conditional,
+            "is_ambiguous": is_ambiguous,
+            "is_positive": decision_state == "PRIMARY_RECOMMENDATION_AVAILABLE",
+            "abstention_reason": abstention_reason,
+            "abstention_category": self._categorize_abstention(decision_state, abstention_reason),
+            "user_actionable": self._generate_user_action(decision_state, missing_discriminators, evidence_gaps),
+            "confidence_context": {
+                "tau_recommend": self.tau_recommend,
+                "tau_min": self.tau_min,
+                "delta_margin": self.delta_margin,
+                "top_candidate_confidence": primary_rec.get("calibrated_confidence") if primary_rec else None,
+                "num_viable": len(viable_recs),
+            },
+            "missing_discriminators": missing_discriminators or [],
+            "evidence_gaps": evidence_gaps or [],
+        }
+
+        return metadata
+
+    def _categorize_abstention(
+        self,
+        decision_state: str,
+        abstention_reason: Optional[str],
+    ) -> str:
+        """
+        Categorize the abstention into a high-level category.
+        Phase 10: Structured categories for UI rendering and analytics.
+        """
+        category_map = {
+            "NO_CONFIDENT_MATCH": "CONFIDENCE_INSUFFICIENT",
+            "INSUFFICIENT_INFORMATION": "QUERY_UNDERSPECIFIED",
+            "OUTSIDE_PROTOTYPE_COVERAGE": "DOMAIN_OUT_OF_SCOPE",
+            "CONTRADICTORY_SPECIFICATIONS": "QUERY_INVALID",
+            "EXPERT_REVIEW_REQUIRED": "EVIDENCE_INSUFFICIENT",
+            "MULTIPLE_POSSIBLE_STANDARDS": "AMBIGUOUS_MATCH",
+            "CONDITIONAL_RECOMMENDATION": "PARTIAL_VERIFICATION",
+            "PRIMARY_RECOMMENDATION_AVAILABLE": "NONE",
+        }
+        return category_map.get(decision_state, "UNKNOWN")
+
+    def _generate_user_action(
+        self,
+        decision_state: str,
+        missing_discriminators: Optional[List[str]] = None,
+        evidence_gaps: Optional[List[str]] = None,
+    ) -> str:
+        """
+        Generate an actionable suggestion for the user.
+        Phase 10: Evidence-aware, specific suggestions.
+        """
+        if decision_state == "INSUFFICIENT_INFORMATION" and missing_discriminators:
+            disc_list = ", ".join(missing_discriminators[:5])
+            return f"Provide the following missing specifications: {disc_list}"
+
+        if decision_state == "CONTRADICTORY_SPECIFICATIONS":
+            return "Review and resolve the contradictory technical requirements in the tender specification."
+
+        if decision_state == "OUTSIDE_PROTOTYPE_COVERAGE":
+            return "This product category is outside the current system scope (CED + ETD divisions). Consult BIS directly."
+
+        if decision_state == "EXPERT_REVIEW_REQUIRED" and evidence_gaps:
+            gap_list = ", ".join(evidence_gaps[:5])
+            return f"Expert review required due to: {gap_list}"
+
+        if decision_state == "MULTIPLE_POSSIBLE_STANDARDS":
+            return "Provide additional discriminating specifications (material, voltage class, grade, application) to narrow the match."
+
+        if decision_state == "NO_CONFIDENT_MATCH":
+            return "Refine the procurement query with more specific technical parameters or consult domain experts."
+
+        return "Review the recommendation details."

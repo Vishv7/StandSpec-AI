@@ -99,12 +99,12 @@ def test_consistent_procurement_queries(query):
 
 
 def test_engine_blocks_contradictory_query():
-    """Engine recommend() must abstain with INSUFFICIENT_INFORMATION and primary_recommendation=None on contradictions."""
+    """Engine recommend() must abstain with CONTRADICTORY_SPECIFICATIONS and primary_recommendation=None on contradictions."""
     engine = StandSpecRecommendationEngine({"nodes": [], "edges": []})
 
     # Within-domain contradiction
     res1 = engine.recommend("Supply of 43 grade and 53 grade cement for structural columns")
-    assert res1["decision_state"] == "INSUFFICIENT_INFORMATION"
+    assert res1["decision_state"] == "CONTRADICTORY_SPECIFICATIONS"
     assert res1["primary_recommendation"] is None
     assert len(res1["contradictions"]) >= 1
     assert res1["clarification_prompt"] is not None
@@ -118,7 +118,7 @@ def test_engine_blocks_contradictory_query():
 
     # Cross-domain contradiction
     res2 = engine.recommend("HDPE pipe with 33kV XLPE insulation")
-    assert res2["decision_state"] == "INSUFFICIENT_INFORMATION"
+    assert res2["decision_state"] == "CONTRADICTORY_SPECIFICATIONS"
     assert res2["primary_recommendation"] is None
     assert len(res2["contradictions"]) >= 1
     assert "civil piping and electrical equipment" in res2["clarification_prompt"]

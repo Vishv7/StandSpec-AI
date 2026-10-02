@@ -156,9 +156,10 @@ def evaluate_engine_on_benchmark(benchmark_path: Path, graph_path: Path, top_k: 
         # 4. Regulatory Status Match
         rec_for_reg = primary_rec or review_cand
         if rec_for_reg:
-            reg_status = (rec_for_reg.get("regulatory") or {}).get("regulatory_state")
-            if (expected_reg == "MANDATORY" and reg_status == "MANDATORY_CONFIRMED") or (
-                expected_reg != "MANDATORY" and reg_status != "MANDATORY_CONFIRMED"
+            reg_dict = rec_for_reg.get("regulatory") or {}
+            reg_status = reg_dict.get("state") or reg_dict.get("regulatory_state")
+            if (expected_reg == "MANDATORY" and reg_status in ("MANDATORY_CONFIRMED", "MANDATORY_CONDITIONALLY_APPLICABLE")) or (
+                expected_reg != "MANDATORY" and reg_status not in ("MANDATORY_CONFIRMED", "MANDATORY_CONDITIONALLY_APPLICABLE")
             ):
                 regulatory_matches += 1
 
@@ -286,7 +287,12 @@ def print_report(results: dict, benchmark_path: Path):
     print(f"WRONG_PART_PRIMARY_RATE:            {results.get('wrong_part_primary_rate', 0.0):>7.2%}")
     print(f"WRONG_EDITION_PRIMARY_RATE:         {results.get('wrong_edition_primary_rate', 0.0):>7.2%}")
     print(f"REGULATORY_FALSE_ASSERTION_RATE:    {results.get('regulatory_false_assertion_rate', 0.0):>7.2%}")
-    print(f"SAFE_PRIMARY_RATE:                  {results.get('safe_primary_rate', 1.0):>7.2%}")
+    safe_prim = results.get('safe_primary_rate')
+    safe_prim_str = f"{safe_prim:>7.2%}" if safe_prim is not None else "    N/A"
+    safe_abst = results.get('safe_abstention_rate')
+    safe_abst_str = f"{safe_abst:>7.2%}" if safe_abst is not None else "    N/A"
+
+    print(f"SAFE_PRIMARY_RATE:                  {safe_prim_str}")
     print(f"COMPOSITE_UNSAFE_PRIMARY_RATE:      {results['unsafe_primary_rate']:>7.2%}")
     print("-" * 70)
     print(f"1.  Candidate Recall@5:              {results['candidate_recall_at_5']:>7.2%}")
@@ -296,7 +302,7 @@ def print_report(results: dict, benchmark_path: Path):
     print(f"5.  Outside-Coverage Accuracy:       {results['outside_coverage_accuracy']:>7.2%}")
     print(f"6.  Safe Decision Contract Accuracy: {results['safe_decision_accuracy']:>7.2%}")
     print(f"7.  Legacy Raw Decision Match:       {results['decision_accuracy_raw']:>7.2%}")
-    print(f"8.  Safe Abstention Rate on Unready: {results['safe_abstention_rate']:>7.2%}")
+    print(f"8.  Safe Abstention Rate on Unready: {safe_abst_str}")
     print(f"9.  Regulatory Mandate Accuracy:     {results['regulatory_accuracy']:>7.2%}")
     print("-" * 70)
     print(f"10. Hard Negative Rejection (HNRR@1):{results['hnrr_at1']:>7.2%}  ({results['total_hard_negatives']} evaluated)")

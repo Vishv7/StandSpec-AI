@@ -40,12 +40,40 @@ class TenderPDFExtractor:
         metadata = self._extract_metadata(all_text, filename)
         clauses = self._segment_clauses(pages_text)
 
+        pages_with_text = sum(1 for p in pages_text if len(p["text"].strip()) > 0)
+        pages_without_text = num_pages - pages_with_text
+        scanned_pdf_detected = (pages_with_text == 0) or (num_pages > 1 and (pages_without_text / num_pages) > 0.7)
+        table_like_count = sum(
+            1 for p in pages_text for line in p["text"].split("\n")
+            if line.count("|") >= 2 or line.count("\t") >= 2
+        )
+        extraction_warnings = []
+        if scanned_pdf_detected:
+            extraction_warnings.append("Scanned or image-only PDF detected; text extraction may be incomplete.")
+        if table_like_count > 0:
+            extraction_warnings.append(f"{table_like_count} table-like line structures detected; tabular extraction is heuristic.")
+        if num_pages == 0:
+            extraction_warnings.append("PDF document contains zero pages.")
+
+        extraction_metadata = {
+            "extraction_method": "pypdf_text_extraction",
+            "page_count": num_pages,
+            "pages_with_text": pages_with_text,
+            "pages_without_text": pages_without_text,
+            "scanned_pdf_detected": scanned_pdf_detected,
+            "clause_count": len(clauses),
+            "technical_clause_count": sum(1 for c in clauses if c.get("is_technical", False)),
+            "table_like_regions": table_like_count,
+            "extraction_warnings": extraction_warnings,
+        }
+
         return {
             "document_id": f"DOC_{uuid.uuid4().hex[:10].upper()}",
             "filename": filename,
             "page_count": num_pages,
             "uploaded_at": datetime.now(timezone.utc).isoformat(),
             "tender_metadata": metadata,
+            "extraction_metadata": extraction_metadata,
             "total_extracted_clauses": len(clauses),
             "clauses": clauses,
         }
@@ -88,13 +116,18 @@ class TenderPDFExtractor:
                 detected_authority = auth
                 break
 
-        # Tender Date pattern
+        # Tender Date pattern — do NOT default missing dates to current date (PS 26108 P1)
         date_match = re.search(
             r'(?:dated?|date\s*of\s*issue|published\s*on)\s*[:\-]?\s*(\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}|\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4})',
             text,
             re.IGNORECASE,
         )
-        tender_date = date_match.group(1).strip() if date_match else datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        if date_match:
+            tender_date = date_match.group(1).strip()
+            tender_date_state = "VERIFIED_EXTRACTED"
+        else:
+            tender_date = None
+            tender_date_state = "NOT_VERIFIED"
 
         # Title extraction (heuristic: first non-empty lines)
         lines = [l.strip() for l in text.split("\n") if len(l.strip()) > 15]
@@ -107,6 +140,7 @@ class TenderPDFExtractor:
             "title": title,
             "issuing_authority": detected_authority,
             "publish_date": tender_date,
+            "publish_date_state": tender_date_state,
         }
 
     def _segment_clauses(self, pages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -212,9 +246,17 @@ class TenderPDFExtractor:
         else:
             domain = "General Procurement"
 
-        # Check for cited standard
-        cited_match = re.search(r'\b(IS\s*\d+(?:\s*(?:Part|\()\s*\d+[^\)]*\)?)?(?::\d{4})?)\b', text, re.IGNORECASE)
-        cited_standard = cited_match.group(1).strip() if cited_match else None
+        # Check for cited standard (supports IS 4985:2021, IS/IEC 60079-1, IS: 1239 (Part 1), IS 7098 (Part 1):1988)
+        cited_match = re.search(
+            r'\b(?:IS|IS/IEC|IS/ISO)\s*[:\-\s]?\s*(\d+(?:\s*(?:Part|Pt\.?|\()\s*[\dA-Za-z]+(?:\s*/\s*Sec\s*[\dA-Za-z]+)?[^\)]*\)?)?(?:\s*:\s*\d{4})?)\b',
+            text,
+            re.IGNORECASE
+        )
+        cited_standard = None
+        if cited_match:
+            raw_match = cited_match.group(0).strip()
+            cleaned = re.sub(r'\s+', ' ', raw_match).replace("IS :", "IS").replace("IS -", "IS")
+            cited_standard = cleaned
 
         extracted_summary: Dict[str, Any] = {}
         for k in ["product", "voltage", "material", "dimensions", "grade", "application", "installation"]:
@@ -228,9 +270,16 @@ class TenderPDFExtractor:
         return {
             "item_id": f"ITEM_{counter:03d}",
             "clause_reference": f"{ref} (Page {page_no})",
+            "section": f"Page {page_no}",
+            "clause_number": str(ref_num or counter),
             "clause_type": clause_type,
             "is_technical": (clause_type == "TECHNICAL_PROCUREMENT"),
             "raw_text": text,
+            "text_span": {
+                "length": len(text),
+                "start_snippet": text[:50],
+                "end_snippet": text[-50:] if len(text) > 50 else text,
+            },
             "page_number": page_no,
             "domain": domain,
             "extracted_entities": extracted_summary,

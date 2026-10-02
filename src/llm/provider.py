@@ -141,6 +141,77 @@ class GeminiLLMProvider(BaseLLMProvider):
             raise RuntimeError(f"Gemini LLM generation failed: {err_msg}")
 
 
+class OpenAICompatibleLLMProvider(BaseLLMProvider):
+    """
+    OpenAI-compatible LLM Provider supporting Groq, Ollama, OpenRouter, Together AI, Mistral.
+    Uses standard POST /chat/completions payload with Bearer authentication and bounded timeout.
+    """
+
+    def __init__(
+        self,
+        base_url: Optional[str] = None,
+        api_key: Optional[str] = None,
+        model_name: Optional[str] = None,
+        timeout_seconds: Optional[int] = None,
+    ):
+        self.base_url = (base_url or os.environ.get("STANDSPEC_LLM_BASE_URL", "https://api.groq.com/openai/v1")).rstrip("/")
+        self.api_key = api_key or os.environ.get("STANDSPEC_LLM_API_KEY") or os.environ.get("GROQ_API_KEY") or os.environ.get("OPENAI_API_KEY", "")
+        raw_model = model_name or os.environ.get("STANDSPEC_LLM_MODEL", "openai/gpt-oss-120b")
+        if raw_model in ("llama-3.3-70b-versatile", "llama-3.1-70b-versatile"):
+            raw_model = "openai/gpt-oss-120b"
+        self.model_name = raw_model
+        timeout_env = os.environ.get("STANDSPEC_LLM_TIMEOUT_SECONDS")
+        self.timeout_seconds = timeout_seconds or (int(timeout_env) if timeout_env else 15)
+
+    def is_available(self) -> bool:
+        llm_enabled = os.environ.get("STANDSPEC_LLM_ENABLED", "").lower() in ("1", "true", "yes")
+        has_key_or_local = bool(self.api_key) or "localhost" in self.base_url or "127.0.0.1" in self.base_url
+        return llm_enabled and has_key_or_local
+
+    def generate(self, prompt: str, system_instruction: Optional[str] = None, json_mode: bool = False) -> str:
+        if not self.is_available():
+            raise RuntimeError("OpenAICompatibleLLMProvider unavailable: LLM is disabled or credentials not configured.")
+
+        import httpx
+
+        messages = []
+        if system_instruction:
+            messages.append({"role": "system", "content": system_instruction})
+        messages.append({"role": "user", "content": prompt})
+
+        headers = {
+            "Content-Type": "application/json",
+        }
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        payload = {
+            "model": self.model_name,
+            "messages": messages,
+            "temperature": 0.0,
+        }
+        if json_mode:
+            payload["response_format"] = {"type": "json_object"}
+
+        endpoint = f"{self.base_url}/chat/completions"
+        try:
+            with httpx.Client(timeout=self.timeout_seconds) as client:
+                resp = client.post(endpoint, json=payload, headers=headers)
+                if resp.status_code != 200:
+                    raise RuntimeError(f"HTTP {resp.status_code}: {resp.text[:200]}")
+                data = resp.json()
+                choice = data.get("choices", [{}])[0]
+                text = choice.get("message", {}).get("content", "")
+                if not text:
+                    raise RuntimeError("Empty response content from OpenAI-compatible provider.")
+                return text
+        except Exception as e:
+            err_msg = str(e)
+            if self.api_key and self.api_key in err_msg:
+                err_msg = err_msg.replace(self.api_key, "[REDACTED_API_KEY]")
+            raise RuntimeError(f"OpenAI-compatible LLM generation failed: {err_msg}")
+
+
 class DisabledLLMProvider(BaseLLMProvider):
     """
     Explicitly disabled LLM provider for zero-LLM / production hardened offline operation.
@@ -197,7 +268,7 @@ def get_llm_provider() -> BaseLLMProvider:
     """
     Factory to return the configured LLM provider according to environment variables:
     - STANDSPEC_LLM_ENABLED: ("true", "1", "yes") to activate live LLM. Default False.
-    - STANDSPEC_LLM_PROVIDER: "gemini", "mock", or "disabled".
+    - STANDSPEC_LLM_PROVIDER: "gemini", "openai", "groq", "ollama", "openrouter", "mock", or "disabled".
     """
     _load_env_file()
     enabled = os.environ.get("STANDSPEC_LLM_ENABLED", "").lower() in ("1", "true", "yes")
@@ -208,6 +279,9 @@ def get_llm_provider() -> BaseLLMProvider:
 
     if not enabled or provider_name == "disabled":
         return DisabledLLMProvider()
+
+    if provider_name in ("openai", "groq", "ollama", "openrouter"):
+        return OpenAICompatibleLLMProvider()
 
     if provider_name in ("gemini", ""):
         return GeminiLLMProvider()

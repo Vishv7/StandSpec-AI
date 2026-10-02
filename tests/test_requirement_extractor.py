@@ -145,3 +145,35 @@ def test_deterministic_input_hash():
     assert res1["requirements"] == res2["requirements"]
     assert res1["extractor_version"] == res2["extractor_version"]
 
+
+def test_multilingual_semantic_equivalence():
+    """Section 22: '110 mm ka HDPE paani ka pipe' and English equivalent produce matching technical product and material."""
+    extractor = RequirementExtractor()
+    hinglish_text = "110 mm ka HDPE paani ka pipe"
+    english_text = "110 mm HDPE potable water pipe"
+
+    res_hinglish = extractor.extract(hinglish_text)
+    res_english = extractor.extract(english_text)
+
+    # Product normalization matches
+    assert res_hinglish["requirements"]["product"]["normalization"] == "HDPE Pipes for Water Supply"
+    assert res_english["requirements"]["product"]["normalization"] == "HDPE Pipes for Water Supply"
+
+    # Material normalization matches
+    assert res_hinglish["requirements"]["material"]["normalization"] == "HDPE"
+    assert res_english["requirements"]["material"]["normalization"] == "HDPE"
+
+    # Dimensions preserved
+    assert "110" in res_hinglish["requirements"]["dimensions"]["value"]
+    assert "110" in res_english["requirements"]["dimensions"]["value"]
+
+
+def test_longest_first_material_normalization():
+    """Section 23: Compound materials must match before single-word substrings (e.g. stainless steel before steel)."""
+    from src.extraction.normalizer import normalize_material
+    assert normalize_material("stainless steel plate") == "Stainless Steel"
+    assert normalize_material("high density polyethylene pipe") == "High Density Polyethylene (HDPE)"
+    assert normalize_material("crosslinked polyethylene cable") == "Crosslinked Polyethylene (XLPE)"
+    assert normalize_material("rapid hardening portland cement") == "Rapid Hardening Portland Cement"
+
+

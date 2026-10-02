@@ -6,7 +6,7 @@ const STATE_CONFIG = {
     badgeClass: "bg-emerald-100 text-emerald-900 border-emerald-300",
     icon: "verified",
     iconColor: "text-emerald-600",
-    description: "Authoritative Indian Standard identified and verified against technical requirements.",
+    description: "Primary recommendation available based on the currently verified evidence.",
   },
   CONDITIONAL_RECOMMENDATION: {
     label: "Conditional Recommendation",
@@ -20,14 +20,14 @@ const STATE_CONFIG = {
     badgeClass: "bg-blue-100 text-blue-900 border-blue-300",
     icon: "difference",
     iconColor: "text-blue-600",
-    description: "Multiple Indian Standards are applicable across different sub-clauses or construction types.",
+    description: "Multiple plausible standards remain after the current evidence and applicability checks.",
   },
   EXPERT_REVIEW_REQUIRED: {
     label: "Expert Review Required",
     badgeClass: "bg-amber-100 text-amber-900 border-amber-300",
     icon: "engineering",
     iconColor: "text-amber-600",
-    description: "Potentially relevant candidate found, but available scope evidence is insufficient for autonomous sign-off.",
+    description: "Potentially relevant candidate found, but available scope evidence is insufficient for autonomous recommendation.",
   },
   INSUFFICIENT_INFORMATION: {
     label: "Insufficient Information",
@@ -62,14 +62,14 @@ const STATE_CONFIG = {
     badgeClass: "bg-purple-100 text-purple-900 border-purple-300",
     icon: "domain_disabled",
     iconColor: "text-purple-600",
-    description: "Requirement falls outside Civil Engineering (CED) and Electrotechnical (ETD) prototype scope.",
+    description: "This query is outside the current CED + ETD prototype coverage.",
   },
   SUPERSEDED_STANDARD_IN_QUERY: {
     label: "Superseded Standard Cited",
     badgeClass: "bg-rose-100 text-rose-900 border-rose-400",
     icon: "history_toggle_off",
     iconColor: "text-rose-600",
-    description: "The specification cites a withdrawn or historical standard edition that must be updated.",
+    description: "The cited edition appears superseded according to the lifecycle evidence.",
   },
   CONTRADICTORY_SPECIFICATIONS: {
     label: "Contradictory Specifications",

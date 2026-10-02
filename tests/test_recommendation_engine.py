@@ -28,6 +28,8 @@ def mini_graph():
                 "is_hydrated": True,
                 "is_recommendation_eligible": True,
                 "recommendation_ready": True,
+                "publication_date": "2011-01-01",
+                "lifecycle_status": "ACTIVE",
             },
             {
                 "id": "IS 1554 (Part 1):1988",

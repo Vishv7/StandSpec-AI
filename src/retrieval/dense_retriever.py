@@ -26,7 +26,7 @@ class DeterministicSemanticProjection:
     model_loaded: bool = True
     fallback_used: bool = False
     fallback_reason: Optional[str] = None
-    effective_mode: str = "DENSE_DETERMINISTIC"
+    effective_mode: str = "DETERMINISTIC_DENSE_FALLBACK"
     index_version: str = "v2.1"
 
     def __init__(self, embedding_dim: int = 384):
@@ -177,13 +177,13 @@ class MultilingualDenseRetriever:
             self.model_loaded = True
             self.fallback_used = False
             self.fallback_reason = None
-            self.effective_mode = "NEURAL_DENSE"
+            self.effective_mode = "NEURAL_MULTILINGUAL_DENSE"
         except Exception as e:
             self._st_model = None
             self.model_loaded = False
             self.fallback_used = True
             self.fallback_reason = f"Neural embedding model load failed: {str(e)}"
-            self.effective_mode = "HASHED_FALLBACK"
+            self.effective_mode = "DETERMINISTIC_DENSE_FALLBACK"
 
     def get_metadata(self) -> Dict[str, Any]:
         return {

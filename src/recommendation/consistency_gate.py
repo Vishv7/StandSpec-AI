@@ -268,7 +268,7 @@ class RequirementConsistencyGate:
         return ConsistencyCheckResult(
             is_consistent=False,
             contradictions=contradictions,
-            decision_state="INSUFFICIENT_INFORMATION",
+            decision_state="CONTRADICTORY_SPECIFICATIONS",
             abstention_reason=abstention_reason,
             clarification_message=clarification_msg,
         )

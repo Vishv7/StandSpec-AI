@@ -97,6 +97,7 @@ class DeterministicValidator:
             "OUTSIDE_PROTOTYPE_COVERAGE",
             "EXPERT_REVIEW_REQUIRED",
             "CLARIFICATION_REQUIRED",
+            "CONTRADICTORY_SPECIFICATIONS",
         )
         if not decision_state or decision_state not in valid_states:
             errors.append(f"Invalid or missing decision_state: '{decision_state}'. Must be one of {valid_states}.")
@@ -124,6 +125,7 @@ class DeterministicValidator:
             "EXPERT_REVIEW_REQUIRED",
             "CLARIFICATION_REQUIRED",
             "STANDARD_DATA_UNAVAILABLE",
+            "CONTRADICTORY_SPECIFICATIONS",
         )
         if decision_state in abstention_states and primary is not None:
             errors.append(f"State '{decision_state}' must have primary_recommendation=null, but primary was proposed.")
@@ -140,6 +142,16 @@ class DeterministicValidator:
                     f"Hallucinated candidate: '{desig}' was neither returned by search_standards nor explicitly requested."
                 )
                 veto_reasons.append("HALLUCINATED_DESIGNATION")
+
+            # ── GATE 2B: Prototype Department Boundary Gate (CED + ETD Only) ──
+            node = self.nodes_by_desig.get(desig) or self.nodes_by_desig.get(base_desig)
+            if node:
+                from src.recommendation.corpus_policy import PrototypeCoveragePolicy
+                if not PrototypeCoveragePolicy.is_in_primary_coverage(node):
+                    errors.append(
+                        f"Department Boundary Veto: '{desig}' is outside supported prototype departments (CED/ETD only)."
+                    )
+                    veto_reasons.append("OUTSIDE_PROTOTYPE_COVERAGE")
 
             # ── GATE 3: Role Validity (No Supporting Standards as Primary Products) ──
             cand_meta = next((c for c in retrieved_candidates if self._resolve_base(c.get("designation", "")) == base_desig), None)

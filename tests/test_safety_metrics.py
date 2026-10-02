@@ -266,3 +266,199 @@ def test_safe_primary_recommendation_all_criteria_met():
     assert res["wrong_role_primary_rate"] == 0.0
     assert res["wrong_edition_primary_rate"] == 0.0
     assert res["unsafe_primary_rate"] == 0.0
+
+
+def test_safe_abstention_no_opportunities():
+    """Section 45: Denominator is zero when no queries require abstention -> rate is None, bounded."""
+    query = {
+        "query_id": "Q_IN_SCOPE_1",
+        "expected_coverage_state": "IN_PROTOTYPE_COVERAGE",
+        "gold_standards": [{"standard_designation": "IS 4984:2016", "base_number": "4984"}],
+        "expected_decision": {"query_level_state": "PRIMARY_RECOMMENDATION_AVAILABLE"},
+        "expected_safe_decision": "PRIMARY_RECOMMENDATION_AVAILABLE",
+        "expected_evidence_state": "SCOPE_AVAILABLE",
+    }
+    output = {
+        "decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE",
+        "primary_recommendation": {
+            "standard_designation": "IS 4984:2016",
+            "base_number": "4984",
+            "standard_role": "PRODUCT_SPECIFICATION",
+            "evidence_bundle": {
+                "scope_ready": True, "applicability_ready": True,
+                "lifecycle_ready": True, "provenance_ready": True,
+            },
+            "lifecycle": {"status": "ACTIVE", "is_superseded": False},
+        },
+    }
+    res = compute_safety_metrics([query], [output])
+    assert res["abstention_opportunities"] == 0
+    assert res["safe_abstentions_count"] == 0
+    assert res["safe_abstention_rate"] is None
+
+
+def test_safe_abstention_one_opportunity_safe():
+    """Section 45: One query expecting abstention, engine safely abstains -> rate 1.0."""
+    query = {
+        "query_id": "Q_ABSTAIN_1",
+        "expected_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "gold_standards": [],
+        "expected_decision": {"query_level_state": "OUTSIDE_PROTOTYPE_COVERAGE"},
+    }
+    output = {
+        "decision_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "primary_recommendation": None,
+        "review_candidate": None,
+    }
+    res = compute_safety_metrics([query], [output])
+    assert res["abstention_opportunities"] == 1
+    assert res["safe_abstentions_count"] == 1
+    assert res["safe_abstention_rate"] == 1.0
+
+
+def test_safe_abstention_one_opportunity_false():
+    """Section 45: One query expecting abstention, engine wrongly emits primary -> rate 0.0."""
+    query = {
+        "query_id": "Q_ABSTAIN_2",
+        "expected_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+        "gold_standards": [],
+        "expected_decision": {"query_level_state": "OUTSIDE_PROTOTYPE_COVERAGE"},
+    }
+    output = {
+        "decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE",
+        "primary_recommendation": {
+            "standard_designation": "IS 9999:2020",
+            "standard_role": "PRODUCT_SPECIFICATION",
+            "lifecycle": {"status": "ACTIVE", "is_superseded": False},
+        },
+        "review_candidate": None,
+    }
+    res = compute_safety_metrics([query], [output])
+    assert res["abstention_opportunities"] == 1
+    assert res["safe_abstentions_count"] == 0
+    assert res["safe_abstention_rate"] == 0.0
+
+
+def test_safe_abstention_mixed_population():
+    """Section 45: Mixed set of abstention opportunities and primary recommendations."""
+    queries = [
+        # Opportunity 1: Outside coverage -> safely abstained
+        {
+            "query_id": "Q_1",
+            "expected_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+            "gold_standards": [],
+            "expected_decision": {"query_level_state": "OUTSIDE_PROTOTYPE_COVERAGE"},
+        },
+        # Opportunity 2: Insufficient info -> wrongly promoted primary
+        {
+            "query_id": "Q_2",
+            "expected_coverage_state": "IN_PROTOTYPE_COVERAGE",
+            "gold_standards": [],
+            "expected_decision": {"query_level_state": "INSUFFICIENT_INFORMATION"},
+        },
+        # Opportunity 3: Expert review required -> safely abstained with review
+        {
+            "query_id": "Q_3",
+            "expected_coverage_state": "IN_PROTOTYPE_COVERAGE",
+            "gold_standards": [{"standard_designation": "IS 4984:2016"}],
+            "expected_decision": {"query_level_state": "EXPERT_REVIEW_REQUIRED"},
+        },
+        # Non-opportunity: Clear primary expected
+        {
+            "query_id": "Q_4",
+            "expected_coverage_state": "IN_PROTOTYPE_COVERAGE",
+            "gold_standards": [{"standard_designation": "IS 4985:2021", "base_number": "4985"}],
+            "expected_decision": {"query_level_state": "PRIMARY_RECOMMENDATION_AVAILABLE"},
+        },
+    ]
+    outputs = [
+        {"decision_state": "OUTSIDE_PROTOTYPE_COVERAGE", "primary_recommendation": None},
+        {"decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE", "primary_recommendation": {"standard_designation": "IS 1234:2020", "lifecycle": {"status": "ACTIVE"}}},
+        {"decision_state": "EXPERT_REVIEW_REQUIRED", "primary_recommendation": None, "review_candidate": {"standard_designation": "IS 4984:2016"}},
+        {"decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE", "primary_recommendation": {"standard_designation": "IS 4985:2021", "base_number": "4985", "standard_role": "PRODUCT_SPECIFICATION", "evidence_bundle": {"scope_ready": True, "applicability_ready": True, "lifecycle_ready": True, "provenance_ready": True}, "lifecycle": {"status": "ACTIVE"}}},
+    ]
+
+    res = compute_safety_metrics(queries, outputs)
+    assert res["abstention_opportunities"] == 3
+    assert res["safe_abstentions_count"] == 2
+    assert res["safe_abstention_rate"] == round(2 / 3, 4)
+    assert 0.0 <= res["safe_abstention_rate"] <= 1.0
+
+
+def test_safe_abstention_all_primary_case():
+    """Section 45: All queries are primary-eligible and system promotes all -> safe_abstention_rate is None."""
+    queries = [
+        {
+            "query_id": f"Q_{i}",
+            "expected_coverage_state": "IN_PROTOTYPE_COVERAGE",
+            "gold_standards": [{"standard_designation": f"IS {i}:2020", "base_number": str(i)}],
+            "expected_decision": {"query_level_state": "PRIMARY_RECOMMENDATION_AVAILABLE"},
+        }
+        for i in range(1, 4)
+    ]
+    outputs = [
+        {
+            "decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE",
+            "primary_recommendation": {
+                "standard_designation": f"IS {i}:2020",
+                "base_number": str(i),
+                "standard_role": "PRODUCT_SPECIFICATION",
+                "evidence_bundle": {"scope_ready": True, "applicability_ready": True, "lifecycle_ready": True, "provenance_ready": True},
+                "lifecycle": {"status": "ACTIVE"},
+            }
+        }
+        for i in range(1, 4)
+    ]
+    res = compute_safety_metrics(queries, outputs)
+    assert res["abstention_opportunities"] == 0
+    assert res["safe_abstention_rate"] is None
+    assert res["safe_primary_rate"] == 1.0
+
+
+def test_safe_abstention_all_abstention_case():
+    """Section 45: All queries require abstention and system safely abstains on all -> rate 1.0."""
+    queries = [
+        {
+            "query_id": f"Q_ABS_{i}",
+            "expected_coverage_state": "OUTSIDE_PROTOTYPE_COVERAGE",
+            "gold_standards": [],
+            "expected_decision": {"query_level_state": "OUTSIDE_PROTOTYPE_COVERAGE"},
+        }
+        for i in range(1, 4)
+    ]
+    outputs = [
+        {"decision_state": "OUTSIDE_PROTOTYPE_COVERAGE", "primary_recommendation": None}
+        for _ in range(3)
+    ]
+    res = compute_safety_metrics(queries, outputs)
+    assert res["abstention_opportunities"] == 3
+    assert res["safe_abstentions_count"] == 3
+    assert res["safe_abstention_rate"] == 1.0
+    assert res["safe_primary_rate"] is None  # Section 46: 0 primaries emitted -> None, not 1.0
+
+
+def test_unverified_edition_flagged_as_wrong_edition():
+    """Section 47: Promoting a candidate with UNKNOWN / UNVERIFIED lifecycle is flagged."""
+    primary = {
+        "standard_designation": "IS 1234:2020",
+        "lifecycle": {
+            "lifecycle_state": "LIFECYCLE_UNKNOWN",
+            "status": "UNKNOWN",
+            "is_superseded": None,
+        }
+    }
+    assert is_primary_wrong_edition(primary) is True
+
+    query = {
+        "query_id": "Q_UNVERIFIED_EDITION",
+        "expected_coverage_state": "IN_PROTOTYPE_COVERAGE",
+        "gold_standards": [{"standard_designation": "IS 1234:2020"}],
+    }
+    output = {
+        "decision_state": "PRIMARY_RECOMMENDATION_AVAILABLE",
+        "primary_recommendation": primary,
+    }
+    res = compute_safety_metrics([query], [output])
+    assert res["wrong_edition_primary_rate"] == 1.0
+    assert res["safe_primary_rate"] == 0.0
+

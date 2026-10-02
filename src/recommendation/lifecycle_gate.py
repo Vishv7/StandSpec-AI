@@ -76,7 +76,7 @@ class StandardEdition:
     section: Optional[str] = None
     publication_date: Optional[str] = None
     withdrawal_date: Optional[str] = None
-    lifecycle_status: str = "ACTIVE"
+    lifecycle_status: str = "LIFECYCLE_UNVERIFIED"
     candidate_status: str = "ELIGIBLE"
     superseded_by: Optional[str] = None
     supersedes: Optional[str] = None
@@ -145,7 +145,7 @@ class LifecycleGate:
                 for sup in curated.get("supersessions", []):
                     old_d = sup.get("old_designation")
                     new_d = sup.get("superseded_by")
-                    eff = sup.get("effective_date", "2020-01-01")
+                    eff = sup.get("effective_date")
                     if old_d and new_d:
                         self.supersession_edges[old_d] = (new_d, eff)
                 self.amendment_registry.update(curated.get("amendments", {}))
@@ -202,7 +202,9 @@ class LifecycleGate:
                 date_status = "UNKNOWN"
 
             with_date = lifecycle.get("withdrawal_date") or n.get("withdrawal_date")
-            l_status = lifecycle.get("lifecycle_status") or n.get("lifecycle_status") or "ACTIVE"
+            # PS §6 Fix B1: NEVER default missing lifecycle status to ACTIVE.
+            # Missing lifecycle metadata MUST become LIFECYCLE_UNVERIFIED.
+            l_status = lifecycle.get("lifecycle_status") or n.get("lifecycle_status") or "LIFECYCLE_UNVERIFIED"
             c_status = n.get("candidate_status", "ELIGIBLE")
             sup_by = lifecycle.get("superseded_by") or n.get("superseded_by")
             sup_es = lifecycle.get("supersedes") or n.get("supersedes")
@@ -243,14 +245,16 @@ class LifecycleGate:
 
             if rel == "superseded_by":
                 tgt_node = self.designation_to_node.get(tgt, {})
-                eff_date = f"{tgt_node.get('year', '2020')}-01-01"
+                tgt_yr = tgt_node.get('year')
+                eff_date = f"{tgt_yr}-01-01" if tgt_yr else None
                 self.supersession_edges[src] = (tgt, eff_date)
                 if src in self.editions:
                     self.editions[src].superseded_by = tgt
                     self.editions[src].withdrawal_date = eff_date
             elif rel == "supersedes":
                 src_node = self.designation_to_node.get(src, {})
-                eff_date = f"{src_node.get('year', '2020')}-01-01"
+                src_yr = src_node.get('year')
+                eff_date = f"{src_yr}-01-01" if src_yr else None
                 self.supersession_edges[tgt] = (src, eff_date)
                 if tgt in self.editions:
                     self.editions[tgt].superseded_by = src
@@ -274,7 +278,9 @@ class LifecycleGate:
         current_desig = candidate_designation
         is_superseded = False
         superseding_edition = None
-        lifecycle_state = LifecycleState.VERIFIED_ACTIVE.value
+        # PS §6 Fix B2: Start with LIFECYCLE_UNVERIFIED, not VERIFIED_ACTIVE.
+        # Only promote to VERIFIED_ACTIVE when authoritative lifecycle evidence supports it.
+        lifecycle_state = LifecycleState.LIFECYCLE_UNVERIFIED.value
         eval_year = self._parse_eval_year(evaluation_date)
 
         # 1. Check explicit supersession graph edges / migrations
@@ -348,18 +354,6 @@ class LifecycleGate:
             elif cand_yr and eval_year is not None and cand_yr > eval_year:
                 lifecycle_state = LifecycleState.FUTURE_NOT_VALID.value
 
-            # If candidate is historical (< 2010) and tender is contemporary (>= 2020),
-            # resolve to the modern active edition in the chain
-            cand_entry = next((e for e in chain if e.designation == current_desig), None)
-            cand_year = cand_entry.year if cand_entry else cand_yr
-            if cand_year and cand_year < 2010 and (eval_year is None or eval_year >= 2020):
-                modern_editions = [e for e in chain if e.year and e.year >= 2020]
-                if modern_editions:
-                    is_superseded = True
-                    superseding_edition = modern_editions[-1].designation
-                    current_desig = superseding_edition
-                    lifecycle_state = LifecycleState.VERIFIED_SUPERSEDED.value
-
         # If standard was undivided (part is None) and later partitioned into Part 1:
         if part is None and base:
             part1_key = (fam.upper(), str(base).strip(), "1", None)
@@ -378,7 +372,7 @@ class LifecycleGate:
 
         # Check final validity of recommended edition
         rec_edition = self.editions.get(current_desig)
-        is_valid_on_date = rec_edition.valid_on(evaluation_date) if rec_edition else True
+        is_valid_on_date = rec_edition.valid_on(evaluation_date) if rec_edition else None
 
         # Extract amendments
         amendments = self.amendment_registry.get(current_desig, [])
@@ -389,6 +383,34 @@ class LifecycleGate:
             else ("INFERRED" if (rec_edition and rec_edition.date_status == "INFERRED") else "UNKNOWN")
         )
 
+        # PS §6: Determine final lifecycle_state based on evidence quality.
+        # If no supersession/withdrawal was detected and the edition has verified evidence,
+        # promote to VERIFIED_ACTIVE. If only inferred, remain LIFECYCLE_UNVERIFIED.
+        if lifecycle_state == LifecycleState.LIFECYCLE_UNVERIFIED.value:
+            if rec_edition and rec_edition.date_status == "VERIFIED":
+                # Has authoritative lifecycle evidence - check if actively valid
+                l_status = rec_edition.lifecycle_status
+                if l_status in ("ACTIVE", "CURRENT", "VERIFIED_ACTIVE"):
+                    lifecycle_state = LifecycleState.VERIFIED_ACTIVE.value
+                elif l_status in ("WITHDRAWN", "VERIFIED_WITHDRAWN"):
+                    lifecycle_state = LifecycleState.VERIFIED_WITHDRAWN.value
+                elif l_status in ("SUPERSEDED", "VERIFIED_SUPERSEDED"):
+                    lifecycle_state = LifecycleState.VERIFIED_SUPERSEDED.value
+                # else: remains LIFECYCLE_UNVERIFIED
+            elif rec_edition and rec_edition.date_status == "INFERRED":
+                # Only publication year known — lifecycle is NOT verified
+                # This is the critical B2 fix: inferred date ≠ verified active
+                lifecycle_state = LifecycleState.LIFECYCLE_UNVERIFIED.value
+
+        # Build lifecycle provenance for audit trail
+        lifecycle_provenance = {
+            "source": "BIS_KNOWLEDGE_GRAPH",
+            "source_id": current_desig,
+            "source_date": rec_edition.publication_date if rec_edition else None,
+            "retrieval_date": None,  # Populated from graph build timestamp when available
+            "verification_state": lifecycle_evidence_status,
+        }
+
         return {
             "original_candidate": candidate_designation,
             "recommended_edition": current_desig,
@@ -398,10 +420,39 @@ class LifecycleGate:
             "lifecycle_evidence_status": lifecycle_evidence_status,
             "applicable_amendments": amendments,
             "amendment_notes": "; ".join(amendment_notes) if amendment_notes else None,
+            "lifecycle_provenance": lifecycle_provenance,
             "temporal_validity": {
                 "evaluation_date": evaluation_date,
                 "is_valid_on_evaluation_date": is_valid_on_date,
                 "edition_year": cand_yr,
                 "date_status": rec_edition.date_status if rec_edition else "UNKNOWN",
             }
+        }
+
+    def check_citation_lifecycle(self, cited_designation: str, evaluation_date: Optional[str] = None) -> dict:
+        """
+        Verify lifecycle state of a standard cited in a tender or specification document.
+        Does not guess supersession; relies strictly on authoritative edition chains and edges.
+        """
+        res = self.resolve_edition(cited_designation, evaluation_date=evaluation_date)
+        is_sup = res.get("is_superseded", False)
+        rec_ed = res.get("recommended_edition")
+        state = res.get("lifecycle_state", "LIFECYCLE_UNKNOWN")
+        
+        evidence = []
+        if is_sup and rec_ed:
+            evidence.append(f"Authoritative lifecycle chain supersedes '{cited_designation}' with current active standard '{rec_ed}'.")
+        elif state == "VERIFIED_ACTIVE":
+            evidence.append(f"Standard edition '{cited_designation}' is active and valid.")
+        else:
+            evidence.append(f"Lifecycle evidence status for '{cited_designation}': {state}.")
+
+        return {
+            "cited_designation": cited_designation,
+            "is_superseded": is_sup,
+            "state": state,
+            "recommended_current_edition": rec_ed if is_sup else cited_designation,
+            "evidence": evidence,
+            "applicable_amendments": res.get("applicable_amendments", []),
+            "evaluation_date": evaluation_date,
         }

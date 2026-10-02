@@ -240,16 +240,18 @@ def print_report(res: dict, title: str = "StandSpec AI — Open-World Evaluation
     print(f"MRR:                                   {res['MRR']:.4f}")
     print(f"CANDIDATE RECALL@5:                    {res['candidate_recall_at_5'] * 100:.2f}%")
     print(f"CANDIDATE RECALL@10:                   {res['candidate_recall_at_10'] * 100:.2f}%")
-    print(f"SAFE DECISION ACCURACY:                {res['safe_decision_accuracy'] * 100:.2f}%")
-    print(f"SAFE ABSTENTION RATE:                  {res['safe_abstention_rate'] * 100:.2f}%")
+    safe_abst_str = f"{res['safe_abstention_rate'] * 100:.2f}%" if res.get('safe_abstention_rate') is not None else "N/A"
+    print(f"SAFE ABSTENTION RATE:                  {safe_abst_str}")
     print("-" * 76)
     sm = res["safety_metrics"]
+    safe_prim_val = sm.get('SAFE_PRIMARY_RATE')
+    safe_prim_str = f"{safe_prim_val * 100:.2f}%" if safe_prim_val is not None else "N/A"
     print("  Authoritative Safety Metrics:")
     print(f"  - WRONG_PRIMARY_PROMOTION_RATE:      {sm['WRONG_PRIMARY_PROMOTION_RATE'] * 100:.2f}%")
     print(f"  - UNSUPPORTED_PRIMARY_PROMOTION_RATE: {sm['UNSUPPORTED_PRIMARY_PROMOTION_RATE'] * 100:.2f}%")
     print(f"  - WRONG_ROLE_PRIMARY_RATE:           {sm['WRONG_ROLE_PRIMARY_RATE'] * 100:.2f}%")
     print(f"  - WRONG_EDITION_PRIMARY_RATE:        {sm['WRONG_EDITION_PRIMARY_RATE'] * 100:.2f}%")
-    print(f"  - SAFE_PRIMARY_RATE:                 {sm['SAFE_PRIMARY_RATE'] * 100:.2f}%")
+    print(f"  - SAFE_PRIMARY_RATE:                 {safe_prim_str}")
     print(f"  - UNSAFE_PRIMARY_RATE:               {sm['UNSAFE_PRIMARY_RATE'] * 100:.2f}%")
     print("-" * 76)
     print("  Subset Performance Breakdown:")

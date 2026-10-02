@@ -83,7 +83,7 @@ export default function StandardsExplorer() {
               onClick={() => setDepartment("")}
               className={`px-3 py-1.5 rounded-md transition ${department === "" ? "bg-white text-slate-900 font-bold shadow-xs" : "text-slate-600"}`}
             >
-              All Departments
+              CED + ETD Prototype
             </button>
             <button
               onClick={() => setDepartment("CED")}
@@ -207,7 +207,7 @@ export default function StandardsExplorer() {
                         {std.designation}
                       </span>
                       <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
-                        {std.department || "ETD"}
+                        {std.department || "NOT_VERIFIED"}
                       </span>
                     </div>
                     <div className="text-xs text-slate-600 mt-1 line-clamp-2">
@@ -215,7 +215,7 @@ export default function StandardsExplorer() {
                     </div>
                     <div className="flex items-center gap-3 text-[11px] text-slate-400 mt-2 font-mono">
                       <span>Committee: {std.committee || "Standard"}</span>
-                      <span>Year: {std.year || "Active"}</span>
+                      <span>Year: {std.year || "Not specified"}</span>
                     </div>
                   </div>
                 );
@@ -255,7 +255,7 @@ export default function StandardsExplorer() {
                     </p>
                   </div>
                   <span className="font-mono text-xs px-2.5 py-1 rounded bg-slate-100 text-slate-800 border border-slate-200 font-semibold">
-                    {selectedStandard.department}
+                    {selectedStandard.department || "NOT_VERIFIED"}
                   </span>
                 </div>
 
@@ -269,26 +269,46 @@ export default function StandardsExplorer() {
                   </div>
                 </div>
 
-                {/* Regulatory Mandate Status */}
-                <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200 flex flex-col gap-1.5 text-xs">
+                {/* Regulatory Mandate Status (PS 26108 Section 13 & 34) */}
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-1.5 text-xs">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 font-bold text-amber-900">
+                    <div className="flex items-center gap-1.5 font-bold text-slate-900">
                       <span className="material-symbols-outlined text-[18px] text-amber-600">gavel</span>
-                      <span>Statutory Mandate: {selectedStandard.regulatory?.is_mandatory ? "MANDATORY UNDER QCO" : "NOT VERIFIED MANDATORY"}</span>
+                      <span>Available Regulatory Evidence: {selectedStandard.regulatory?.order_title || selectedStandard.regulatory?.qco_order || "Indexed Corpus Check"}</span>
                     </div>
                     <span className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded border ${
-                      selectedStandard.regulatory?.is_mandatory
+                      selectedStandard.regulatory?.state === "MANDATORY_CONFIRMED" || selectedStandard.regulatory?.is_mandatory
                         ? "bg-amber-100 text-amber-900 border-amber-300"
                         : "bg-slate-100 text-slate-700 border-slate-200"
                     }`}>
-                      {selectedStandard.regulatory?.is_mandatory ? "QCO Mandatory" : "Voluntary / Unverified"}
+                      {selectedStandard.regulatory?.state || (selectedStandard.regulatory?.is_mandatory ? "MANDATORY_CONFIRMED" : "NOT_VERIFIED_IN_CURRENT_CORPUS")}
                     </span>
                   </div>
-                  <p className="text-amber-900/90 leading-relaxed mt-1">
-                    {selectedStandard.regulatory?.notes ||
-                     selectedStandard.regulatory?.statement ||
-                     "Regulatory mandatory status was not verified in the current gazette corpus."}
+                  <p className="text-slate-700 leading-relaxed mt-1">
+                    {selectedStandard.regulatory?.state === "MANDATORY_CONFIRMED" || selectedStandard.regulatory?.is_mandatory
+                      ? `Indexed regulatory evidence indicates mandatory certification under ${selectedStandard.regulatory?.order_title || selectedStandard.regulatory?.qco_order || "published QCO"}.`
+                      : "No matching regulatory record was found in the indexed regulatory corpus. This does not establish voluntary status or exemption."}
                   </p>
+                </div>
+
+                {/* Amendments Section (PS 26108 Section 12 & 34) */}
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-white flex flex-col gap-1.5 text-xs">
+                  <span className="text-[11px] font-mono uppercase font-bold text-slate-500">
+                    Applicable Amendments &amp; Revision Chain
+                  </span>
+                  {selectedStandard.lifecycle?.applicable_amendments && selectedStandard.lifecycle.applicable_amendments.length > 0 ? (
+                    <div className="space-y-1">
+                      {selectedStandard.lifecycle.applicable_amendments.map((am, idx) => (
+                        <div key={idx} className="p-2 rounded bg-slate-50 border border-slate-200 text-xs font-mono">
+                          {typeof am === "string" ? am : am.amendment_number || `Amendment ${idx + 1}`}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-xs font-mono text-slate-500">
+                      AMENDMENT_DATA_UNAVAILABLE
+                    </span>
+                  )}
                 </div>
 
                 {/* Metadata Grid */}
@@ -299,8 +319,8 @@ export default function StandardsExplorer() {
                   </div>
                   <div className="p-2.5 rounded bg-slate-50 border border-slate-200">
                     <span className="text-[10px] text-slate-400 block font-mono">LIFECYCLE STATUS</span>
-                    <strong className="text-emerald-700">
-                      {selectedStandard.lifecycle?.lifecycle_state || "Not verified"}
+                    <strong className="text-emerald-700 font-mono">
+                      {selectedStandard.lifecycle?.lifecycle_state || "LIFECYCLE_UNKNOWN"}
                     </strong>
                   </div>
                   <div className="p-2.5 rounded bg-slate-50 border border-slate-200">

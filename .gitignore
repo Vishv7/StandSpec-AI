@@ -25,12 +25,21 @@ yarn-error.log*
 *.env
 .env.local
 .env.*.local
+*.key
+*.pem
+*.p12
+*.pfx
+*.secret
+
+# Markdown files (excluded per project policy)
+*.md
 
 # IDE / Editor artifacts
 .vscode/
 .idea/
 *.swp
 *.swo
+.agents/
 
 # OS / Temporary files
 .DS_Store
@@ -39,10 +48,7 @@ data/logs/
 data/raw/
 data/processed/pilot_etd/
 
-# Exclude all review, audit, spec, and doc markdown files (keep only root README.md)
-*.md
-!README.md
-docs/
-data/**/*.md
-frontend/*.md
-stitch_standspec_ai_studio/**/*.md
+# Temporary and scratch artifacts
+scratch/
+tmp/
+*.tmp

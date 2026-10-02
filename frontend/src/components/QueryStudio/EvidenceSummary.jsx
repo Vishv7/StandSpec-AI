@@ -31,25 +31,33 @@ export default function EvidenceSummary({ standard }) {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
         {DIMENSIONS.map((dim) => {
-          const isReady = readiness[dim.key] !== false;
+          const val = readiness[dim.key];
+          let statusLabel = 'UNKNOWN';
+          let badgeClass = 'bg-slate-100 text-slate-700 border-slate-200';
+          let cardClass = 'bg-slate-50/50 border-slate-200 text-slate-800';
+
+          if (val === true) {
+            statusLabel = 'VERIFIED';
+            badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-300';
+            cardClass = 'bg-emerald-50/40 border-emerald-200/80 text-emerald-900';
+          } else if (val === false) {
+            statusLabel = 'NOT_VERIFIED';
+            badgeClass = 'bg-amber-100 text-amber-800 border-amber-300';
+            cardClass = 'bg-amber-50/40 border-amber-200/80 text-amber-900';
+          }
+
           return (
             <div
               key={dim.key}
-              className={`p-2.5 rounded-xl border flex flex-col gap-1 transition-all ${
-                isReady
-                  ? 'bg-emerald-50/40 border-emerald-200/80 text-emerald-900'
-                  : 'bg-amber-50/40 border-amber-200/80 text-amber-900'
-              }`}
+              className={`p-2.5 rounded-xl border flex flex-col gap-1 transition-all ${cardClass}`}
               title={dim.desc}
             >
               <div className="flex items-center justify-between">
                 <span className="material-symbols-outlined text-[16px] text-slate-600">
                   {dim.icon}
                 </span>
-                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.2 rounded ${
-                  isReady ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                }`}>
-                  {isReady ? 'VERIFIED' : 'PARTIAL'}
+                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${badgeClass}`}>
+                  {statusLabel}
                 </span>
               </div>
               <span className="text-xs font-bold tracking-tight text-slate-800 mt-1">

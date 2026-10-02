@@ -12,12 +12,13 @@ export default function RecommendationCard({
 
   const designation = standard.standard_designation || standard.designation || "Unknown Designation";
   const title = standard.title || "No Title Available";
-  const department = standard.evidence_bundle?.department || standard.department || "ETD";
+  const department = standard.evidence_bundle?.department || standard.department || "NOT_VERIFIED";
   const applicability = standard.applicability || {};
   const matchedAttrs = applicability.matched_attributes || [];
   const regulatory = standard.regulatory || {};
   const lifecycle = standard.lifecycle || {};
-  const isMandatory = regulatory.is_mandatory || regulatory.statutory_mandate?.is_statutory_mandatory;
+  const isMandatory = regulatory.state === "MANDATORY_CONFIRMED" || regulatory.state === "MANDATORY_CONDITIONALLY_APPLICABLE" || regulatory.is_mandatory === true;
+  const amendments = standard.amendments || lifecycle.applicable_amendments || [];
 
   const handleCopy = () => {
     navigator.clipboard.writeText(designation);
@@ -25,24 +26,30 @@ export default function RecommendationCard({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Determine readiness badge
+  // Determine readiness badge based on verified decision state and claim level
   let readinessBadge = {
-    label: "Verified",
+    label: standard.claim_level === "PRIMARY_RECOMMENDATION" ? "Primary Recommendation" : "Identified Candidate",
     class: "bg-emerald-50 text-emerald-800 border-emerald-300",
     icon: "verified",
   };
 
   if (isReviewCandidate || decisionState === 'EXPERT_REVIEW_REQUIRED') {
     readinessBadge = {
-      label: "Review Required",
+      label: "Expert Review Required",
       class: "bg-amber-50 text-amber-800 border-amber-300",
       icon: "engineering",
     };
-  } else if (decisionState === 'CONDITIONAL_RECOMMENDATION' || decisionState === 'INSUFFICIENT_INFORMATION') {
+  } else if (decisionState === 'CONDITIONAL_RECOMMENDATION') {
     readinessBadge = {
-      label: "Partial Verification",
+      label: "Conditional Recommendation",
       class: "bg-teal-50 text-teal-800 border-teal-300",
       icon: "fact_check",
+    };
+  } else if (decisionState === 'INSUFFICIENT_INFORMATION') {
+    readinessBadge = {
+      label: "Insufficient Evidence",
+      class: "bg-slate-100 text-slate-800 border-slate-300",
+      icon: "help_outline",
     };
   }
 
@@ -94,67 +101,67 @@ export default function RecommendationCard({
           <div className="flex items-start gap-2 p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 self-start shrink-0 max-w-xs">
             <span className="material-symbols-outlined text-[18px] text-amber-700 shrink-0">gavel</span>
             <div className="text-[11px] leading-tight">
-              <span className="font-bold block text-amber-950">Statutory QCO Mandate</span>
+              <span className="font-bold block text-amber-950">Indexed Regulatory Evidence</span>
               <span className="text-amber-800 line-clamp-2">
-                {regulatory.qco_order || "Mandatory under Section 16 BIS Act 2016"}
+                {regulatory.qco_order || regulatory.order_title || "Mandatory certification under published QCO"}
               </span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Prominent Superseded Alert (Part 21) */}
-      {lifecycle.is_superseded && (
+      {/* Prominent Superseded Alert */}
+      {(lifecycle.is_superseded || lifecycle.lifecycle_state === "VERIFIED_SUPERSEDED") && (
         <div className="p-4 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 flex items-start gap-3 text-xs">
           <span className="material-symbols-outlined text-rose-600 text-xl shrink-0 mt-0.5">warning</span>
           <div className="flex-1">
             <strong className="font-bold text-sm block text-rose-950">SUPERSEDED STANDARD EDITION</strong>
             <p className="mt-1 text-rose-800 leading-relaxed">
-              Candidate edition <strong>{designation}</strong> has been superseded by <strong>{lifecycle.superseded_by || "a later revision"}</strong>.
-              In accordance with public procurement rules, procurement tenders must cite the currently active edition.
+              Candidate edition <strong>{designation}</strong> appears superseded according to indexed lifecycle records. Modern revision: <strong>{lifecycle.recommended_edition || lifecycle.superseded_by || "Check current catalog"}</strong>.
             </p>
           </div>
         </div>
       )}
 
-      {/* Conflicting Regulatory Records Alert (Part 22) */}
-      {regulatory.regulatory_state === "CONFLICTING_EVIDENCE" && (
+      {/* Conflicting Regulatory Records Alert */}
+      {regulatory.state === "CONFLICTING_EVIDENCE" && (
         <div className="p-3.5 rounded-xl bg-yellow-50 border border-yellow-300 text-yellow-900 flex items-start gap-2.5 text-xs">
           <span className="material-symbols-outlined text-yellow-700 text-lg shrink-0 mt-0.5">balance</span>
           <div>
-            <strong className="font-semibold block text-yellow-950">Conflicting Regulatory Gazette Records</strong>
+            <strong className="font-semibold block text-yellow-950">Conflicting Regulatory Records</strong>
             <p className="mt-0.5 text-yellow-800">
-              Contradictory regulatory mandates were identified across indexed sources. Authoritative confirmation from the Ministry gazette notification is recommended.
+              Contradictory regulatory mandates were identified across indexed sources. Authoritative confirmation from the relevant Ministry notification is recommended.
             </p>
           </div>
         </div>
       )}
 
-      {/* Why it matches */}
+      {/* Evidence-grounded Match Summary */}
       <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col gap-2.5">
         <span className="text-xs font-bold uppercase tracking-wider text-slate-600 font-mono">
-          Why this standard matches your specification
+          Corroborated Match Evidence
         </span>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
           <div className="flex items-start gap-2">
             <span className="material-symbols-outlined text-[16px] text-emerald-600 shrink-0 mt-0.5">check_circle</span>
             <span className="text-slate-700">
-              <strong>Product match:</strong> Identified target product within scope
+              <strong>Applicability:</strong> {applicability.applicability_state || (matchedAttrs.length > 0 ? "APPLICABLE" : "EVALUATED")}
             </span>
           </div>
 
           <div className="flex items-start gap-2">
             <span className="material-symbols-outlined text-[16px] text-emerald-600 shrink-0 mt-0.5">check_circle</span>
             <span className="text-slate-700">
-              <strong>Technical attributes:</strong> Grounded on {matchedAttrs.length > 0 ? matchedAttrs.join(', ') : 'product parameters'}
+              <strong>Attributes:</strong> {matchedAttrs.length > 0 ? matchedAttrs.join(', ') : 'Product family verified'}
             </span>
           </div>
 
           <div className="flex items-start gap-2">
             <span className="material-symbols-outlined text-[16px] text-emerald-600 shrink-0 mt-0.5">check_circle</span>
             <span className="text-slate-700">
-              <strong>Edition validity:</strong> {lifecycle.is_superseded ? `Superseded (Active: ${lifecycle.recommended_edition || lifecycle.superseded_by})` : `Active edition (${lifecycle.recommended_edition || designation})`}
+              <strong>Lifecycle:</strong> {lifecycle.lifecycle_state || "LIFECYCLE_UNKNOWN"}
+              {amendments.length > 0 ? ` (${amendments.length} amendments)` : ""}
             </span>
           </div>
         </div>

@@ -23,6 +23,7 @@ def mini_graph():
                 "title": "Crosslinked Polyethylene Insulated Thermoplastic Sheathed Cables: Part 2 For Working Voltages From 3.3 kV Up to and Including 33 kV",
                 "scope": "Prescribes requirements for XLPE cables 3.3 kV to 33 kV.",
                 "candidate_status": "ELIGIBLE",
+                "department": "ETD",
                 "is_hydrated": True,
                 "scope_evidence_available": True,
                 "recommendation_ready": True,

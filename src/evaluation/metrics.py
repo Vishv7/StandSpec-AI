@@ -215,6 +215,8 @@ def is_primary_wrong_role(primary: Dict[str, Any]) -> bool:
         "SUPPORTING_STANDARD",
         "COMPONENT",
         "EXTERNAL_STANDARD",
+        "INSTALLATION_CODE",
+        "UNKNOWN_ROLE",
     }
     return role in incompatible
 
@@ -225,22 +227,32 @@ def is_primary_wrong_edition(primary: Dict[str, Any]) -> bool:
     if lifecycle.get("is_superseded") is True:
         return True
     status = str((lifecycle.get("status") or lifecycle.get("lifecycle_state") or "")).upper()
-    return status in ("SUPERSEDED", "WITHDRAWN", "CANCELLED", "INACTIVE")
+    unverified_or_inactive = {
+        "SUPERSEDED", "WITHDRAWN", "CANCELLED", "INACTIVE",
+        "UNKNOWN", "UNVERIFIED", "NOT_VERIFIED", "SOURCE_UNAVAILABLE",
+        "LIFECYCLE_UNKNOWN", "LIFECYCLE_SOURCE_UNAVAILABLE"
+    }
+    if status in unverified_or_inactive:
+        return True
+    # If no status is specified at all and no lifecycle evidence exists, it is unverified
+    if not status and not lifecycle:
+        return True
+    return False
 
 
 def compute_safety_metrics(queries: List[Dict[str, Any]], outputs: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
-    Computes Authoritative Trust and Safety metrics (Phase P1-E):
+    Computes Authoritative Trust and Safety metrics (Phase P1-E & Sections 45-48):
     - wrong_primary_promotion_rate: Emits primary not matching gold set for in-scope queries.
     - unsupported_primary_promotion_rate: Primary lacks evidentiary readiness.
     - wrong_role_primary_rate: Primary recommendation has incompatible role.
     - wrong_part_primary_rate: Primary selects wrong part/section family.
     - wrong_edition_primary_rate: Primary selects superseded or unverified edition.
     - regulatory_false_assertion_rate: System misasserts regulatory mandate against gold.
-    - safe_primary_rate: Primary meets all correctness, role, evidence, and lifecycle criteria.
+    - safe_primary_rate: Primary meets all correctness, role, evidence, and lifecycle criteria (None if 0 primaries).
     - unsafe_primary_rate: Composite rate of queries emitting any unsafe primary recommendation.
     - safe_decision_accuracy: Engine makes the correct safe recommendation or abstention.
-    - safe_abstention_rate: Abstains when gold is unready or missing.
+    - safe_abstention_rate: Abstains when gold is unready, absent, or out-of-scope (bounded in [0, 1]).
     - hard_negative_rejection_rate: Rejects hard negatives at top-1.
     - hard_negative_intrusion_rate_5: Prevents hard negatives in top-5.
     - coverage_detection_accuracy: Correctly identifies out-of-coverage queries.
@@ -280,7 +292,7 @@ def compute_safety_metrics(queries: List[Dict[str, Any]], outputs: List[Dict[str
         gold_bases = {str(g.get("base_number")) for g in q.get("gold_standards", []) if g.get("base_number")}
         hns = {h.get("standard_designation") for h in q.get("hard_negatives", []) if h.get("standard_designation")}
         cov_state = q.get("expected_coverage_state", "IN_PROTOTYPE_COVERAGE")
-        exp_decision = q.get("expected_decision", {}).get("query_level_state")
+        exp_decision = (q.get("expected_decision") or {}).get("query_level_state")
 
         primary = out.get("primary_recommendation")
         review = out.get("review_candidate")
@@ -311,12 +323,17 @@ def compute_safety_metrics(queries: List[Dict[str, Any]], outputs: List[Dict[str
             in_scope_with_gold_queries += 1
 
         # 3. Primary Recommendation Evaluation
+        is_wrong_primary = False
+        unsupported = False
+        wrong_role = False
+        wrong_edition = False
+        desig = None
+
         if primary:
             total_primaries += 1
             desig = primary.get("standard_designation")
             base_num = str(primary.get("base_number") or (primary.get("evidence_bundle") or {}).get("base_number") or "")
 
-            is_wrong_primary = False
             if is_in_scope_with_gold and (desig not in golds):
                 is_wrong_primary = True
                 wrong_primaries_in_scope += 1
@@ -359,53 +376,130 @@ def compute_safety_metrics(queries: List[Dict[str, Any]], outputs: List[Dict[str
             if is_wrong_primary or unsupported or wrong_role or wrong_edition or (desig in hns):
                 unsafe_primaries += 1
 
-        # 4. Regulatory Assertion Tracking
-        expected_reg = q.get("expected_regulatory_status") or q.get("regulatory_mandate_expected")
-        if expected_reg in ("MANDATORY", "NON_MANDATORY"):
+        # 4. Regulatory Assertion Tracking (Section 48 — PS §12 Fix)
+        # Core semantic fix: separate regulatory claim states:
+        #   - regulatory_claim_present: system made a definitive regulatory assertion
+        #   - regulatory_claim_absent: system abstained from regulatory claim (coverage gap, NOT false assertion)
+        #   - regulatory_false_assertion: system made a CONTRADICTORY regulatory claim vs gold
+        expected_reg = (
+            q.get("expected_regulatory_status") or
+            q.get("regulatory_mandate_expected") or
+            (q.get("certification_requirement") or {}).get("regulatory_status")
+        )
+        rec_for_reg = primary or review
+        reg_info = (rec_for_reg.get("regulatory") or {}) if rec_for_reg else {}
+        reg_status = reg_info.get("regulatory_state") or reg_info.get("status")
+
+        has_reg_eval = False
+        if expected_reg in ("MANDATORY", "NON_MANDATORY", "VOLUNTARY"):
+            has_reg_eval = True
+        elif reg_status in ("MANDATORY_CONFIRMED", "VOLUNTARY", "NOT_MANDATORY", "NOT_MANDATORY_CONFIRMED"):
+            has_reg_eval = True
+
+        if has_reg_eval:
             regulatory_eval_queries += 1
-            rec_for_reg = primary or review
-            reg_status = (rec_for_reg.get("regulatory") or {}).get("regulatory_state") if rec_for_reg else None
-            if expected_reg == "MANDATORY" and reg_status != "MANDATORY_CONFIRMED":
-                regulatory_false_assertions += 1
-            elif expected_reg == "NON_MANDATORY" and reg_status == "MANDATORY_CONFIRMED":
+            is_reg_false = False
+
+            # Determine if system made a definitive regulatory assertion
+            definitive_output_states = {
+                "MANDATORY_CONFIRMED", "VOLUNTARY", "NOT_MANDATORY",
+                "NOT_MANDATORY_CONFIRMED", "NOT_APPLICABLE",
+            }
+            system_made_claim = reg_status in definitive_output_states
+
+            if expected_reg == "MANDATORY":
+                if reg_status == "MANDATORY_CONFIRMED":
+                    pass  # Correct — matches gold
+                elif not system_made_claim:
+                    pass  # No claim made → coverage/abstention issue, NOT false assertion
+                elif reg_status in ("VOLUNTARY", "NOT_MANDATORY", "NOT_MANDATORY_CONFIRMED", "NOT_APPLICABLE"):
+                    is_reg_false = True  # System actively contradicted gold MANDATORY
+            elif expected_reg in ("NON_MANDATORY", "VOLUNTARY"):
+                if reg_status == "MANDATORY_CONFIRMED":
+                    is_reg_false = True  # System actively contradicted gold NON_MANDATORY
+            
+            # Unsupported voluntary assertion without authoritative backing
+            if reg_status in ("VOLUNTARY", "NOT_MANDATORY", "NOT_MANDATORY_CONFIRMED"):
+                if not reg_info.get("order_name") and not reg_info.get("order_number") and not reg_info.get("verified_voluntary"):
+                    is_reg_false = True
+            
+            # Conflicting evidence in mandatory claim
+            if reg_status == "MANDATORY_CONFIRMED" and (reg_info.get("source_consistency") == "CONFLICTING" or reg_info.get("conflicting_evidence")):
+                is_reg_false = True
+
+            if is_reg_false:
                 regulatory_false_assertions += 1
 
-        # 5. Safe Abstention / Overall Safe Decision Accuracy
+        # 5. Safe Abstention / Overall Safe Decision Accuracy (Section 45 & 46)
+        is_abstention_opportunity = (
+            (not golds) or
+            (exp_decision in ("EXPERT_REVIEW_REQUIRED", "INSUFFICIENT_INFORMATION", "NO_CONFIDENT_MATCH", "OUTSIDE_PROTOTYPE_COVERAGE", "CONTRADICTORY_SPECIFICATIONS")) or
+            (q.get("expected_safe_decision") in ("EXPERT_REVIEW_REQUIRED", "INSUFFICIENT_INFORMATION", "NO_CONFIDENT_MATCH", "OUTSIDE_PROTOTYPE_COVERAGE", "CONTRADICTORY_SPECIFICATIONS")) or
+            (cov_state != "IN_PROTOTYPE_COVERAGE") or
+            (q.get("expected_evidence_state") in ("SCOPE_UNAVAILABLE", "UNHYDRATED_STUB"))
+        )
+
+        if is_abstention_opportunity:
+            abstention_opportunities += 1
+
         is_safe_decision = False
         if primary and (primary.get("standard_designation") in golds) and (decision_state == "PRIMARY_RECOMMENDATION_AVAILABLE"):
-            is_safe_decision = True
+            if not is_wrong_primary and not unsupported and not wrong_role and not wrong_edition and (desig not in hns):
+                is_safe_decision = True
         elif not primary:
-            # System abstained
-            if not golds or exp_decision in ("EXPERT_REVIEW_REQUIRED", "INSUFFICIENT_INFORMATION", "NO_CONFIDENT_MATCH", "OUTSIDE_PROTOTYPE_COVERAGE"):
-                is_safe_decision = True
+            # System abstained from emitting a primary recommendation
+            if is_abstention_opportunity:
                 safe_abstentions += 1
+                is_safe_decision = True
             elif review and (review.get("standard_designation") in golds):
+                # When primary was expected, but review candidate correctly captured the gold
                 is_safe_decision = True
-                safe_abstentions += 1
-
-        if not golds or exp_decision in ("EXPERT_REVIEW_REQUIRED", "INSUFFICIENT_INFORMATION", "NO_CONFIDENT_MATCH", "OUTSIDE_PROTOTYPE_COVERAGE"):
-            abstention_opportunities += 1
 
         if is_safe_decision:
             safe_decisions += 1
 
+    # Bounds enforcement and explicit numerators/denominators
+    safe_abstention_rate = (
+        round(safe_abstentions / abstention_opportunities, 4)
+        if abstention_opportunities > 0
+        else None
+    )
+    if safe_abstention_rate is not None:
+        assert 0.0 <= safe_abstention_rate <= 1.0, f"safe_abstention_rate {safe_abstention_rate} out of bounds [0, 1]"
+
+    safe_primary_rate = (
+        round(safe_primaries / total_primaries, 4)
+        if total_primaries > 0
+        else None
+    )
+    if safe_primary_rate is not None:
+        assert 0.0 <= safe_primary_rate <= 1.0, f"safe_primary_rate {safe_primary_rate} out of bounds [0, 1]"
+
     return {
-        "safe_decision_accuracy": round(safe_decisions / total, 4),
+        "safe_decision_accuracy": round(safe_decisions / total, 4) if total > 0 else 0.0,
         "wrong_primary_promotion_rate": round(wrong_primaries_in_scope / in_scope_with_gold_queries, 4) if in_scope_with_gold_queries > 0 else 0.0,
         "unsupported_primary_promotion_rate": round(unsupported_primaries / total_primaries, 4) if total_primaries > 0 else 0.0,
         "wrong_role_primary_rate": round(wrong_role_primaries / total_primaries, 4) if total_primaries > 0 else 0.0,
         "wrong_part_primary_rate": round(wrong_part_primaries / total_primaries, 4) if total_primaries > 0 else 0.0,
         "wrong_edition_primary_rate": round(wrong_edition_primaries / total_primaries, 4) if total_primaries > 0 else 0.0,
         "regulatory_false_assertion_rate": round(regulatory_false_assertions / regulatory_eval_queries, 4) if regulatory_eval_queries > 0 else 0.0,
-        "safe_primary_rate": round(safe_primaries / total_primaries, 4) if total_primaries > 0 else 1.0,
-        "unsafe_primary_rate": round(unsafe_primaries / total, 4),
-        "safe_abstention_rate": round(safe_abstentions / abstention_opportunities, 4) if abstention_opportunities > 0 else 1.0,
+        "safe_primary_rate": safe_primary_rate,
+        "unsafe_primary_rate": round(unsafe_primaries / total, 4) if total > 0 else 0.0,
+        "safe_abstention_rate": safe_abstention_rate,
         "hard_negative_rejection_rate": round(hn_rejected_at1 / total_hn_queries, 4) if total_hn_queries > 0 else 1.0,
         "hard_negative_intrusion_rate_5": round(hn_intrusions_5 / total_hn_queries, 4) if total_hn_queries > 0 else 0.0,
         "supporting_as_primary_rate": round(supporting_as_primary / total_primaries, 4) if total_primaries > 0 else 0.0,
         "coverage_detection_accuracy": round(outside_detected / outside_queries, 4) if outside_queries > 0 else 1.0,
+        # Explicit numerator and denominator visibility (Sections 45 & 46)
         "total_primaries_emitted": total_primaries,
+        "total_primaries": total_primaries,
+        "safe_primaries_count": safe_primaries,
         "in_scope_with_gold_queries": in_scope_with_gold_queries,
+        "total_eligible_queries": in_scope_with_gold_queries,
+        "safe_abstentions_count": safe_abstentions,
+        "abstention_opportunities": abstention_opportunities,
+        "regulatory_eval_queries": regulatory_eval_queries,
+        "regulatory_false_assertions": regulatory_false_assertions,
     }
 
 

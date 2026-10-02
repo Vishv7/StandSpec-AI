@@ -61,7 +61,7 @@ def test_dense_retriever_factory_modes():
     det_retriever = create_dense_retriever(mode="deterministic")
     assert isinstance(det_retriever, DeterministicSemanticProjection)
     assert det_retriever.retriever_type == "dense_deterministic"
-    assert det_retriever.effective_mode == "DENSE_DETERMINISTIC"
+    assert det_retriever.effective_mode in ("DENSE_DETERMINISTIC", "DETERMINISTIC_DENSE_FALLBACK")
     assert det_retriever.model_loaded is True
     assert det_retriever.fallback_used is False
     assert det_retriever.embedding_dimension == 384
@@ -69,10 +69,10 @@ def test_dense_retriever_factory_modes():
     neural_retriever = create_dense_retriever(mode="neural", model_name="non-existent/dummy-neural-model")
     assert isinstance(neural_retriever, MultilingualDenseRetriever)
     assert neural_retriever.retriever_type == "dense_neural"
-    # When model fails to load, transparently flags HASHED_FALLBACK
+    # When model fails to load, transparently flags fallback mode
     assert neural_retriever.model_loaded is False
     assert neural_retriever.fallback_used is True
-    assert neural_retriever.effective_mode == "HASHED_FALLBACK"
+    assert neural_retriever.effective_mode in ("HASHED_FALLBACK", "DETERMINISTIC_DENSE_FALLBACK")
     assert "Neural embedding model load failed" in neural_retriever.fallback_reason
 
 

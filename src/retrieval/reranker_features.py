@@ -410,17 +410,43 @@ class ApplicationAlignment(BaseFeatureExtractor):
         app_val = (app_field.get("normalization") or app_field.get("value") or "").lower() if isinstance(app_field, dict) else str(app_field or "").lower()
         search_app = f"{app_val} {q_lower}".strip()
 
-        # Potable water vs sewage
-        if "potable" in search_app or "drinking water" in search_app:
+        # Potable water / distribution vs well casing / drainage / sewerage
+        if any(w in search_app for w in ["potable", "drinking water", "water supply", "distribution", "water mains"]):
             if any(w in cand_all for w in ["sewerage", "drainage", "industrial waste"]):
                 return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate covers sewage/drainage, but query requires potable water.", -5.0)
+            if any(w in cand_all for w in ["casing and screen", "screen and casing", "casing pipe", "tube-well", "tubewell", "borewell"]):
+                if not any(w in search_app for w in ["casing", "tubewell", "borewell", "screen"]):
+                    return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate specifies tubewell casing/screen pipes, not water distribution/potable pipes.", -4.5)
             elif "water supply" in cand_all or "potable" in cand_all:
-                return FeatureResult(self.name, FeatureState.MATCH, "Candidate specifically covers water supply/potable water.", 2.0)
+                return FeatureResult(self.name, FeatureState.MATCH, "Candidate specifically covers water supply/potable water.", 2.5)
 
-        # Bulk power vs distribution
-        if "distribution" in search_app and "transformer" in search_app:
-            if "2026" in candidate.get("designation", "") and "part 1" in candidate.get("designation", "").lower():
-                return FeatureResult(self.name, FeatureState.MISMATCH, "IS 2026 is for bulk transmission power transformers, not distribution transformers.", -3.0)
+        # Bulk power vs distribution transformers
+        if "distribution" in search_app and ("transformer" in search_app or "transformers" in search_app):
+            if "distribution transformer" in cand_all or "distribution transformers" in cand_all:
+                return FeatureResult(self.name, FeatureState.MATCH, "Candidate specifically covers distribution transformers.", 2.5)
+            elif any(w in cand_all for w in ["power transformers", "transmission", "generating station", "generator transformer"]) and not ("distribution" in cand_all):
+                return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate covers bulk power/transmission transformers, but query requires distribution transformers.", -3.5)
+
+        # Concrete reinforcement vs structural steel fabrication
+        if any(w in search_app for w in ["reinforcement", "rebar", "concrete reinforcement", "tmt bar", "deformed bar"]):
+            if any(w in cand_all for w in ["concrete reinforcement", "deformed steel bars", "ribbed bars", "tmt bars", "high strength deformed"]):
+                return FeatureResult(self.name, FeatureState.MATCH, "Candidate specifically covers concrete reinforcement steel.", 3.0)
+            elif any(w in cand_all for w in ["structural steel", "hot rolled sections", "plates and shapes", "tubulars"]) and not ("reinforcement" in cand_all):
+                return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate covers structural steel/tubulars, not concrete reinforcement.", -3.5)
+
+        # Gypsum board vs gypsum building plaster / raw mineral
+        if any(w in search_app for w in ["gypsum board", "plasterboard", "plaster board", "gypsum plaster board"]):
+            if any(w in cand_all for w in ["gypsum plaster boards", "gypsum board", "plasterboard"]):
+                return FeatureResult(self.name, FeatureState.MATCH, "Candidate specifically covers gypsum plaster boards.", 3.0)
+            elif any(w in cand_all for w in ["building plaster", "plaster of paris", "raw gypsum", "calcined gypsum"]) and not any(b in cand_all for b in ["board", "boards"]):
+                return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate covers plaster powder/mineral, not gypsum boards.", -3.5)
+
+        # Self-ballasted LED lamps vs LED drivers/controlgear vs tubular fluorescent
+        if any(w in search_app for w in ["self-ballasted led", "led lamp", "led lamps", "led bulb"]):
+            if any(w in cand_all for w in ["self-ballasted led lamps", "self-ballasted lamps", "led lamps"]):
+                return FeatureResult(self.name, FeatureState.MATCH, "Candidate specifically covers self-ballasted LED lamps.", 3.0)
+            elif any(w in cand_all for w in ["lamp controlgear", "electronic controlgear", "led driver", "tubular fluorescent"]):
+                return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate covers controlgear/fluorescent, not integrated LED lamp.", -4.0)
 
         return FeatureResult(self.name, FeatureState.NOT_APPLICABLE, "Neutral application alignment.", 0.0)
 
@@ -438,7 +464,7 @@ class ApplicationAlignment(BaseFeatureExtractor):
 # ---------------------------------------------------------------------------
 class TechnologyModifierAlignment(BaseFeatureExtractor):
     """
-    Evaluates technology discriminators (smart vs static meters, oil-immersed vs dry type).
+    Evaluates technology discriminators (smart vs static meters, induction vs electronic, oil-immersed vs dry type).
     """
 
     def evaluate(
@@ -452,19 +478,26 @@ class TechnologyModifierAlignment(BaseFeatureExtractor):
         cand_all = f"{doc.get('title', '')} {doc.get('scope', '')} {candidate.get('designation', '')}".lower()
         q_lower = query_text.lower()
 
-        # Smart meter vs static meter
+        # Smart meter vs static electronic meter
         if any(w in q_lower for w in ["smart meter", "ami", "prepayment", "two-way"]):
-            if "smart" in cand_all or "16444" in cand_all:
+            if any(w in cand_all for w in ["smart static", "smart electricity meter", "smart meter"]):
                 return FeatureResult(self.name, FeatureState.MATCH, "Smart meter technology modifier matched.", 3.5)
-            elif "13779" in cand_all or "static" in cand_all:
-                return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate is standard static meter, but smart meter was specified.", -4.0)
+            elif any(w in cand_all for w in ["static electronic energy", "static watthour", "induction type"]) and not ("smart" in cand_all):
+                return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate is legacy static/induction meter lacking mandated smart AMI technology.", -4.0)
 
-        # Static meter without modem
+        # Static meter without smart AMI
         if "static" in q_lower and not any(w in q_lower for w in ["smart", "ami"]):
-            if "13779" in cand_all or "static" in cand_all:
-                return FeatureResult(self.name, FeatureState.MATCH, "Static meter technology matched.", 2.5)
-            elif "16444" in cand_all or "smart" in cand_all:
-                return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate is smart meter, but static meter was specified.", -3.0)
+            if "static electronic" in cand_all or ("static" in cand_all and "smart" not in cand_all):
+                return FeatureResult(self.name, FeatureState.MATCH, "Static electronic meter technology matched.", 2.5)
+            elif "smart" in cand_all:
+                return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate specifies smart meter, but traditional static meter was requested.", -3.0)
+
+        # Induction type electromechanical meter
+        if any(w in q_lower for w in ["induction type", "induction meter", "rotor disc", "electromechanical"]):
+            if "induction type" in cand_all or "induction" in cand_all:
+                return FeatureResult(self.name, FeatureState.MATCH, "Induction type electromechanical technology matched.", 3.0)
+            elif any(w in cand_all for w in ["static", "smart", "electronic"]):
+                return FeatureResult(self.name, FeatureState.MISMATCH, "Candidate is electronic/smart meter, but legacy induction meter was specified.", -3.5)
 
         return FeatureResult(self.name, FeatureState.NOT_APPLICABLE, "No technology modifier conflict.", 0.0)
 
@@ -561,10 +594,10 @@ class Specificity(BaseFeatureExtractor):
 
         # Smart / Prepaid vs Static Induction Meters
         if any(k in q_lower for k in ["smart", "prepaid", "ami", "two-way"]):
-            if "smart" in cand_all or "16444" in desig:
+            if any(w in cand_all for w in ["smart static", "smart electricity", "smart meter"]):
                 return FeatureResult(self.name, FeatureState.MATCH, "Smart meter technology matched", 3.5)
-            elif "static" in cand_all or "13779" in desig:
-                return FeatureResult(self.name, FeatureState.MISMATCH, "Static meter offered for smart meter query", -4.0)
+            elif any(w in cand_all for w in ["static electronic energy", "induction type"]):
+                return FeatureResult(self.name, FeatureState.MISMATCH, "Legacy static/induction meter offered for smart meter query", -4.0)
 
         return FeatureResult(self.name, FeatureState.MATCH, "Specificity check passed.", 1.0)
 

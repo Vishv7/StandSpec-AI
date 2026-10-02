@@ -34,7 +34,7 @@ app = FastAPI(
     version=ENGINE_VERSION,
 )
 
-# Enable CORS — configurable via environment for security (Part 26)
+# Enable CORS — configurable via environment for security (PS 26108 P1)
 _cors_origins_env = os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173")
 _cors_origins = [o.strip() for o in _cors_origins_env.split(",") if o.strip()]
 _allow_credentials = False if "*" in _cors_origins else True
@@ -42,9 +42,39 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_cors_origins,
     allow_credentials=_allow_credentials,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
 )
+
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.responses import JSONResponse
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request, exc):
+    req_id = str(uuid.uuid4())[:8]
+    error_code = f"HTTP_{exc.status_code}"
+    detail = exc.detail if isinstance(exc.detail, str) else "HTTP request failed."
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "error_code": error_code,
+            "message": detail,
+            "request_id": req_id,
+        },
+    )
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request, exc):
+    req_id = str(uuid.uuid4())[:8]
+    logger.exception(f"Unhandled server error [request_id={req_id}]")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error_code": "INTERNAL_SERVER_ERROR",
+            "message": f"An internal server error occurred. Reference: {req_id}",
+            "request_id": req_id,
+        },
+    )
 
 # Global singleton engine and agent references
 _engine: Optional[StandSpecRecommendationEngine] = None
@@ -182,23 +212,43 @@ async def upload_tender_pdf(
     and segments clauses into classified items (Technical Procurement vs Administrative).
     If auto_verify is False (recommended), clauses are returned for user review & selection.
     """
-    if not file.filename.lower().endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF files are supported.")
+    filename = file.filename or "tender.pdf"
+    if not filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Only PDF files are supported (.pdf extension required).")
 
-    # PDF size and page limits (Part 25)
+    if file.content_type and file.content_type.lower() not in (
+        "application/pdf",
+        "application/x-pdf",
+        "application/octet-stream",
+    ):
+        raise HTTPException(status_code=400, detail=f"Invalid MIME type '{file.content_type}'. Must be application/pdf.")
+
+    # PDF size and page limits (PS 26108 P1)
     MAX_PDF_SIZE_MB = int(os.environ.get("MAX_PDF_SIZE_MB", "20"))
     MAX_PDF_PAGES = int(os.environ.get("MAX_PDF_PAGES", "200"))
 
     try:
         pdf_bytes = await file.read()
+        if not pdf_bytes.startswith(b"%PDF-"):
+            raise HTTPException(status_code=400, detail="Invalid PDF file: Missing '%PDF-' file signature.")
+
         pdf_size_mb = len(pdf_bytes) / (1024 * 1024)
         if pdf_size_mb > MAX_PDF_SIZE_MB:
             raise HTTPException(
                 status_code=413,
                 detail=f"PDF file exceeds maximum allowed size of {MAX_PDF_SIZE_MB} MB ({pdf_size_mb:.1f} MB uploaded)."
             )
-        extractor = get_pdf_extractor()
-        doc = extractor.extract_from_bytes(pdf_bytes, filename=file.filename)
+        try:
+            extractor = get_pdf_extractor()
+            doc = extractor.extract_from_bytes(pdf_bytes, filename=filename)
+        except HTTPException:
+            raise
+        except Exception as pe:
+            logger.warning(f"Failed to parse PDF bytes: {pe}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Malformed, encrypted, or corrupted PDF document: {str(pe)[:120]}"
+            )
         page_count = doc.get("page_count", 0)
         if page_count > MAX_PDF_PAGES:
             raise HTTPException(
@@ -207,31 +257,36 @@ async def upload_tender_pdf(
             )
 
         if auto_verify:
-            # Optionally compute initial quick match for extracted technical clauses
             eng = get_engine()
-            eval_date = evaluation_date or eng.default_evaluation_date or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            eval_date = evaluation_date or eng.default_evaluation_date
 
             for cl in doc.get("clauses", []):
                 if not cl.get("is_technical", True):
                     cl["status"] = "EXCLUDED_ADMINISTRATIVE"
                     continue
                 try:
-                    rec = eng.recommend(raw_text=cl["raw_text"], evaluation_date=eval_date, top_k=1)
+                    rec = eng.recommend(raw_text=cl["raw_text"], evaluation_date=eval_date, top_k=3)
+                    # Section 27: Each technical clause retains complete backend recommendation result
+                    cl["analysis"] = rec
+                    cl["decision_state"] = rec.get("decision_state", "UNKNOWN")
                     primary = rec.get("primary_recommendation")
-                    life = primary.get("lifecycle", {}) if primary else {}
-                    reg = primary.get("regulatory", {}) if primary else {}
+                    review = rec.get("review_candidate")
+                    cl["primary_recommendation"] = primary
+                    cl["review_candidate"] = review
 
-                    cl["recommendation"] = {
-                        "decision_state": rec.get("decision_state", "UNKNOWN"),
-                        "designation": primary.get("standard_designation") if primary else None,
-                        "title": primary.get("title") if primary else None,
-                        "lifecycle_state": life.get("lifecycle_state", "UNKNOWN"),
-                        "is_mandatory_qco": reg.get("is_mandatory", False),
-                        "confidence_score": primary.get("confidence_score", 0.0) if primary else 0.0,
-                        "claim_level": rec.get("claim_level", "DISCOVERED"),
-                    }
-                    cl["status"] = "VERIFIED" if primary else "REVIEW_NEEDED"
+                    # Section 28: Citation lifecycle check
+                    cited_std = cl.get("cited_standard")
+                    if cited_std:
+                        cl["citation_lifecycle_check"] = eng.lifecycle_gate.check_citation_lifecycle(cited_std, eval_date)
+
+                    if primary:
+                        cl["status"] = "RECOMMENDATION_AVAILABLE"
+                    elif review:
+                        cl["status"] = "EXPERT_REVIEW_REQUIRED"
+                    else:
+                        cl["status"] = "UNRESOLVED"
                 except Exception:
+                    logger.exception(f"Error processing clause {cl.get('item_id')}")
                     cl["status"] = "UNPROCESSED"
 
         return doc
@@ -258,6 +313,9 @@ def batch_recommend(payload: BatchRecommendRequest):
         try:
             rec = eng.recommend(raw_text=raw_text, evaluation_date=eval_date, top_k=3)
             rec["item_id"] = item_id
+            cited_std = item.get("cited_standard")
+            if cited_std:
+                rec["citation_lifecycle_check"] = eng.lifecycle_gate.check_citation_lifecycle(cited_std, eval_date)
             results.append(rec)
         except Exception as e:
             request_id = str(uuid.uuid4())[:8]

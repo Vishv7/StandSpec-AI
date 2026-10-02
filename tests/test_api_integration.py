@@ -86,3 +86,42 @@ def test_tender_pdf_upload_mock():
     assert "document_id" in data
     assert data["filename"] == "tender_test.pdf"
     assert "clauses" in data
+    assert "extraction_metadata" in data
+    assert data["extraction_metadata"]["extraction_method"] == "pypdf_text_extraction"
+    assert data["tender_metadata"]["publish_date_state"] in ("VERIFIED_EXTRACTED", "NOT_VERIFIED")
+
+
+def test_tender_pdf_invalid_signature():
+    """Verify PDF upload rejects files without '%PDF-' file signature."""
+    fake_bytes = b"NOT_A_REAL_PDF_FILE"
+    response = client.post(
+        "/api/v1/tender/upload",
+        files={"file": ("malicious.pdf", fake_bytes, "application/pdf")}
+    )
+    assert response.status_code == 400
+    err = response.json()
+    assert "error_code" in err
+    assert "Missing '%PDF-'" in err["message"]
+    assert "request_id" in err
+
+
+def test_tender_pdf_invalid_extension():
+    """Verify PDF upload rejects non-PDF file extensions."""
+    response = client.post(
+        "/api/v1/tender/upload",
+        files={"file": ("tender.docx", b"%PDF-dummy", "application/pdf")}
+    )
+    assert response.status_code == 400
+    err = response.json()
+    assert "error_code" in err
+    assert "Only PDF files are supported" in err["message"]
+
+
+def test_api_error_sanitization():
+    """Verify 404 or invalid route returns structured sanitized error."""
+    response = client.get("/api/v1/non_existent_route")
+    assert response.status_code == 404
+    err = response.json()
+    assert err["error_code"] == "HTTP_404"
+    assert "request_id" in err
+

@@ -245,19 +245,20 @@ class ToolRouter:
         dept = args.get("department")
         desig = args.get("designation")
         
+        from src.recommendation.corpus_policy import PrototypeCoveragePolicy
         if not dept and desig:
             node = self._resolve_node(desig)
             if node:
-                dept = node.get("primary_department") or (node.get("source_departments") or [None])[0]
+                dept = PrototypeCoveragePolicy.resolve_department(node)
 
-        is_in_scope = (dept in ("CED", "ETD")) if dept else True
+        is_in_scope = bool(dept and dept.upper() in PrototypeCoveragePolicy.SUPPORTED_PRIMARY_DEPARTMENTS)
         coverage_state = "IN_PROTOTYPE_COVERAGE" if is_in_scope else "OUTSIDE_PROTOTYPE_COVERAGE"
         
         return {
             "status": "SUCCESS",
             "coverage_state": coverage_state,
             "department": dept,
-            "prototype_departments": ["CED", "ETD"],
+            "prototype_departments": list(PrototypeCoveragePolicy.SUPPORTED_PRIMARY_DEPARTMENTS),
             "explanation": "Current prototype strictly indexes Civil Engineering (CED) and Electrotechnical (ETD) standards.",
         }
 

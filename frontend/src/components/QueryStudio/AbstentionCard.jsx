@@ -55,6 +55,10 @@ export default function AbstentionCard({ decisionState, abstentionReason, _query
   }
 
   if (decisionState === 'INSUFFICIENT_INFORMATION' || decisionState === 'CLARIFICATION_REQUIRED') {
+    const clarifications = queryResult?.clarifications_needed || queryResult?.clarifications || [];
+    const missingDisc = queryResult?.missing_discriminators || [];
+    const prompt = queryResult?.clarification_prompt;
+
     return (
       <div className="w-full bg-orange-50/60 rounded-2xl p-6 border border-orange-200 text-orange-900 flex flex-col gap-3">
         <div className="flex items-center gap-2">
@@ -66,15 +70,35 @@ export default function AbstentionCard({ decisionState, abstentionReason, _query
         <p className="text-xs text-orange-800 leading-relaxed">
           {abstentionReason || "The query specifies a general product category, but lacks critical distinguishing parameters required to select a single definitive standard."}
         </p>
-        <div className="p-3 bg-white/80 rounded-xl border border-orange-200/80 text-xs text-slate-700">
-          <strong className="block text-slate-900 font-semibold mb-1">Recommended Clarifications to Add:</strong>
-          <ul className="list-disc list-inside space-y-1 text-slate-600">
-            <li>Operating voltage range or nominal voltage (for electrical components)</li>
-            <li>Conductor or pipe material grade (e.g. Copper vs Aluminium, PE-80 vs PE-100)</li>
-            <li>Pressure class or rating (e.g. PN 6, PN 10, Class K9)</li>
-            <li>Intended application or installation environment (indoor, outdoor, underground, potable water)</li>
-          </ul>
-        </div>
+
+        {prompt && (
+          <div className="p-3 bg-white/90 rounded-xl border border-orange-200 text-xs text-slate-800">
+            <strong className="block text-slate-900 font-semibold mb-0.5">Clarification Guidance:</strong>
+            <p className="text-emerald-900 font-medium">{prompt}</p>
+          </div>
+        )}
+
+        {clarifications.length > 0 && (
+          <div className="p-3 bg-white/80 rounded-xl border border-orange-200/80 text-xs text-slate-700">
+            <strong className="block text-slate-900 font-semibold mb-1">Required Clarifications:</strong>
+            <ul className="list-disc list-inside space-y-1 text-slate-700">
+              {clarifications.map((item, i) => (
+                <li key={i}>{typeof item === 'string' ? item : item.question || JSON.stringify(item)}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {missingDisc.length > 0 && (
+          <div className="flex items-center gap-1.5 flex-wrap text-xs">
+            <span className="font-mono text-slate-500 text-[11px] uppercase">Missing Discriminators:</span>
+            {missingDisc.map((d, i) => (
+              <span key={i} className="px-2 py-0.5 rounded bg-orange-100 text-orange-800 border border-orange-200 font-mono text-[11px]">
+                {typeof d === 'string' ? d : d.attribute || JSON.stringify(d)}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -89,7 +113,7 @@ export default function AbstentionCard({ decisionState, abstentionReason, _query
           </h4>
         </div>
         <p className="text-xs text-slate-600 leading-relaxed">
-          {abstentionReason || "The retrieval and applicability engine searched the 6,082 indexed BIS standards in Civil Engineering (CED) and Electrotechnical (ETD), but none achieved sufficient confidence."}
+          {abstentionReason || "The retrieval and applicability engine searched the 6,082 indexed knowledge-graph nodes in Civil Engineering (CED) and Electrotechnical (ETD), but none achieved sufficient confidence."}
         </p>
         <p className="text-xs text-slate-500">
           Tip: Try rephrasing with specific technical terms, material grades, or equipment designations.
@@ -108,8 +132,7 @@ export default function AbstentionCard({ decisionState, abstentionReason, _query
           </h4>
         </div>
         <p className="text-xs text-purple-800 leading-relaxed">
-          This prototype is strictly scoped to <strong>Civil Engineering (CED)</strong> and <strong>Electrotechnical (ETD)</strong> standard divisions.
-          The requirement appears to belong to food &amp; agriculture (FAD), textiles (TXD), mechanical (MED), or chemical (CHD) divisions.
+          This query is outside the current CED + ETD prototype coverage. The current prototype covers Civil Engineering (CED) and Electrotechnical (ETD) standards; other BIS departments are planned for future releases.
         </p>
       </div>
     );

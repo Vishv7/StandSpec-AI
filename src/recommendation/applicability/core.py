@@ -19,6 +19,18 @@ from typing import Dict, Any, List, Optional, Tuple
 from src.recommendation.role_classifier import RoleClassifier, StandardRole
 from src.recommendation.applicability.state import ApplicabilityState, AttributeStatus
 from src.recommendation.applicability.base_registry import DomainRuleRegistry
+from src.recommendation.applicability.material_concepts import (
+    resolve_material,
+    resolve_material_compatibility,
+    extract_material_from_text,
+    MaterialMatchResult,
+)
+from src.recommendation.applicability.product_concepts import (
+    resolve_base_product,
+    build_product_signature,
+    compare_products,
+    detect_product_from_title,
+)
 
 
 class GenericApplicabilityEngine:
@@ -131,8 +143,13 @@ class GenericApplicabilityEngine:
             or doc.get("scope_evidence_available", False)
             or (scope and str(scope).strip())
         )
-        rec_ready = candidate.get("recommendation_ready", doc.get("recommendation_ready", True))
-        scope_missing = not has_scope_evidence and not rec_ready
+        rec_ready = candidate.get("recommendation_ready", doc.get("recommendation_ready", None))
+        if rec_ready is False:
+            scope_missing = True
+        elif not has_scope_evidence:
+            scope_missing = True
+        else:
+            scope_missing = False
 
         attribute_evaluations: Dict[str, AttributeStatus] = {}
         mismatched: List[str] = []
@@ -160,6 +177,15 @@ class GenericApplicabilityEngine:
                     attribute_evaluations[attr] = AttributeStatus.MISMATCH
                     if attr not in mismatched:
                         mismatched.append(attr)
+                    eval_trace = {
+                        k.lower(): {
+                            "attribute": k,
+                            "status": v.value,
+                            "value": str(reqs.get(k.lower()) or ""),
+                            "evidence": f"Exclusion rule boundary: {boundary['reason']}",
+                        }
+                        for k, v in attribute_evaluations.items()
+                    }
                     return {
                         "is_applicable": False,
                         "state": ApplicabilityState.NOT_APPLICABLE.value,
@@ -170,6 +196,7 @@ class GenericApplicabilityEngine:
                         "rejection_reason": boundary["reason"],
                         "evidence_summary": f"Exclusion triggered: {boundary['reason']}",
                         "standard_role": role_type,
+                        "evaluation_trace": eval_trace,
                     }
 
         # 3. Standard 10-Attribute Evaluations
@@ -209,6 +236,17 @@ class GenericApplicabilityEngine:
             else:
                 unknown.append(attr_name)
 
+        # Build structured evaluation trace for UI and audit logging
+        eval_trace = {
+            k.lower(): {
+                "attribute": k,
+                "status": v.value,
+                "value": str(reqs.get(k.lower()) or ""),
+                "evidence": f"Evaluation for {k}: {v.value}",
+            }
+            for k, v in attribute_evaluations.items()
+        }
+
         # 5. Final State Derivation
         if mismatched:
             return {
@@ -221,10 +259,11 @@ class GenericApplicabilityEngine:
                 "rejection_reason": f"Candidate failed attribute verification on: {', '.join(mismatched)}.",
                 "evidence_summary": f"Mismatches detected: {mismatched}",
                 "standard_role": role_type,
+                "evaluation_trace": eval_trace,
             }
 
         # Trust Mandate P0-1: Scope Missing Gate
-        if scope_missing or not rec_ready:
+        if scope_missing:
             return {
                 "is_applicable": False,
                 "state": ApplicabilityState.EXPERT_REVIEW_REQUIRED.value,
@@ -235,6 +274,7 @@ class GenericApplicabilityEngine:
                 "rejection_reason": f"{desig} lacks verified scope evidence in the knowledge base (recommendation_ready={rec_ready}). Detailed technical boundaries cannot be confirmed without expert review.",
                 "evidence_summary": "Unready scope evidence in knowledge base.",
                 "standard_role": role_type,
+                "evaluation_trace": eval_trace,
             }
 
         # If product did not positively match
@@ -249,6 +289,7 @@ class GenericApplicabilityEngine:
                 "rejection_reason": "No positive product grounding evidence found in candidate title or scope.",
                 "evidence_summary": "Product unverified.",
                 "standard_role": role_type,
+                "evaluation_trace": eval_trace,
             }
 
         # Grounding depth evaluation
@@ -267,6 +308,7 @@ class GenericApplicabilityEngine:
                 "conditional_reason": f"Product matches '{matched[0]}', but critical technical parameters are UNKNOWN in tender specification.",
                 "evidence_summary": f"Product matches '{matched[0]}', but critical technical parameters are UNKNOWN in tender specification.",
                 "standard_role": role_type,
+                "evaluation_trace": eval_trace,
             }
 
         return {
@@ -279,6 +321,7 @@ class GenericApplicabilityEngine:
             "rejection_reason": None,
             "evidence_summary": f"Grounded match on {len(matched)} technical attributes: {', '.join(matched)}.",
             "standard_role": role_type,
+            "evaluation_trace": eval_trace,
         }
 
     def _evaluate_product(
@@ -410,14 +453,37 @@ class GenericApplicabilityEngine:
         return AttributeStatus.UNKNOWN, f"Could not positively confirm product '{prod_val}'"
 
     def _evaluate_material(self, mat_req: Optional[Any], title: str, scope: str, desig: str) -> AttributeStatus:
+        """Evaluate material compatibility using canonical material taxonomy (Phase 4)."""
         if not mat_req:
             return AttributeStatus.UNKNOWN
         mat_val = (mat_req.get("value") or "").lower() if isinstance(mat_req, dict) else str(mat_req or "").lower()
+        if not mat_val:
+            return AttributeStatus.UNKNOWN
+
         content = f"{title} {scope}".lower()
+
+        # Phase 4: Use canonical material taxonomy for concept-level compatibility
+        query_canonical = resolve_material(mat_val)
+        candidate_canonical = extract_material_from_text(f"{title} {scope}")
+
+        if query_canonical and candidate_canonical:
+            result, reason = resolve_material_compatibility(mat_val, f"{title} {scope}")
+            if result == MaterialMatchResult.MATCH:
+                return AttributeStatus.MATCH
+            elif result == MaterialMatchResult.MISMATCH:
+                return AttributeStatus.MISMATCH
+            elif result == MaterialMatchResult.SAME_FAMILY:
+                # Same family but different specific materials → context-dependent
+                # For now treat as UNKNOWN (needs domain-specific rules)
+                return AttributeStatus.UNKNOWN
+            elif result == MaterialMatchResult.RELATED:
+                return AttributeStatus.UNKNOWN
+
+        # Legacy fallback: direct string matching for unresolved materials
         if mat_val and (mat_val in content or (mat_val == "upvc" and ("pvc" in content or "polyvinyl chloride" in content))):
             return AttributeStatus.MATCH
 
-        # Mutual exclusion for cable/winding insulation materials
+        # Legacy mutual exclusion for cable/winding insulation materials
         if any(p in mat_val for p in ["pvc", "polyvinyl chloride", "xlpe", "crosslinked polyethylene", "cross-linked"]):
             if any(c in content for c in ["cotton covered", "paper covered", "enamelled", "tamping powder"]):
                 return AttributeStatus.MISMATCH

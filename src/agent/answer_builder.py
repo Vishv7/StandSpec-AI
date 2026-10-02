@@ -23,10 +23,10 @@ class AnswerBuilder:
         lifecycle_meta: Optional[Dict[str, Any]] = None,
         regulatory_meta: Optional[Dict[str, Any]] = None,
         provenance: Optional[List[str]] = None,
-        confidence: str = "HIGH",
+        confidence: str = "UNVERIFIED",
         explanation: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Constructs an un-hallucinated, 100% grounded final answer."""
+        """Constructs a deterministic, evidence-grounded final answer."""
         primary_rec = None
         if primary_candidate and decision_state in ("PRIMARY_RECOMMENDATION_AVAILABLE", "CONDITIONAL_RECOMMENDATION"):
             desig = primary_candidate.get("designation")
@@ -38,7 +38,7 @@ class AnswerBuilder:
                 "reason": primary_candidate.get("reason", f"Matched procurement specifications for {matched}."),
                 "applicability_state": primary_candidate.get("applicability_state", "APPLICABLE"),
                 "claim_level": primary_candidate.get("claim_level", "VERIFIED"),
-                "evidence_ids": primary_candidate.get("evidence_ids", [f"EV_{desig}"]),
+                "evidence_ids": primary_candidate.get("evidence_ids", []),
                 "matched_attributes": matched,
             }
 
@@ -49,7 +49,7 @@ class AnswerBuilder:
                     "designation": alt.get("designation"),
                     "title": alt.get("title", ""),
                     "reason": alt.get("reason", "Alternative candidate standard"),
-                    "evidence_ids": alt.get("evidence_ids", [f"EV_{alt.get('designation')}"]),
+                    "evidence_ids": alt.get("evidence_ids", []),
                 })
 
         rev = None
@@ -64,7 +64,7 @@ class AnswerBuilder:
 
         # Lifecycle block
         life = {
-            "state": (lifecycle_meta or {}).get("lifecycle_state", "ACTIVE_VALID"),
+            "state": (lifecycle_meta or {}).get("lifecycle_state", "LIFECYCLE_UNKNOWN"),
             "recommended_edition": (lifecycle_meta or {}).get("recommended_edition"),
             "superseded_by": (lifecycle_meta or {}).get("superseded_by"),
             "evidence": (lifecycle_meta or {}).get("evidence", []),
@@ -76,21 +76,20 @@ class AnswerBuilder:
         if not reg_statement:
             if reg_state == "MANDATORY_CONFIRMED":
                 qco = (regulatory_meta or {}).get("qco_order_number") or "QCO"
-                reg_statement = f"Statutory Mandate: MANDATORY under Gazette Order {qco}."
+                reg_statement = f"Indexed regulatory evidence indicates mandatory certification under Gazette Order {qco}."
             elif reg_state == "MANDATORY_CONDITIONALLY_APPLICABLE":
                 qco = (regulatory_meta or {}).get("qco_order_number") or "conditional mandate"
-                reg_statement = f"Statutory Mandate: Mandatory subject to stated conditions ({qco})."
+                reg_statement = f"Indexed regulatory evidence indicates mandatory certification subject to conditions ({qco})."
             elif reg_state in ("NOT_VERIFIED_IN_CURRENT_CORPUS", "UNVERIFIED", "UNKNOWN", "MANDATE_NOT_FOUND_IN_SEARCHED_SOURCES"):
-                reg_statement = "Statutory Mandate: Regulatory mandatory status was not verified in the current regulatory corpus."
+                reg_statement = "Regulatory status is not verified in the indexed corpus. No applicable regulatory record or order was found."
             elif reg_state == "CONFLICTING_EVIDENCE":
-                reg_statement = "Statutory Mandate: Conflicting regulatory evidence prevents a verified mandate conclusion."
+                reg_statement = "Conflicting regulatory evidence prevents a verified mandate conclusion."
             elif reg_state == "VOLUNTARY_OR_UNLISTED":
-                # Legacy state: treat as unverified rather than asserting voluntary
-                reg_statement = "Statutory Mandate: Regulatory mandatory status was not verified in the current regulatory corpus."
+                reg_statement = "Regulatory status is not verified in current corpus. No applicable regulatory mandate was found."
             elif reg_state == "REGULATORY_SOURCE_UNAVAILABLE":
-                reg_statement = "Statutory Mandate: Regulatory source unavailable in current corpus."
+                reg_statement = "Regulatory source unavailable in current corpus."
             else:
-                reg_statement = f"Statutory Mandate: {reg_state}."
+                reg_statement = f"Regulatory evidence status: {reg_state}."
 
         reg = {
             "state": reg_state,

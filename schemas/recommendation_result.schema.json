@@ -173,6 +173,18 @@
       "type": "array",
       "items": {"type": "object"}
     },
+    "applicability": {
+      "type": ["object", "null"],
+      "description": "Technical applicability evaluation of the primary or review candidate."
+    },
+    "lifecycle": {
+      "type": ["object", "null"],
+      "description": "Lifecycle and supersession state of the primary or review candidate."
+    },
+    "regulatory": {
+      "type": ["object", "null"],
+      "description": "Regulatory mandate and QCO evaluation of the primary or review candidate."
+    },
     "supporting_context_pack": {
       "type": "object",
       "properties": {

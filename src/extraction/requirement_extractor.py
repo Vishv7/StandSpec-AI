@@ -71,8 +71,8 @@ PRODUCT_PATTERNS: List[Tuple[re.Pattern, str]] = [
     (re.compile(r'\b((?:paper[- ]faced\s+)?gypsum\s+plaster\s+board[s]?|gypsum\s+board[s]?|plaster\s+board[s]?)\b', re.IGNORECASE), "Gypsum Plaster Boards"),
     
     # Civil Engineering: Piping & Fluid Transmission
-    (re.compile(r'\b(?:high\s+density\s+polyethylene(?:\s*\([a-z0-9]+\))?\s+pipe[s]?|hdpe\s+pipe[s]?)\b', re.IGNORECASE), "HDPE Pipes for Water Supply"),
-    (re.compile(r'\b(?:(?:unplasticized\s+)?polyvinyl\s+chloride(?:\s*\([a-z0-9]+\))?\s+pipe[s]?|upvc\s+pipe[s]?|pvc[- ]u\s+pipe[s]?)\b', re.IGNORECASE), "uPVC Pipes for Potable Water Supplies"),
+    (re.compile(r'\b(?:high\s+density\s+polyethylene(?:\s*\([a-z0-9]+\))?(?:\s+(?:potable\s+)?water)?\s+pipe[s]?|hdpe(?:\s+(?:potable\s+)?water)?\s+pipe[s]?)\b', re.IGNORECASE), "HDPE Pipes for Water Supply"),
+    (re.compile(r'\b(?:(?:unplasticized\s+)?polyvinyl\s+chloride(?:\s*\([a-z0-9]+\))?(?:\s+(?:potable\s+)?water)?\s+pipe[s]?|upvc(?:\s+(?:potable\s+)?water)?\s+pipe[s]?|pvc[- ]u(?:\s+(?:potable\s+)?water)?\s+pipe[s]?)\b', re.IGNORECASE), "uPVC Pipes for Potable Water Supplies"),
     (re.compile(r'\b(?:centrifugally\s+cast(?:\s*\([a-z0-9]+\))?\s+iron\s+pressure\s+pipe[s]?|spun\s+iron\s+pipe[s]?|cast\s+iron\s+pressure\s+pipe[s]?)\b', re.IGNORECASE), "Centrifugally Cast Iron Pressure Pipes"),
     (re.compile(r'\b(?:seamless\s+and\s+electric\s+resistance\s+welded(?:\s*\([a-z0-9]+\))?\s+.*steel\s+tube[s]?|mild\s+steel\s+tube[s]?|steel\s+tube[s]?|steel\s+tubular[s]?|erw\s+tube[s]?)\b', re.IGNORECASE), "Steel Tubes and Tubulars"),
     (re.compile(r'\b(pipe\s+fitting[s]?|cast\s+iron\s+fitting[s]?|upvc\s+fitting[s]?)\b', re.IGNORECASE), "Pipe Fittings"),
@@ -102,7 +102,15 @@ PRODUCT_PATTERNS: List[Tuple[re.Pattern, str]] = [
     (re.compile(r'\b(door[s]?\s*(?:and\s+)?window[s]?|flush\s+door[s]?|wooden\s+door[s]?|window\s+and\s+door|doors,\s*windows)\b', re.IGNORECASE), "Doors and Windows"),
     (re.compile(r'\b(transparent\s+float\s+glass|clear\s+float\s+glass|float\s+glass)\b', re.IGNORECASE), "Transparent Float Glass"),
     
-    # Multilingual Patterns (Hindi & Gujarati)
+    # Multilingual & Hinglish Patterns
+    (re.compile(r'\b(?:paani\s+ka\s+pipe|paani\s+pipe|pani\s+ka\s+pipe|nal\s+ka\s+pipe)\b', re.IGNORECASE), "HDPE Pipes for Water Supply"),
+    (re.compile(r'\b(?:bijli\s+(?:ka|ki|ke)\s+taar|bijli\s+taar|power\s+cable|underground\s+taar)\b', re.IGNORECASE), "Power Cable"),
+    (re.compile(r'\b(?:bijli\s+(?:ka\s+)?transformer|substation\s+transformer)\b', re.IGNORECASE), "Distribution Transformers"),
+    (re.compile(r'\b(?:tmt\s+sariya|lohe\s+ka\s+sariya|sariya|chhad)\b', re.IGNORECASE), "Steel Reinforcement Bars"),
+    (re.compile(r'\b(?:cement\s+ki\s+bori|cement\s+bori|cement\s+ka\s+bag|cement\s+bag)\b', re.IGNORECASE), "Cement"),
+    (re.compile(r'\b(?:flush\s+door|lakdi\s+ka\s+darwaja|darwaja|darwaza)\b', re.IGNORECASE), "Doors and Windows"),
+    (re.compile(r'\b(?:led\s+batti|led\s+bulb|bulub)\b', re.IGNORECASE), "Self-Ballasted LED Lamps"),
+    (re.compile(r'\b(?:bijli\s+ka\s+meter|smart\s+meter)\b', re.IGNORECASE), "Electricity Meter"),
     (re.compile(r'(?:थर्मोकपल\s+पायरोमीटर|पायरोमीटर)'), "Thermocouple Pyrometers"),
     (re.compile(r'(?:સેફ્ટી\s+ગ્લાસ|safety\s+glass)', re.IGNORECASE), "Safety Glass Architectural Building and General Uses"),
     (re.compile(r'(?:सौर\s+विकिरण|ऊर्जा\s+संरक्षण|energy\s+and\s+light)', re.IGNORECASE), "Use of Glass in Buildings Energy and Light"),

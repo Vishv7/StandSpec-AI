@@ -12,29 +12,42 @@ export default function AlternativeStandards({
 
   if (!hasCandidates && !hasAllied && !hasRejected) return null;
 
-  // Group Allied Standards by Architectural Role (Mentor review Part 23)
+  // Group Allied Standards by Architectural Role (PS 26108 Section 20 & 41)
   const getRoleCategory = (allied) => {
     const role = (allied.standard_role || allied.role || "").toUpperCase();
-    const rel = (allied.relationship || "").toLowerCase();
-    const title = (allied.title || "").toLowerCase();
-    const desig = (allied.standard_designation || allied.designation || "").toLowerCase();
+    const rel = (allied.relationship_type || allied.relationship || "").toLowerCase();
 
-    if (role === "TEST_METHOD" || rel.includes("test") || title.includes("method of test") || title.includes("methods of test") || desig.includes("10810") || desig.includes("516")) {
+    if (role === "TEST_METHOD" || rel.includes("test") || rel === "test_method") {
       return "Test Methods & Sampling Procedures";
     }
-    if (role === "COMPONENT" || rel.includes("material") || title.includes("conductor") || title.includes("aggregate") || title.includes("profiles")) {
-      return "Components & Feedstock Materials";
+    if (role === "TERMINOLOGY" || rel.includes("terminology")) {
+      return "Terminology & Glossaries";
     }
-    if (role === "DESIGN_CODE" || role === "CODE_OF_PRACTICE" || rel.includes("code") || title.includes("code of practice")) {
-      return "Design Codes & Codes of Practice";
+    if (role === "SAFETY_STANDARD" || rel.includes("safety")) {
+      return "Safety Standards & Protection Codes";
     }
-    if (role === "INSTALLATION_CODE" || rel.includes("installation") || title.includes("installation") || title.includes("laying")) {
+    if (role === "INSTALLATION_CODE" || rel.includes("installation")) {
       return "Installation & Maintenance Codes";
     }
-    if (role === "DIMENSIONAL_MOUNTING" || rel.includes("dimensional") || title.includes("dimensions")) {
-      return "Dimensional & Mounting Envelopes";
+    if (role === "DESIGN_CODE" || role === "CODE_OF_PRACTICE" || rel.includes("design") || rel.includes("code")) {
+      return "Design Codes & Codes of Practice";
     }
-    return "Normative References & Auxiliary Standards";
+    if (role === "COMPONENT" || rel.includes("component") || rel.includes("material")) {
+      return "Components & Feedstock Materials";
+    }
+    if (role === "DIMENSIONAL_MOUNTING" || rel.includes("dimensional")) {
+      return "Dimensional & Mounting Specifications";
+    }
+    if (role === "PRIMARY_PRODUCT" || rel.includes("related_product")) {
+      return "Related Product Standards";
+    }
+    if (role && role !== "UNKNOWN_ROLE") {
+      return role.replace(/_/g, " ");
+    }
+    if (rel) {
+      return rel.replace(/_/g, " ");
+    }
+    return "Relationship: NOT_VERIFIED";
   };
 
   const groupedAllied = {};
@@ -118,7 +131,7 @@ export default function AlternativeStandards({
                             {allied.standard_designation || allied.designation}
                           </span>
                           <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase">
-                            {allied.relationship || "Normative Reference"}
+                            {allied.relationship_type || allied.relationship || (allied.standard_role && allied.standard_role !== 'UNKNOWN_ROLE' ? allied.standard_role : 'NOT_VERIFIED')}
                           </span>
                         </div>
                         <p className="text-xs text-slate-600 line-clamp-1">

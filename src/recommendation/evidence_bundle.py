@@ -34,10 +34,25 @@ from typing import Dict, Any, List, Optional, Tuple
 from datetime import datetime, timezone
 
 
+class EvidenceState(str, Enum):
+    """Canonical evidence verification states — PS 26108 Phase 1.
+    Core rule: ABSENCE OF EVIDENCE != EVIDENCE OF ABSENCE.
+    Every claim type must track its evidence state explicitly.
+    INFERRED evidence MUST NOT be silently promoted to VERIFIED.
+    """
+    VERIFIED = "VERIFIED"
+    PARTIAL = "PARTIAL"
+    INFERRED = "INFERRED"
+    NOT_VERIFIED = "NOT_VERIFIED"
+    UNAVAILABLE = "UNAVAILABLE"
+    CONFLICTING = "CONFLICTING"
+
+
 class ClaimType(str, Enum):
     """Categorical claim types evaluated against EvidencePolicy."""
     RETRIEVAL_CLAIM = "RETRIEVAL_CLAIM"
     CANDIDATE_CLAIM = "CANDIDATE_CLAIM"
+    REVIEW_CANDIDATE_CLAIM = "REVIEW_CANDIDATE_CLAIM"
     TECHNICAL_APPLICABILITY_CLAIM = "TECHNICAL_APPLICABILITY_CLAIM"
     PRIMARY_RECOMMENDATION_CLAIM = "PRIMARY_RECOMMENDATION_CLAIM"
     REGULATORY_MANDATE_CLAIM = "REGULATORY_MANDATE_CLAIM"
@@ -53,12 +68,15 @@ class EvidenceGapCode(str, Enum):
     ROLE_MISMATCH = "ROLE_MISMATCH"
     TECHNICAL_ATTRIBUTE_MISMATCH = "TECHNICAL_ATTRIBUTE_MISMATCH"
     LIFECYCLE_UNVERIFIED = "LIFECYCLE_UNVERIFIED"
+    LIFECYCLE_INFERRED_NOT_VERIFIED = "LIFECYCLE_INFERRED_NOT_VERIFIED"
     PROVENANCE_UNVERIFIED = "PROVENANCE_UNVERIFIED"
     UNHYDRATED_STUB = "UNHYDRATED_STUB"
     REGULATORY_UNVERIFIED = "REGULATORY_UNVERIFIED"
     REGULATORY_SOURCE_UNAVAILABLE = "REGULATORY_SOURCE_UNAVAILABLE"
     REGULATORY_CONFLICT = "REGULATORY_CONFLICT"
+    REGULATORY_DOMAIN_NOT_IN_CORPUS = "REGULATORY_DOMAIN_NOT_IN_CORPUS"
     CONTRADICTORY_REQUIREMENTS = "CONTRADICTORY_REQUIREMENTS"
+    OUTSIDE_PROTOTYPE_COVERAGE = "OUTSIDE_PROTOTYPE_COVERAGE"
 
 
 class EvidenceItem:
@@ -101,6 +119,12 @@ class EvidencePolicy:
     """
     Authoritative policy defining required evidentiary support per claim type.
     Decoupled from pre-baked graph booleans; evaluates bundle state directly.
+
+    PS 26108 Core Rule: ABSENCE OF EVIDENCE != EVIDENCE OF ABSENCE.
+    - INFERRED lifecycle MUST NOT become VERIFIED lifecycle.
+    - Missing scope MUST NOT become generic scope text.
+    - Missing regulatory evidence MUST NOT become VOLUNTARY.
+    - Missing applicability MUST NOT become APPLICABLE.
     """
 
     @staticmethod
@@ -123,6 +147,16 @@ class EvidencePolicy:
                 gaps.append(EvidenceGapCode.IDENTITY_UNVERIFIED.value)
             return len(gaps) == 0, gaps
 
+        elif claim_type == ClaimType.REVIEW_CANDIDATE_CLAIM:
+            # Review candidates require identity + (scope OR product match)
+            if not bundle.identity_ready:
+                gaps.append(EvidenceGapCode.IDENTITY_UNVERIFIED.value)
+            if not bundle.scope_ready:
+                matched = (context or {}).get("matched_attributes") or []
+                if "PRODUCT" not in matched:
+                    gaps.append(EvidenceGapCode.SCOPE_MISSING.value)
+            return len(gaps) == 0, gaps
+
         elif claim_type == ClaimType.TECHNICAL_APPLICABILITY_CLAIM:
             if not bundle.identity_ready:
                 gaps.append(EvidenceGapCode.IDENTITY_UNVERIFIED.value)
@@ -142,6 +176,14 @@ class EvidencePolicy:
                     gaps.append(EvidenceGapCode.APPLICABILITY_EVIDENCE_MISSING.value)
             if not bundle.lifecycle_ready:
                 gaps.append(EvidenceGapCode.LIFECYCLE_UNVERIFIED.value)
+
+            # PS §5 Guard: INFERRED lifecycle MUST NOT satisfy PRIMARY_RECOMMENDATION
+            # Only VERIFIED lifecycle evidence is sufficient for primary recommendation
+            lifecycle_ev_status = (bundle.lifecycle_evidence.get("lifecycle_evidence_status") or "").upper()
+            if lifecycle_ev_status == "INFERRED":
+                if EvidenceGapCode.LIFECYCLE_UNVERIFIED.value not in gaps:
+                    gaps.append(EvidenceGapCode.LIFECYCLE_INFERRED_NOT_VERIFIED.value)
+
             if not bundle.provenance_ready:
                 gaps.append(EvidenceGapCode.PROVENANCE_UNVERIFIED.value)
             if not bundle.provenance_metadata.get("is_hydrated", False) and not bundle.scope_ready:
@@ -157,6 +199,16 @@ class EvidencePolicy:
             elif bundle.standard_role == "UNKNOWN_ROLE":
                 # Unknown role cannot be promoted as primary — must be resolved first
                 gaps.append(EvidenceGapCode.ROLE_UNVERIFIED.value)
+
+            # Prototype Department Boundary Gate (CED + ETD only)
+            from src.recommendation.corpus_policy import PrototypeCoveragePolicy
+            dept = bundle.department or PrototypeCoveragePolicy.resolve_department({
+                "primary_department": bundle.department,
+                "department": bundle.department,
+                "designation": bundle.designation,
+            })
+            if not dept or dept.upper() not in PrototypeCoveragePolicy.SUPPORTED_PRIMARY_DEPARTMENTS:
+                gaps.append(EvidenceGapCode.OUTSIDE_PROTOTYPE_COVERAGE.value)
 
             if context:
                 if context.get("mismatched_attributes"):
@@ -182,6 +234,8 @@ class EvidencePolicy:
             reg_state = (bundle.regulatory_evidence or {}).get("regulatory_state")
             if reg_state == "CONFLICTING_EVIDENCE":
                 gaps.append(EvidenceGapCode.REGULATORY_CONFLICT.value)
+            elif reg_state == "REGULATORY_DOMAIN_NOT_IN_CURRENT_CORPUS":
+                gaps.append(EvidenceGapCode.REGULATORY_DOMAIN_NOT_IN_CORPUS.value)
             elif reg_state not in (
                 "MANDATORY_CONFIRMED",
                 "NOT_MANDATORY_CONFIRMED",
@@ -302,7 +356,12 @@ class EvidenceBundle:
     @property
     def lifecycle_ready(self) -> bool:
         """
-        True only if lifecycle status is explicitly verified and not UNKNOWN, SUPERSEDED, or WITHDRAWN.
+        True only if lifecycle status is explicitly verified (not INFERRED, not UNKNOWN,
+        not SUPERSEDED, not WITHDRAWN).
+
+        PS §6 Core Rule: A standard with only a publication year MUST NOT become
+        a verified current/active standard. INFERRED lifecycle evidence is NOT
+        sufficient for lifecycle_ready=True.
         """
         status = (self.lifecycle_evidence.get("status") or "").upper()
         if status in ("UNKNOWN", "", "UNVERIFIED", "LIFECYCLE_UNVERIFIED", "SUPERSEDED", "WITHDRAWN", "VERIFIED_SUPERSEDED", "VERIFIED_WITHDRAWN", "FUTURE_NOT_VALID", "CONFLICTING_LIFECYCLE"):
@@ -314,7 +373,7 @@ class EvidenceBundle:
         if self.lifecycle_evidence.get("is_valid_on_date") is False:
             return False
         ev_status = (self.lifecycle_evidence.get("lifecycle_evidence_status") or "").upper()
-        if ev_status in ("LIFECYCLE_EVIDENCE_INSUFFICIENT", "UNKNOWN"):
+        if ev_status in ("LIFECYCLE_EVIDENCE_INSUFFICIENT", "UNKNOWN", "INFERRED"):
             return False
         return True
 
@@ -444,7 +503,8 @@ class EvidenceBundle:
         """Hydrate an EvidenceBundle from a graph node and optional gate outputs."""
         desig = node.get("designation") or node.get("id") or ""
         title = node.get("title") or ""
-        dept = node.get("primary_department") or (node.get("source_departments") or [None])[0]
+        from src.recommendation.corpus_policy import PrototypeCoveragePolicy
+        dept = PrototypeCoveragePolicy.resolve_department(node)
         base_num = node.get("base_number")
         part = str(node.get("part")) if node.get("part") is not None else None
         section = str(node.get("section")) if node.get("section") is not None else None
@@ -499,7 +559,7 @@ class EvidenceBundle:
                 "provenance": lifecycle_info.get("provenance", []),
                 "reaffirmation_date": lifecycle_info.get("reaffirmation_date"),
                 "review_date": lifecycle_info.get("review_date"),
-                "is_valid_on_date": (lifecycle_info.get("temporal_validity") or {}).get("is_valid_on_evaluation_date", True),
+                "is_valid_on_date": (lifecycle_info.get("temporal_validity") or {}).get("is_valid_on_evaluation_date", None),
             })
         else:
             has_status = node.get("status") or node.get("standard_status")
@@ -507,6 +567,7 @@ class EvidenceBundle:
             bundle.lifecycle_evidence["status"] = status_str
             bundle.lifecycle_evidence["lifecycle_state"] = status_str
             bundle.lifecycle_evidence["lifecycle_evidence_status"] = "VERIFIED" if has_status else "UNKNOWN"
+            bundle.lifecycle_evidence["is_valid_on_date"] = None
             if node.get("amendments"):
                 bundle.lifecycle_evidence["amendments"] = node.get("amendments")
 
@@ -514,10 +575,12 @@ class EvidenceBundle:
         if reg_info:
             bundle.regulatory_evidence.update(reg_info)
         else:
+            # Metadata hint only: RegulatoryGate is the sole authority for mandatory claims.
             if node.get("qco_mandatory") is not None:
                 bundle.regulatory_evidence["is_mandatory"] = bool(node.get("qco_mandatory"))
+                # Never emit MANDATORY_CONFIRMED from an unverified node boolean
                 bundle.regulatory_evidence["regulatory_state"] = (
-                    "MANDATORY_CONFIRMED" if node.get("qco_mandatory") else "NOT_MANDATORY_CONFIRMED"
+                    "NOT_VERIFIED_IN_CURRENT_CORPUS"
                 )
 
         # Populate provenance

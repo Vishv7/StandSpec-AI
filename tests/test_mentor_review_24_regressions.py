@@ -98,7 +98,7 @@ def test_03_contradictory_query_abstains():
 
     engine = StandSpecRecommendationEngine.from_release()
     result = engine.recommend(query)
-    assert result["decision_state"] in ("INSUFFICIENT_INFORMATION", "CONTRADICTORY_SPECIFICATIONS")
+    assert result["decision_state"] == "CONTRADICTORY_SPECIFICATIONS"
     assert result["primary_recommendation"] is None
 
 

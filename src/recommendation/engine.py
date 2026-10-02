@@ -602,7 +602,7 @@ class StandSpecRecommendationEngine:
 
         # Step 9: Calibrated Selective Abstention Policy
         if has_contradictions:
-            decision_state = "INSUFFICIENT_INFORMATION"
+            decision_state = "CONTRADICTORY_SPECIFICATIONS"
             abstention_reason = consistency_result.abstention_reason or f"Contradictory technical specifications detected: {'; '.join(req_obj.get('contradictions', []))}"
             primary_rec = None
             viable_recs = []
@@ -662,8 +662,10 @@ class StandSpecRecommendationEngine:
                 # Trust Mandate P0-1, P0-3 & P1-C: EvidencePolicy gate
                 # Must NOT erase candidate — surface as review_candidate
                 review_cand_desig = primary_rec.get("standard_designation") or orig_desig
+                cand_bundle_dict = primary_rec.get("evidence_bundle") or {}
                 cand_gaps = primary_rec.get("evidence_gaps") or (
-                    bundle.get_evidence_gaps(ClaimType.PRIMARY_RECOMMENDATION_CLAIM) if bundle else ["SCOPE_MISSING"]
+                    cand_bundle_dict.get("readiness", {}).get("evidence_gaps", {}).get("primary_recommendation")
+                    or ["SCOPE_MISSING"]
                 )
                 review_candidate = {
                     "designation": review_cand_desig,
@@ -735,17 +737,22 @@ class StandSpecRecommendationEngine:
                 "EXPERT_REVIEW_REQUIRED",
             ):
                 if is_explicit_request and primary_rec and not review_candidate:
+                    cand_bundle_dict = primary_rec.get("evidence_bundle") or {}
+                    cand_gaps = primary_rec.get("evidence_gaps") or (
+                        cand_bundle_dict.get("readiness", {}).get("evidence_gaps", {}).get("primary_recommendation")
+                        or ["EVIDENCE_INSUFFICIENT"]
+                    )
                     review_candidate = {
                         "designation": primary_rec.get("standard_designation") or orig_desig,
                         "standard_designation": primary_rec.get("standard_designation") or orig_desig,
                         "title": primary_rec.get("title"),
-                        "role": (primary_rec.get("evidence_bundle") or {}).get("standard_role", "PRODUCT_STANDARD"),
+                        "role": cand_bundle_dict.get("standard_role", "PRODUCT_STANDARD"),
                         "candidate_relevance": "HIGH",
-                        "applicability_state": cand_app_state or "APPLICABLE",
+                        "applicability_state": cand_app_state or "UNKNOWN",
                         "claim_level": "REVIEW_REQUIRED",
-                        "evidence_state": "SUFFICIENT",
-                        "missing_evidence": [],
-                        "evidence_gaps": [],
+                        "evidence_state": "SCOPE_UNAVAILABLE" if "SCOPE_MISSING" in cand_gaps else "EVIDENCE_INSUFFICIENT",
+                        "missing_evidence": cand_gaps,
+                        "evidence_gaps": cand_gaps,
                         "lifecycle_state": (primary_rec.get("lifecycle") or {}).get("lifecycle_state") or "UNKNOWN",
                         "regulatory_state": (primary_rec.get("regulatory") or {}).get("regulatory_state") or "UNVERIFIED",
                         "review_reason": abstention_reason or "Verification required against missing procurement specifications.",
@@ -758,7 +765,7 @@ class StandSpecRecommendationEngine:
                         }
                     }
                 primary_rec = None
-                claim_level = "ABSTAINED" if decision_state in ("INSUFFICIENT_INFORMATION", "NO_CONFIDENT_MATCH", "OUTSIDE_PROTOTYPE_COVERAGE") else ("REVIEW_REQUIRED" if decision_state == "EXPERT_REVIEW_REQUIRED" else "PLAUSIBLE")
+                claim_level = "ABSTAINED" if decision_state in ("INSUFFICIENT_INFORMATION", "NO_CONFIDENT_MATCH", "OUTSIDE_PROTOTYPE_COVERAGE", "CONTRADICTORY_SPECIFICATIONS") else ("REVIEW_REQUIRED" if decision_state == "EXPERT_REVIEW_REQUIRED" else "PLAUSIBLE")
 
         elif not has_contradictions and not is_outside_domain and not is_query_underspecified:
             # No primary recommendation reached threshold or survived applicability.
@@ -1109,6 +1116,7 @@ class StandSpecRecommendationEngine:
             "decision_state": decision_state,
             "abstention_reason": abstention_reason,
             "contradictions": [c.to_dict() for c in consistency_result.contradictions] if not consistency_result.is_consistent else req_obj.get("contradictions", []),
+            "clarifications": [consistency_result.clarification_message] if consistency_result.clarification_message else (req_obj.get("clarifications_needed") or []),
             "clarification_prompt": consistency_result.clarification_message if not consistency_result.is_consistent else None,
             "claim_level": claim_level,
             "data_coverage": data_coverage,
@@ -1117,6 +1125,9 @@ class StandSpecRecommendationEngine:
             "decision_trace": decision_trace,
             "primary_recommendation": primary_rec,
             "review_candidate": review_candidate,
+            "applicability": primary_rec.get("applicability") if primary_rec else (review_candidate.get("applicability") or {"state": review_candidate.get("applicability_state", "UNKNOWN")} if review_candidate else None),
+            "lifecycle": primary_rec.get("lifecycle") if primary_rec else (review_candidate.get("lifecycle") if review_candidate else None),
+            "regulatory": primary_rec.get("regulatory") if primary_rec else (review_candidate.get("regulatory") if review_candidate else None),
             "alternative_standards": alternative_standards,
             "candidate_recommendations": resolved_recommendations,
             "allied_standards": allied_candidates[:5],

@@ -217,6 +217,7 @@ export default function TenderPdfStudio({ evaluationDate }) {
       ...sample,
       filename: sample.name,
       page_count: sample.pages,
+      is_synthetic_demo: true,
       tender_metadata: {
         issuing_authority: sample.authority,
         tender_id: sample.tenderId,
@@ -281,37 +282,58 @@ export default function TenderPdfStudio({ evaluationDate }) {
           if (resultsMap.has(cl.item_id)) {
             const r = resultsMap.get(cl.item_id);
             const primary = r.primary_recommendation;
-            const life = primary?.lifecycle || {};
-            const reg = primary?.regulatory || {};
+            const review = r.review_candidate;
+            const life = r.lifecycle || primary?.lifecycle || {};
+            const reg = r.regulatory || primary?.regulatory || {};
+            const citationCheck = r.citation_lifecycle_check;
             const isContradictory = r.decision_state === 'CONTRADICTORY_SPECIFICATIONS';
-            const isSuperseded = (cl.cited_standard && primary && !cl.cited_standard.includes(primary.standard_designation)) ||
-                                 life.lifecycle_state === 'SUPERSEDED_IN_TENDER' ||
-                                 life.is_superseded === true;
+            const isSuperseded = citationCheck
+              ? (citationCheck.state === 'VERIFIED_SUPERSEDED' || citationCheck.state === 'VERIFIED_WITHDRAWN')
+              : (life.lifecycle_state === 'VERIFIED_SUPERSEDED' || life.is_superseded === true);
 
-            // P4.3: Preserve full backend result per clause
+            // PS 26108 Section 27: Retain full backend analysis result per clause
             return {
               ...cl,
+              analysis: r,
               backend_result: r,
-              decision_state: r.decision_state || (primary ? "PRIMARY_RECOMMENDATION_AVAILABLE" : "INSUFFICIENT_INFORMATION"),
-              contradiction_details: r.contradiction_details || null,
-              clarification_prompts: r.clarification_prompts || [],
+              decision_state: r.decision_state || (primary ? "PRIMARY_RECOMMENDATION_AVAILABLE" : (review ? "EXPERT_REVIEW_REQUIRED" : "INSUFFICIENT_INFORMATION")),
+              contradiction_details: r.contradictions?.[0] || r.contradiction_details || null,
+              clarification_prompts: r.clarifications_needed || r.clarification_prompts || [],
+              citation_lifecycle_check: citationCheck,
               recommendation: primary ? {
-                decision_state: r.decision_state || "PRIMARY_RECOMMENDATION_AVAILABLE",
-                designation: primary.standard_designation,
+                decision_state: r.decision_state,
+                designation: primary.standard_designation || primary.designation,
                 title: primary.title,
-                department: primary.department,
+                department: primary.department || "NOT_VERIFIED",
                 standard_role: primary.standard_role,
-                lifecycle_state: life.lifecycle_state || (life.is_superseded ? "SUPERSEDED" : "VERIFIED_ACTIVE"),
+                lifecycle_state: life.lifecycle_state || "LIFECYCLE_UNKNOWN",
                 lifecycle: life,
-                is_mandatory_qco: reg.is_mandatory || false,
-                regulatory_state: reg.regulatory_state,
+                is_mandatory_qco: reg.state === "MANDATORY_CONFIRMED" || reg.is_mandatory === true,
+                regulatory_state: reg.state || reg.regulatory_state || "NOT_VERIFIED_IN_CURRENT_CORPUS",
                 regulatory: reg,
-                confidence_score: primary.confidence_score || 0.9,
+                confidence_score: primary.confidence_score ?? null,
                 evidence_gaps: primary.evidence_gaps || [],
                 allied_standards: r.allied_standards || [],
-                alternatives: r.alternatives || [],
-              } : null,
-              status: isContradictory ? "CONTRADICTORY" : (isSuperseded ? "SUPERSEDED_ALERT" : (primary ? "VERIFIED" : "REVIEW_NEEDED")),
+                alternatives: r.candidate_recommendations || r.alternatives || [],
+                is_review_candidate: false,
+              } : (review ? {
+                decision_state: r.decision_state,
+                designation: review.standard_designation || review.designation,
+                title: review.title,
+                department: review.department || "NOT_VERIFIED",
+                standard_role: review.standard_role,
+                lifecycle_state: life.lifecycle_state || "LIFECYCLE_UNKNOWN",
+                lifecycle: life,
+                is_mandatory_qco: reg.state === "MANDATORY_CONFIRMED" || reg.is_mandatory === true,
+                regulatory_state: reg.state || reg.regulatory_state || "NOT_VERIFIED_IN_CURRENT_CORPUS",
+                regulatory: reg,
+                confidence_score: review.confidence_score ?? null,
+                evidence_gaps: review.evidence_gaps || [],
+                allied_standards: r.allied_standards || [],
+                alternatives: r.candidate_recommendations || r.alternatives || [],
+                is_review_candidate: true,
+              } : null),
+              status: isContradictory ? "CONTRADICTORY" : (isSuperseded ? "SUPERSEDED_ALERT" : (primary ? "RECOMMENDATION_AVAILABLE" : (review ? "REVIEW_NEEDED" : "UNRESOLVED"))),
             };
           }
           return cl;
@@ -328,7 +350,7 @@ export default function TenderPdfStudio({ evaluationDate }) {
 
       setVerificationFeedback({
         type: "success",
-        message: `Successfully analyzed ${itemsToRun.length} selected specifications against BIS standards graph.`,
+        message: `Successfully analyzed ${itemsToRun.length} selected specifications against CED + ETD standards graph.`,
       });
     } catch (err) {
       console.error("Batch verification failed:", err);
@@ -362,36 +384,57 @@ export default function TenderPdfStudio({ evaluationDate }) {
           if (resultsMap.has(cl.item_id)) {
             const r = resultsMap.get(cl.item_id);
             const primary = r.primary_recommendation;
-            const life = primary?.lifecycle || {};
-            const reg = primary?.regulatory || {};
+            const review = r.review_candidate;
+            const life = r.lifecycle || primary?.lifecycle || {};
+            const reg = r.regulatory || primary?.regulatory || {};
+            const citationCheck = r.citation_lifecycle_check;
             const isContradictory = r.decision_state === 'CONTRADICTORY_SPECIFICATIONS';
-            const isSuperseded = (cl.cited_standard && primary && !cl.cited_standard.includes(primary.standard_designation)) ||
-                                 life.lifecycle_state === 'SUPERSEDED_IN_TENDER' ||
-                                 life.is_superseded === true;
+            const isSuperseded = citationCheck
+              ? (citationCheck.state === 'VERIFIED_SUPERSEDED' || citationCheck.state === 'VERIFIED_WITHDRAWN')
+              : (life.lifecycle_state === 'VERIFIED_SUPERSEDED' || life.is_superseded === true);
 
             return {
               ...cl,
+              analysis: r,
               backend_result: r,
-              decision_state: r.decision_state || (primary ? "PRIMARY_RECOMMENDATION_AVAILABLE" : "INSUFFICIENT_INFORMATION"),
-              contradiction_details: r.contradiction_details || null,
-              clarification_prompts: r.clarification_prompts || [],
+              decision_state: r.decision_state || (primary ? "PRIMARY_RECOMMENDATION_AVAILABLE" : (review ? "EXPERT_REVIEW_REQUIRED" : "INSUFFICIENT_INFORMATION")),
+              contradiction_details: r.contradictions?.[0] || r.contradiction_details || null,
+              clarification_prompts: r.clarifications_needed || r.clarification_prompts || [],
+              citation_lifecycle_check: citationCheck,
               recommendation: primary ? {
-                decision_state: r.decision_state || "PRIMARY_RECOMMENDATION_AVAILABLE",
-                designation: primary.standard_designation,
+                decision_state: r.decision_state,
+                designation: primary.standard_designation || primary.designation,
                 title: primary.title,
-                department: primary.department,
+                department: primary.department || "NOT_VERIFIED",
                 standard_role: primary.standard_role,
-                lifecycle_state: life.lifecycle_state || (life.is_superseded ? "SUPERSEDED" : "VERIFIED_ACTIVE"),
+                lifecycle_state: life.lifecycle_state || "LIFECYCLE_UNKNOWN",
                 lifecycle: life,
-                is_mandatory_qco: reg.is_mandatory || false,
-                regulatory_state: reg.regulatory_state,
+                is_mandatory_qco: reg.state === "MANDATORY_CONFIRMED" || reg.is_mandatory === true,
+                regulatory_state: reg.state || reg.regulatory_state || "NOT_VERIFIED_IN_CURRENT_CORPUS",
                 regulatory: reg,
-                confidence_score: primary.confidence_score || 0.9,
+                confidence_score: primary.confidence_score ?? null,
                 evidence_gaps: primary.evidence_gaps || [],
                 allied_standards: r.allied_standards || [],
-                alternatives: r.alternatives || [],
-              } : null,
-              status: isContradictory ? "CONTRADICTORY" : (isSuperseded ? "SUPERSEDED_ALERT" : (primary ? "VERIFIED" : "REVIEW_NEEDED")),
+                alternatives: r.candidate_recommendations || r.alternatives || [],
+                is_review_candidate: false,
+              } : (review ? {
+                decision_state: r.decision_state,
+                designation: review.standard_designation || review.designation,
+                title: review.title,
+                department: review.department || "NOT_VERIFIED",
+                standard_role: review.standard_role,
+                lifecycle_state: life.lifecycle_state || "LIFECYCLE_UNKNOWN",
+                lifecycle: life,
+                is_mandatory_qco: reg.state === "MANDATORY_CONFIRMED" || reg.is_mandatory === true,
+                regulatory_state: reg.state || reg.regulatory_state || "NOT_VERIFIED_IN_CURRENT_CORPUS",
+                regulatory: reg,
+                confidence_score: review.confidence_score ?? null,
+                evidence_gaps: review.evidence_gaps || [],
+                allied_standards: r.allied_standards || [],
+                alternatives: r.candidate_recommendations || r.alternatives || [],
+                is_review_candidate: true,
+              } : null),
+              status: isContradictory ? "CONTRADICTORY" : (isSuperseded ? "SUPERSEDED_ALERT" : (primary ? "RECOMMENDATION_AVAILABLE" : (review ? "REVIEW_NEEDED" : "UNRESOLVED"))),
             };
           }
           return cl;
@@ -407,7 +450,7 @@ export default function TenderPdfStudio({ evaluationDate }) {
 
       setVerificationFeedback({
         type: "success",
-        message: `Analyzed all ${techItems.length} technical specifications against BIS catalog.`,
+        message: `Analyzed all ${techItems.length} technical specifications against CED + ETD catalog.`,
       });
     } catch (err) {
       console.error("Analyze all technical failed:", err);
@@ -498,16 +541,21 @@ export default function TenderPdfStudio({ evaluationDate }) {
   });
 
   const totalItems = allClauses.length;
-  const verifiedCount = allClauses.filter(c => c.status === 'VERIFIED').length;
-  const supersededCount = allClauses.filter(c => c.status === 'SUPERSEDED_ALERT' || c.recommendation?.lifecycle_state === 'SUPERSEDED_IN_TENDER').length;
-  const contradictoryCount = allClauses.filter(c => c.status === 'CONTRADICTORY').length;
-  const qcoCount = allClauses.filter(c => c.recommendation?.is_mandatory_qco).length;
-  const complianceScore = technicalClauses.length > 0 ? Math.round((verifiedCount / technicalClauses.length) * 100) : 0;
+  const analyzedTechClauses = technicalClauses.filter(c => c.analysis || c.recommendation);
+  const primaryAvailableCount = technicalClauses.filter(c => c.decision_state === 'PRIMARY_RECOMMENDATION_AVAILABLE' || c.status === 'RECOMMENDATION_AVAILABLE' || c.status === 'VERIFIED').length;
+  const conditionalCount = technicalClauses.filter(c => c.decision_state === 'CONDITIONAL_RECOMMENDATION').length;
+  const reviewRequiredCount = technicalClauses.filter(c => c.decision_state === 'EXPERT_REVIEW_REQUIRED' || c.status === 'REVIEW_NEEDED').length;
+  const insufficientCount = technicalClauses.filter(c => c.decision_state === 'INSUFFICIENT_INFORMATION' || c.decision_state === 'CLARIFICATION_REQUIRED').length;
+  const _outsideCoverageCount = technicalClauses.filter(c => c.decision_state === 'OUTSIDE_PROTOTYPE_COVERAGE').length;
+  const contradictoryCount = technicalClauses.filter(c => c.status === 'CONTRADICTORY' || c.decision_state === 'CONTRADICTORY_SPECIFICATIONS').length;
+  const supersededCount = technicalClauses.filter(c => c.status === 'SUPERSEDED_ALERT' || c.citation_lifecycle_check?.state === 'VERIFIED_SUPERSEDED').length;
+  const _qcoCount = technicalClauses.filter(c => c.recommendation?.is_mandatory_qco).length;
 
-  // Dynamic Red-Flag Findings (Part 10 / Invariant)
+  // Dynamic Red-Flag Findings (PS 26108 Section 28 & 43)
   const redFlags = allClauses.filter(c =>
     c.status === 'SUPERSEDED_ALERT' ||
     c.status === 'CONTRADICTORY' ||
+    c.citation_lifecycle_check?.state === 'VERIFIED_SUPERSEDED' ||
     c.recommendation?.lifecycle_state === 'SUPERSEDED_IN_TENDER'
   );
 
@@ -526,7 +574,7 @@ export default function TenderPdfStudio({ evaluationDate }) {
                 Procurement Tender &amp; Schedule Analysis Studio
               </h1>
               <p className="text-xs text-slate-500 mt-0.5">
-                Upload procurement tenders, extract technical clauses, and verify compliance against 6,082 indexed BIS standards
+                Upload procurement tenders, extract technical clauses, and verify compliance against 6,082 indexed knowledge-graph nodes in CED + ETD
               </p>
             </div>
           </div>
@@ -674,6 +722,19 @@ export default function TenderPdfStudio({ evaluationDate }) {
   // ── Render Screen 2: Active Tender Analysis Workspace ──
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 flex flex-col gap-6">
+      {/* Synthetic Demo Mode Notice Banner (PS 26108 Section 42) */}
+      {docData?.is_synthetic_demo && (
+        <div className="w-full bg-amber-50 border border-amber-300 rounded-xl p-3.5 flex items-start sm:items-center gap-3 text-amber-950 text-xs shadow-xs">
+          <span className="material-symbols-outlined text-amber-700 text-lg shrink-0">science</span>
+          <div className="flex-1">
+            <strong>DEMO DATA — SYNTHETIC / NON-AUTHORITATIVE:</strong>
+            <span className="ml-1 text-amber-900">
+              This sample tender package contains precomputed demonstration data for user interface evaluation. It is non-authoritative and does not represent live Bureau of Indian Standards compliance verification.
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Top Header & Breadcrumb with Document Info */}
       <div className="w-full bg-white rounded-xl p-4 border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -1108,27 +1169,50 @@ export default function TenderPdfStudio({ evaluationDate }) {
             </div>
           </div>
 
-          {/* Executive Metrics Cards (4 cards) */}
+          {/* Executive Metrics Cards (4 cards) — Neutral Operational Summary (PS 26108 Section 30) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs flex items-center gap-3.5">
               <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
                 <span className="material-symbols-outlined text-[22px]">list_alt</span>
               </div>
               <div>
-                <span className="text-xs font-mono text-slate-400 block uppercase">Clauses Classified</span>
+                <span className="text-xs font-mono text-slate-400 block uppercase">Clauses Analyzed</span>
                 <span className="text-xl font-bold text-slate-900">
-                  {technicalClauses.length} Tech / {administrativeClauses.length} Admin
+                  {analyzedTechClauses.length} of {technicalClauses.length} Tech
+                </span>
+                <span className="text-[11px] text-slate-500 block">
+                  {administrativeClauses.length} Administrative Excluded
                 </span>
               </div>
             </div>
 
             <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs flex items-center gap-3.5">
               <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                <span className="material-symbols-outlined text-[22px]">verified</span>
+                <span className="material-symbols-outlined text-[22px]">fact_check</span>
               </div>
               <div>
-                <span className="text-xs font-mono text-slate-400 block uppercase">Technical Alignment</span>
-                <span className="text-xl font-bold text-emerald-700">{complianceScore}% Conforming Specifications</span>
+                <span className="text-xs font-mono text-slate-400 block uppercase">Recommendations Available</span>
+                <span className="text-xl font-bold text-emerald-700">
+                  {primaryAvailableCount + conditionalCount} Standards
+                </span>
+                <span className="text-[11px] text-emerald-800 block">
+                  {primaryAvailableCount} Primary • {conditionalCount} Conditional
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                <span className="material-symbols-outlined text-[22px]">engineering</span>
+              </div>
+              <div>
+                <span className="text-xs font-mono text-slate-400 block uppercase">Review &amp; Clarification</span>
+                <span className="text-xl font-bold text-amber-700">
+                  {reviewRequiredCount + insufficientCount} Items
+                </span>
+                <span className="text-[11px] text-slate-500 block">
+                  {reviewRequiredCount} Expert Review • {insufficientCount} Insufficient Info
+                </span>
               </div>
             </div>
 
@@ -1137,18 +1221,13 @@ export default function TenderPdfStudio({ evaluationDate }) {
                 <span className="material-symbols-outlined text-[22px]">warning</span>
               </div>
               <div>
-                <span className="text-xs font-mono text-slate-400 block uppercase">Critical Discrepancies</span>
-                <span className="text-xl font-bold text-rose-700">{supersededCount + contradictoryCount} Discrepancies</span>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                <span className="material-symbols-outlined text-[22px]">gavel</span>
-              </div>
-              <div>
-                <span className="text-xs font-mono text-slate-400 block uppercase">Mandatory QCO Items</span>
-                <span className="text-xl font-bold text-amber-700">{qcoCount} Items Mandated</span>
+                <span className="text-xs font-mono text-slate-400 block uppercase">Superseded / Conflicts</span>
+                <span className="text-xl font-bold text-rose-700">
+                  {supersededCount + contradictoryCount} Discrepancies
+                </span>
+                <span className="text-[11px] text-rose-800 block">
+                  {supersededCount} Superseded • {contradictoryCount} Contradictory
+                </span>
               </div>
             </div>
           </div>
@@ -1158,7 +1237,7 @@ export default function TenderPdfStudio({ evaluationDate }) {
             <div className="flex items-center gap-2 text-rose-800">
               <span className="material-symbols-outlined text-[20px]">report</span>
               <h3 className="font-display font-bold text-sm">
-                Red-Flag Findings &amp; Statutory Non-Compliance Alerts
+                Technical Discrepancies &amp; Superseded Standard Alerts
               </h3>
             </div>
 
@@ -1181,8 +1260,8 @@ export default function TenderPdfStudio({ evaluationDate }) {
                     </p>
                     <div className="mt-2 text-rose-800 font-semibold">
                       Recommended Action: {cl.status === 'CONTRADICTORY'
-                        ? `Issue a pre-bid corrigendum resolving conflicting parameters: ${cl.clarification_prompts?.[0] || 'Clarify exact specification required.'}`
-                        : `Issue an immediate tender corrigendum updating the specification to ${cl.recommendation?.designation}.`
+                        ? `Clarify conflicting parameters: ${cl.clarification_prompts?.[0] || 'Clarify exact specification required.'}`
+                        : `Verify procurement specification against current active edition ${cl.recommendation?.designation || 'in the standards catalog'}.`
                       }
                     </div>
                   </div>
