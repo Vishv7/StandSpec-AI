@@ -27,6 +27,8 @@ def mini_graph():
                 "is_hydrated": True,
                 "scope_evidence_available": True,
                 "recommendation_ready": True,
+                "publication_date": "2011-01-01",
+                "lifecycle_status": "ACTIVE",
             },
             {
                 "id": "IS 10810 (Part 53):1984",

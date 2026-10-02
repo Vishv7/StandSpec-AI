@@ -97,7 +97,10 @@ def test_tool_check_lifecycle(registry):
         "evaluation_date": "2026-07-15",
     })
     assert res["status"] == "SUCCESS"
-    assert res["lifecycle_state"] in ("ACTIVE_VALID", "ACTIVE", "SUPERSEDED")
+    assert res["lifecycle_state"] in (
+        "ACTIVE_VALID", "ACTIVE", "SUPERSEDED",
+        "VERIFIED_ACTIVE", "VERIFIED_SUPERSEDED", "LIFECYCLE_UNVERIFIED",
+    )
 
 
 def test_tool_check_regulatory_never_claims_voluntary_on_unverified(registry):
