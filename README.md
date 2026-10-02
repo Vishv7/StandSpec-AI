@@ -82,20 +82,7 @@
 
 ---
 
-## 3. Authoritative Documentation
-
-| Document | Primary Focus |
-|:---|:---|
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Complete multi-tier architecture and pipeline workflow |
-| [`docs/DATA_CONTRACTS.md`](docs/DATA_CONTRACTS.md) | JSON schemas, standards node structures, and evidence bundle contracts |
-| [`docs/EVALUATION.md`](docs/EVALUATION.md) | Benchmark suites, evaluation metrics, and machine-readable artifacts |
-| [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | Developer CLI manual, verification commands, and test workflows |
-| [`docs/LLM_INTEGRATION.md`](docs/LLM_INTEGRATION.md) | Bounded LLM provider architecture and evidence grounding |
-| [`docs/RELEASES.md`](docs/RELEASES.md) | Version identity, release manifest, and component version contracts |
-
----
-
-## 4. Quickstart & Verification Commands
+## 3. Quickstart & Verification Commands
 
 ### 4.1 Run StandSpec Agent CLI Demo
 Execute single queries or launch an interactive procurement officer session:
@@ -155,7 +142,7 @@ python scripts/evaluate_recommendation.py --benchmark data/benchmarks/coverage_b
 
 ---
 
-## 5. Technology Stack & Prerequisites
+## 4. Technology Stack & Prerequisites
 
 - **Python Version:** 3.10+ (Tested on Python 3.14)
 - **Core Dependencies:** Listed in `requirements.txt` (offline, deterministic)
