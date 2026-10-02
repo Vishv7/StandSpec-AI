@@ -22,7 +22,9 @@ yarn-error.log*
 
 # Environment / Secret keys
 .env
+.env*
 *.env
+*.env*
 .env.local
 .env.*.local
 *.key
@@ -33,6 +35,9 @@ yarn-error.log*
 
 # Markdown files (excluded per project policy)
 *.md
+**/*.md
+*.markdown
+**/*.markdown
 
 # IDE / Editor artifacts
 .vscode/
