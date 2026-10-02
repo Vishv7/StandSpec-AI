@@ -33,11 +33,12 @@ yarn-error.log*
 *.pfx
 *.secret
 
-# Markdown files (excluded per project policy)
+# Markdown files (excluded per project policy, except public root README)
 *.md
 **/*.md
 *.markdown
 **/*.markdown
+!/README.md
 
 # IDE / Editor artifacts
 .vscode/
